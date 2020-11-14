@@ -42,5 +42,6 @@
 
 #### 기타
 - https://developer.android.com/guide/topics/ui/controls/spinner?hl=ko#java
+- https://patents.google.com/patent/KR20070013526A/ko
 
 
