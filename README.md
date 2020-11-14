@@ -19,5 +19,10 @@
 #### FCMtoken
 - https://onedaycodeing.tistory.com/26
 
+#### Socket통신
+https://bangsj1224.tistory.com/entry/5-%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%82%B9-%EC%86%8C%EC%BC%93-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0
+
 #### 기타
 - https://developer.android.com/guide/topics/ui/controls/spinner?hl=ko#java
+
+
