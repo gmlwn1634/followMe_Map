@@ -6,4 +6,11 @@ followMe_Map
 
 
 참고사이트
+
+
+//googleMap
+https://developers.google.com/android/reference/com/google/android/gms/maps/OnMapReadyCallback
+
+//thread
+https://blog.opid.kr/302
 https://mine-it-record.tistory.com/246
