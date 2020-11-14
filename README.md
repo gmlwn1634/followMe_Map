@@ -9,7 +9,7 @@ followMe_Map
 
 
 //googleMap
-https://developers.google.com/android/reference/com/google/android/gms/maps/OnMapReadyCallback
+"# https://developers.google.com/android/reference/com/google/android/gms/maps/OnMapReadyCallback"
 
 //thread
 https://blog.opid.kr/302
