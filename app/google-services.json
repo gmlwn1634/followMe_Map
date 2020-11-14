@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "878638813194",
+    "firebase_url": "https://followme-293716.firebaseio.com",
+    "project_id": "followme-293716",
+    "storage_bucket": "followme-293716.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878638813194:android:7a2e185b729f8f52b64ff3",
+        "android_client_info": {
+          "package_name": "com.example.followme_map"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "878638813194-0ih3tmjnptp11mk0tt5ouq8e8hl7b6o0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsZOgppE-zSEEBs-XosAhulYEbiaxJIwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "878638813194-0ih3tmjnptp11mk0tt5ouq8e8hl7b6o0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
