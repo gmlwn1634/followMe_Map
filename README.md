@@ -14,3 +14,9 @@
 #### thread
 ##### https://blog.opid.kr/302
 ##### https://mine-it-record.tistory.com/246
+
+#### FCMtoken
+##### https://onedaycodeing.tistory.com/26
+
+#### 기타
+https://developer.android.com/guide/topics/ui/controls/spinner?hl=ko#java
