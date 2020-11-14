@@ -1,3 +1,3 @@
 "# followMe_Map" 
-"# followMe_Map"                 
-"# followMe_Map" 
+"# 병원 실시간 네비게이션 서비스"                 
+"# 캡스톤 " 
