@@ -13,6 +13,7 @@ https://developers.google.com/maps/documentation/android-sdk/events
 
 #### thread
 https://blog.opid.kr/302
+https://recipes4dev.tistory.com/150
 https://mine-it-record.tistory.com/246
 
 #### FCMtoken
