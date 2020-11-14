@@ -7,8 +7,7 @@
 
 
 ### 참고사이트
-
-#### googleMap
+googleMap
 ##### https://developers.google.com/android/reference/com/google/android/gms/maps/OnMapReadyCallback"
 
 #### thread
