@@ -79,7 +79,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //좌표 Valus-----------
     private float[][] flowLatLng = new float[20][2]; //진료동선을 담을 배열
     private LatLng schoolPoint = new LatLng(35.896797, 128.620944);  //본관좌표
-    private LatLng startPoint, endPoint, thisPoint;
+    private LatLng startPoint, endPoint;
+    private LatLng thisPoint = new LatLng(35.896759, 128.620387);
     private float thisLat, thisLng; //현위치의 위/경도
     private CameraPosition camPosition;
     private Marker thisMarker;
@@ -87,9 +88,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private float zoomLevel = 25;
 
     //실시간 이동 임의 좌표---------
-    float lat = 35.896688f;
-    float lng = 128.620400f;
-    int num = 0;
+//    float lat = 35.896688f;
+//    float lng = 128.620400f;
+//    int num = 0;
 
 
     @SuppressLint("ServiceCast")
@@ -121,12 +122,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
     }
 
-    // 사용자의 위치와 바라보는 방향에 따라 cameraPosition 조절
+    // cameraPosition 업데이트
     void setCameraPosition() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                //ui 변경을 위해
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -352,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void run() {
                 while (true) {
                     try {
-                        randLatLng();
+//                        randLatLng();
                         setCameraPosition();
                         Thread.sleep(300);
                     } catch (Exception e) {
@@ -374,6 +374,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         endPoint)
                 .startCap(new RoundCap())
                 .endCap(new RoundCap()));
+
+
     }
 
     //파이썬 Socket 통신
@@ -440,19 +442,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     //임의의 좌표 생성
-    void randLatLng() {
-        if (num == 52) {
-            //끝지점에 도달->시작지점으로 초기화
-            lat = 35.896688f;
-            lng = 128.620400f;
-            num = 0;
-        }
-        thisPoint = new LatLng(lat, lng);
-        lat += 0.000003f;
-        lng += 0.000008f;
-        num++;
-
-    }
+//    void randLatLng() {
+//        if (num == 52) {
+//            //끝지점에 도달->시작지점으로 초기화
+//            lat = 35.896688f;
+//            lng = 128.620400f;
+//            num = 0;
+//        }
+//        thisPoint = new LatLng(lat, lng);
+//        lat += 0.000003f;
+//        lng += 0.000008f;
+//        num++;
+//
+//    }
 
     //방위각에 따른 지도 회전
     void changeCamera() {
