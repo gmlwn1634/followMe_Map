@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
 
 
-        // 본관 좌표를 기준으로 구글맵에 도면 오버레이.
+        // 본관 좌표를 기준으로 구글맵에 도면 오버레이
         mapOverlay();
 
         // 동선 정보 받아옴
