@@ -17,6 +17,8 @@
 - https://developers.google.com/maps/documentation/android-sdk/marker
 - https://developers.google.com/maps/documentation/android-sdk/groundoverlay
 - https://stackoverrun.com/ko/q/4445784
+- https://breadboy.tistory.com/287
+- https://developers.google.com/android/reference/com/google/android/gms/maps/model/PolylineOptions
 
 #### thread
 - https://recipes4dev.tistory.com/150
