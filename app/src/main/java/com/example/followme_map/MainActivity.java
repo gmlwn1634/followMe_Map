@@ -12,7 +12,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.followme_map.databinding.ActivityMainBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -28,10 +33,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
 
+import org.json.JSONObject;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener {
 
@@ -98,6 +107,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //해당 프로젝트의 설정 된 minSdkVersion 이후에 나온 API를 사용할 때
     //Warring을 없애고 개발자가 해당 APi를 사용할 수 있게 합니다.
 
+    //RequestQueue는 한번 생성하면 어디서든 접근할 수 있도록 AppHelper 클래스에 static으로 선언
+    public static class AppHelper {
+        public static RequestQueue requestQueue;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,8 +119,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // volley 통신 request 초기화
-        requestQueue = Volley.newRequestQueue(this);
+        // Volley 통신 requestQueue 생성 및 초기화
+        if (AppHelper.requestQueue == null) {
+            AppHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
 
         //센서 값 받기
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -304,37 +320,57 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     //진료동선 받기(임의데이터) - 구글맵이 준비되면 호출
-    void receiveFlow() {
+    public void receiveFlow() {
+        String url = "http://192.168.0.8:8000/api/patient/flow";
+        final StringRequest request;
 
-//라라벨 volley통신으로 좌표 가져오기
-//        int patient_id = 1901141, token = 1234;
-//        String url = "http://192.168.0.8:8000/api/patient/flow";
-//
-//        StringRequest request;
+        request = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //응답 수신 성공 시 자동 호출
 
-//        request = new StringRequest(Request.Method.POST, url, response->{
-//            try{
-//                JSONObject jsonObject = new JSONObject(response);
-//
-//
-//            }
-//        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //에러 발생 시 자동 호출
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                //요청을 보낼 때 포함시킬 파라미터
+
+                Map<String, String> params = new HashMap<String, String>();
+                //params.put("key", "value");
+                return params;
+            }
+        };
+
+        // 이전 결과가 있더라도 새로 요청
+        request.setShouldCache(false);
+        AppHelper.requestQueue.add(request);
 
         //임의로 찍은 좌표
-        flowLatLng[0][0] = 35.896761f;
-        flowLatLng[0][1] = 128.620373f;
-        flowLatLng[1][0] = 35.896708f;
-        flowLatLng[1][1] = 128.620389f;
-        flowLatLng[2][0] = 35.896750f;
-        flowLatLng[2][1] = 128.620584f;
-        flowLatLng[3][0] = 35.896784f;
-        flowLatLng[3][1] = 128.620588f;
-        flowLatLng[4][0] = 35.896789f;
-        flowLatLng[4][1] = 128.620633f;
-
-        startPoint = new LatLng(flowLatLng[0][0], flowLatLng[0][1]);
-        endPoint = new LatLng(flowLatLng[4][0], flowLatLng[4][1]);
+//        flowLatLng[0][0] = 35.896761f;
+//        flowLatLng[0][1] = 128.620373f;
+//        flowLatLng[1][0] = 35.896708f;
+//        flowLatLng[1][1] = 128.620389f;
+//        flowLatLng[2][0] = 35.896750f;
+//        flowLatLng[2][1] = 128.620584f;
+//        flowLatLng[3][0] = 35.896784f;
+//        flowLatLng[3][1] = 128.620588f;
+//        flowLatLng[4][0] = 35.896789f;
+//        flowLatLng[4][1] = 128.620633f;
+//
+//        startPoint = new LatLng(flowLatLng[0][0], flowLatLng[0][1]);
+//        endPoint = new LatLng(flowLatLng[4][0], flowLatLng[4][1]);
     }
+
 
     //구글맵 오버레이 (3층) - 구글맵이 준비되면 호출
     void mapOverlay() {
