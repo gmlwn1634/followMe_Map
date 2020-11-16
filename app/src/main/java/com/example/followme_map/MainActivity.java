@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean setThisMarker = false;
     private float zoomLevel = 25;
 
-    //실시간 이동 임의 좌표--------
+    //실시간 이동 임의 좌표---------
     float lat = 35.896688f;
     float lng = 128.620400f;
     int num = 0;
