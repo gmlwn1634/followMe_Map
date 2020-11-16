@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
 
@@ -48,23 +49,36 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener {
 
     private ActivityMainBinding binding;
-    private GoogleMap mMap; //구글맵 오버레이
     private final String TAG = "MainActivity";
 
-    //소켓통신 Values---------
+
+    //구글맵 Values---------------
+    private GoogleMap mMap; //구글맵 오버레이
+    private CameraPosition camPosition;
+    private float zoomLevel = 25;
+
+    private LatLng schoolPoint = new LatLng(35.896797, 128.620944);  //본관좌표
+    private LatLng thisPoint = new LatLng(35.896759, 128.620387);
+    private LatLng startPoint, endPoint;
+
+    private Marker thisMarker;
+    private boolean setThisMarker = false;
+
+
+    //소켓통신 Values--------------
     private Socket socket;
     private DataOutputStream dos;
     private DataInputStream dis;
 
     //방위각 계산 Values-----------
     private SensorManager sm;
-    private Sensor mAccelSensor; //가속도센서 값
-    private Sensor mMagnetSensor; //지자기센서 값
+    private Sensor mAccelSensor; //가속도센서
+    private Sensor mMagnetSensor; //지자기센서
 
-    private final float[] mLastAccel = new float[3]; //최근 가속도 센서 3개
-    private final float[] mLastMagnet = new float[3];  //최근 지자기 센서 3개
+    private final float[] mLastAccel = new float[3];
+    private final float[] mLastMagnet = new float[3];
 
-    private boolean mLastAccelSet = false;  //배열이 가득찼는지 확인
+    private boolean mLastAccelSet = false;  //받아왔는지 확인
     private boolean mLastMagnetSet = false;
 
     private final float[] mR = new float[9]; //회전 매트릭스
@@ -76,31 +90,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean azimutFull = false;
     private int index = 0;
 
-    //스마트폰의 가속도센서 및 지자기센서 값 최근 3개를 저장하여 방위각을 계산
-    //방위각(-z축을 중심으로 한 회전 각도) : 기기의 현재 나침반 방향과 자북 사이의 각도
-    //기기의 상단이 북쪽을 향하면 0도, 동쪽을 향하면 90도, 남쪽을 향하면 180도, 서쪽을 향하면 270도
-
-    // Azimuth, pitch, roll
-    //[0] : Azimuth - z축에 대한 회전 방위각
-    //[1] : Pitch - x축에 대한 회전 방위각
-    //[2] : Roll - y축에 대한 회전 방위각
-
-    //좌표 Valus-----------
-    private LatLng schoolPoint = new LatLng(35.896797, 128.620944);  //본관좌표
-    private LatLng startPoint, endPoint;
-    private LatLng thisPoint = new LatLng(35.896759, 128.620387);
-    private float thisLat, thisLng; //현위치의 위/경도
-    private CameraPosition camPosition;
-    private Marker thisMarker;
-    private boolean setThisMarker = false;
-    private float zoomLevel = 25;
 
     //실시간 이동 임의 좌표---------
-//    float lat = 35.896688f;
-//    float lng = 128.620400f;
-//    int num = 0;
+//    float testLat = 35.896688f;
+//    float testLng = 128.620400f;
+//    int testNum = 0;
 
-    private ArrayList<Flow> flowList;
+    private ArrayList<Flow> flowList = new ArrayList<Flow>();
 
 
     @SuppressLint("ServiceCast")
@@ -214,7 +210,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-        //최근 3개를 저장
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             System.arraycopy(sensorEvent.values, 0, mLastAccel, 0, mLastAccel.length);
             mLastAccelSet = true;
@@ -251,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //getOrientation(float[] R, float[] values)
         //회전 매트릭스(mR)를 이용하여 장치의 방향을 구하는 함수
+        //기기의 상단이 북쪽을 향하면 0도, 동쪽을 향하면 90도, 남쪽을 향하면 180도, 서쪽을 향하면 270도
         //values[0] : Azimuth - z축에 대한 회전 방위각
         //values[1] : Pitch - x축에 대한 회전 방위각
         //values[2] : Roll - y축에 대한 회전 방위각
@@ -353,66 +349,89 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //진료동선 받기(임의데이터) - 구글맵이 준비되면 호출
     public void receiveFlow() {
-        String url = "http://192.168.0.8:8000/api/patient/flow";
-        final StringRequest request;
+//        String url = "http://192.168.0.8:8000/api/patient/flow";
+//        final StringRequest request;
+//
+//        request = new StringRequest(
+//                Request.Method.GET,
+//                url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        //응답 수신 성공 시 자동 호출
+//                        try {
+//                            JSONObject jsonResponse = new JSONObject(response);
+////                            boolean check = jsonResponse.getBoolean("check"); //완료된 동선, 미완료 동선
+//                            JSONArray flowArr = jsonResponse.getJSONArray("nodeFlow"); //첫번째 진료동선에 대한 노드 정보
+//
+//                            for (int i = 0; i < flowArr.length(); i++) {
+//                                JSONObject flowObj = flowArr.getJSONObject(i);
+//                                Flow flow = new Flow();
+//
+//                                flow.setMinor(flowObj.getInt("beacon_id_minor"));
+//                                flow.setFloor(flowObj.getInt("floor"));
+//                                flow.setLatLng(flowObj.getDouble("lat"), flowObj.getDouble("lon"));
+//                                flowList.add(flow);
+//                            }
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        for (int i = 0; i < flowList.size(); i++) {
+//                            Log.i(TAG, "진료동선 요청 성공/ 진료동선 1 [" + i + "] minor : " + flowList.get(i).getMinor());
+//                            Log.i(TAG, "진료동선 요청 성공/ 진료동선 1 [" + i + "] floor : " + flowList.get(i).getFloor());
+//                            Log.i(TAG, "진료동선 요청 성공/ 진료동선 1 [" + i + "] latLng : " + flowList.get(i).getLatLng());
+//                        }
+//
+//                        startPoint = flowList.get(0).getLatLng();
+//                        endPoint = flowList.get(flowList.size() - 1).getLatLng();
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        //에러 발생 시 자동 호출
+//                        Log.i(TAG, "서버에 진료동선 요청 실패" + error.getMessage());
+//                    }
+//                }
+//        ) {
+//            @Override
+//            protected Map<String, String> getParams() throws AuthFailureError {
+//                //요청을 보낼 때 포함시킬 파라미터
+//                Map<String, String> params = new HashMap<String, String>();
+//                params.put("patient_id", "1");
+//                params.put("token", "dslfklsdkflasmfkdsjgkdfkgjskdjfgksdjfksdjfksd");
+//                return params;
+//            }
+//        };
+//
+//        // 이전 결과가 있더라도 새로 요청
+//        request.setShouldCache(false);
+//        AppHelper.requestQueue = Volley.newRequestQueue(this); //requestQueue 초기화 필수
+//        AppHelper.requestQueue.add(request);
 
-        request = new StringRequest(
-                Request.Method.GET,
-                url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        //응답 수신 성공 시 자동 호출
-                        try {
-                            JSONObject jsonResponse = new JSONObject(response);
-                            boolean check = jsonResponse.getBoolean("check");
-                            JSONArray flowArr = jsonResponse.getJSONArray("nodeFlow");
+        Flow flow1_1 = new Flow();
+        Flow flow1_2 = new Flow();
+        Flow flow1_3 = new Flow();
+        flow1_1.setMinor(1);
+        flow1_1.setFloor(1);
+        flow1_1.setLatLng(35.896761, 128.620373);
 
-                            for (int i = 0; i < flowArr.length(); i++) {
-                                JSONObject flowObj = flowArr.getJSONObject(i);
-                                Flow flow = new Flow();
+        flow1_2.setMinor(2);
+        flow1_2.setFloor(2);
+        flow1_2.setLatLng(35.896708, 128.620389);
 
-                                flow.setMinor(flowObj.getInt("beacon_id_minor"));
-                                flow.setFloor(flowObj.getInt("floor"));
-                                flow.setLatLng(flowObj.getDouble("lat"), flowObj.getDouble("lon"));
-                                flowList.add(flow);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+        flow1_3.setMinor(3);
+        flow1_3.setFloor(3);
+        flow1_3.setLatLng(35.896750, 128.620584);
 
-                        for (int i = 0; i < flowList.size(); i++) {
-                            Log.i(TAG, "진료동선 요청 성공/ 진료동선[" + i + "] minor : " + flowList.get(i).getMinor());
-                            Log.i(TAG, "진료동선 요청 성공/ 진료동선[" + i + "] floor : " + flowList.get(i).getFloor());
-                            Log.i(TAG, "진료동선 요청 성공/ 진료동선[" + i + "] latLng : " + flowList.get(i).getLatLng());
-                        }
 
-                        startPoint = flowList.get(0).getLatLng();
-                        endPoint = flowList.get(flowList.size() - 1).getLatLng();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //에러 발생 시 자동 호출
-                        Log.i(TAG, "서버에 진료동선 요청 실패" + error.getMessage());
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                //요청을 보낼 때 포함시킬 파라미터
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("patient_id", "1");
-                params.put("token", "dslfklsdkflasmfkdsjgkdfkgjskdjfgksdjfksdjfksd");
-                return params;
-            }
-        };
+        flowList.add(flow1_1);
+        flowList.add(flow1_2);
+        flowList.add(flow1_3);
 
-        // 이전 결과가 있더라도 새로 요청
-        request.setShouldCache(false);
-        AppHelper.requestQueue = Volley.newRequestQueue(this); //requestQueue 초기화 필수
-        AppHelper.requestQueue.add(request);
+        startPoint = flowList.get(0).getLatLng();
+        endPoint = flowList.get(flowList.size() - 1).getLatLng();
     }
 
 
@@ -432,7 +451,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void run() {
                 while (true) {
                     try {
-//                        randLatLng();
+//                        testLatLng();
                         setCameraPosition();
                         Thread.sleep(300);
                     } catch (Exception e) {
@@ -446,93 +465,91 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //진료동선 표시
     void drawPolyline() {
 
-        mMap.addPolyline(new PolylineOptions()
-                .add(startPoint,
-                        flowList.get(1).getLatLng(), //꺾는점1
-                        flowList.get(2).getLatLng(), //꺾는점2
-                        flowList.get(3).getLatLng(), //꺾는점3
-                        endPoint)
-                .startCap(new RoundCap())
-                .endCap(new RoundCap()));
+        PolylineOptions polyOpt = new PolylineOptions();
+        for (int i = 0; i < flowList.size(); i++)
+            polyOpt.add(flowList.get(i).getLatLng());
 
+        polyOpt.startCap(new RoundCap());
+        polyOpt.endCap(new RoundCap());
 
+        Polyline polyline = mMap.addPolyline(polyOpt);
     }
 
     //파이썬 Socket 통신
-    void connectPy() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //ui 변경을 위해
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String pyIp = "192.168.10.10";
-                        int port = 8000;
-
-                        //--- 서버 접속
-                        try {
-                            socket = new Socket(pyIp, port);
-                            Log.i(TAG, "Python 서버 접속 성공");
-                        } catch (IOException e) {
-                            Log.i(TAG, "Python 서버 접속 실패");
-                            e.printStackTrace();
-                        }
-                        Log.i(TAG, "안드로이드 -> Python 서버 연결 요청");
-
-                        //
-                        try {
-
-                            //데이터 송신을 위한 버퍼
-                            dos = new DataOutputStream(socket.getOutputStream());
-
-                            //데이터 수신을 위한 버퍼
-                            dis = new DataInputStream(socket.getInputStream());
-
-                            Log.i(TAG, "버퍼 생성 성공");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            Log.i(TAG, "버퍼 생성 실패");
-                        }
-
-                        while (true) {
-                            try {
-                                //2개를 받는 것이 불가능하다면 json객체나 String으로 변환해서 주고 받기
-                                thisLat = (float) dis.readFloat();
-                                thisLng = (float) dis.readFloat();
-
-                                if (thisLat > 0 && thisLng > 0) {
-                                    dos.writeUTF("Python 서버로부터 수신 / 위도 : " + thisLat + "경도 : " + thisLng);
-                                    dos.flush(); //찌꺼기 털어주기
-
-                                    //카메라 포지션 및 현위치 바꾸기
-                                    setCameraPosition();
-
-                                }
-
-                            } catch (Exception e) {
-                                Log.i(TAG, "Python 서버로부터 수신 실패");
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-            }
-        }).start();
-    }
+//    void connectPy() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                //ui 변경을 위해
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        String pyIp = "192.168.10.10";
+//                        int port = 8000;
+//
+//                        //--- 서버 접속
+//                        try {
+//                            socket = new Socket(pyIp, port);
+//                            Log.i(TAG, "Python 서버 접속 성공");
+//                        } catch (IOException e) {
+//                            Log.i(TAG, "Python 서버 접속 실패");
+//                            e.printStackTrace();
+//                        }
+//                        Log.i(TAG, "안드로이드 -> Python 서버 연결 요청");
+//
+//                        //
+//                        try {
+//
+//                            //데이터 송신을 위한 버퍼
+//                            dos = new DataOutputStream(socket.getOutputStream());
+//
+//                            //데이터 수신을 위한 버퍼
+//                            dis = new DataInputStream(socket.getInputStream());
+//
+//                            Log.i(TAG, "버퍼 생성 성공");
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                            Log.i(TAG, "버퍼 생성 실패");
+//                        }
+//
+//                        while (true) {
+//                            try {
+//                                //2개를 받는 것이 불가능하다면 json객체나 String으로 변환해서 주고 받기
+//                                thisLat = (float) dis.readFloat();
+//                                thisLng = (float) dis.readFloat();
+//
+//                                if (thisLat > 0 && thisLng > 0) {
+//                                    dos.writeUTF("Python 서버로부터 수신 / 위도 : " + thisLat + "경도 : " + thisLng);
+//                                    dos.flush(); //찌꺼기 털어주기
+//
+//                                    //카메라 포지션 및 현위치 바꾸기
+//                                    setCameraPosition();
+//
+//                                }
+//
+//                            } catch (Exception e) {
+//                                Log.i(TAG, "Python 서버로부터 수신 실패");
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                });
+//            }
+//        }).start();
+//    }
 
     //임의의 좌표 생성
-//    void randLatLng() {
-//        if (num == 52) {
+//    void testLatLng() {
+//        if (testNum == 52) {
 //            //끝지점에 도달->시작지점으로 초기화
-//            lat = 35.896688f;
-//            lng = 128.620400f;
-//            num = 0;
+//            testLat = 35.896688f;
+//            testLng = 128.620400f;
+//            testNum = 0;
 //        }
 //        thisPoint = new LatLng(lat, lng);
-//        lat += 0.000003f;
-//        lng += 0.000008f;
-//        num++;
+//        testLat += 0.000003f;
+//        testLng += 0.000008f;
+//        testNum++;
 //
 //    }
 
