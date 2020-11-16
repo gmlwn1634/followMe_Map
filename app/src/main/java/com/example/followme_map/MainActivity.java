@@ -33,12 +33,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,9 +55,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Socket socket;
     private DataOutputStream dos;
     private DataInputStream dis;
-
-    //Volley통신 Values--------
-    private RequestQueue requestQueue;
 
     //방위각 계산 Values-----------
     private SensorManager sm;
@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //[2] : Roll - y축에 대한 회전 방위각
 
     //좌표 Valus-----------
-    private float[][] flowLatLng = new float[20][2]; //진료동선을 담을 배열
     private LatLng schoolPoint = new LatLng(35.896797, 128.620944);  //본관좌표
     private LatLng startPoint, endPoint;
     private LatLng thisPoint = new LatLng(35.896759, 128.620387);
@@ -100,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //    float lat = 35.896688f;
 //    float lng = 128.620400f;
 //    int num = 0;
+
+    private ArrayList<Flow> flowList;
 
 
     @SuppressLint("ServiceCast")
@@ -319,6 +320,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    //진료 동선
+    public class Flow {
+        private int minor;
+        private int floor;
+        private LatLng latLng;
+
+        public int getMinor() {
+            return minor;
+        }
+
+        public int getFloor() {
+            return floor;
+        }
+
+        public LatLng getLatLng() {
+            return latLng;
+        }
+
+        public void setMinor(int argMinor) {
+            this.minor = argMinor;
+        }
+
+        public void setFloor(int argFloor) {
+            this.floor = argFloor;
+        }
+
+        public void setLatLng(double argLat, double argLng) {
+            this.latLng = new LatLng(argLat, argLng);
+        }
+    }
+
     //진료동선 받기(임의데이터) - 구글맵이 준비되면 호출
     public void receiveFlow() {
         String url = "http://192.168.0.8:8000/api/patient/flow";
@@ -331,44 +363,56 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onResponse(String response) {
                         //응답 수신 성공 시 자동 호출
+                        try {
+                            JSONObject jsonResponse = new JSONObject(response);
+                            boolean check = jsonResponse.getBoolean("check");
+                            JSONArray flowArr = jsonResponse.getJSONArray("nodeFlow");
 
+                            for (int i = 0; i < flowArr.length(); i++) {
+                                JSONObject flowObj = flowArr.getJSONObject(i);
+                                Flow flow = new Flow();
+
+                                flow.setMinor(flowObj.getInt("beacon_id_minor"));
+                                flow.setFloor(flowObj.getInt("floor"));
+                                flow.setLatLng(flowObj.getDouble("lat"), flowObj.getDouble("lon"));
+                                flowList.add(flow);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        for (int i = 0; i < flowList.size(); i++) {
+                            Log.i(TAG, "진료동선 요청 성공/ 진료동선[" + i + "] minor : " + flowList.get(i).getMinor());
+                            Log.i(TAG, "진료동선 요청 성공/ 진료동선[" + i + "] floor : " + flowList.get(i).getFloor());
+                            Log.i(TAG, "진료동선 요청 성공/ 진료동선[" + i + "] latLng : " + flowList.get(i).getLatLng());
+                        }
+
+                        startPoint = flowList.get(0).getLatLng();
+                        endPoint = flowList.get(flowList.size() - 1).getLatLng();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         //에러 발생 시 자동 호출
+                        Log.i(TAG, "서버에 진료동선 요청 실패" + error.getMessage());
                     }
                 }
         ) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 //요청을 보낼 때 포함시킬 파라미터
-
                 Map<String, String> params = new HashMap<String, String>();
-                //params.put("key", "value");
+                params.put("patient_id", "1");
+                params.put("token", "dslfklsdkflasmfkdsjgkdfkgjskdjfgksdjfksdjfksd");
                 return params;
             }
         };
 
         // 이전 결과가 있더라도 새로 요청
         request.setShouldCache(false);
+        AppHelper.requestQueue = Volley.newRequestQueue(this); //requestQueue 초기화 필수
         AppHelper.requestQueue.add(request);
-
-        //임의로 찍은 좌표
-//        flowLatLng[0][0] = 35.896761f;
-//        flowLatLng[0][1] = 128.620373f;
-//        flowLatLng[1][0] = 35.896708f;
-//        flowLatLng[1][1] = 128.620389f;
-//        flowLatLng[2][0] = 35.896750f;
-//        flowLatLng[2][1] = 128.620584f;
-//        flowLatLng[3][0] = 35.896784f;
-//        flowLatLng[3][1] = 128.620588f;
-//        flowLatLng[4][0] = 35.896789f;
-//        flowLatLng[4][1] = 128.620633f;
-//
-//        startPoint = new LatLng(flowLatLng[0][0], flowLatLng[0][1]);
-//        endPoint = new LatLng(flowLatLng[4][0], flowLatLng[4][1]);
     }
 
 
@@ -404,9 +448,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mMap.addPolyline(new PolylineOptions()
                 .add(startPoint,
-                        new LatLng(flowLatLng[1][0], flowLatLng[1][1]), //꺾는점1
-                        new LatLng(flowLatLng[2][0], flowLatLng[2][1]), //꺾는점2
-                        new LatLng(flowLatLng[3][0], flowLatLng[3][1]), //꺾는점3
+                        flowList.get(1).getLatLng(), //꺾는점1
+                        flowList.get(2).getLatLng(), //꺾는점2
+                        flowList.get(3).getLatLng(), //꺾는점3
                         endPoint)
                 .startCap(new RoundCap())
                 .endCap(new RoundCap()));

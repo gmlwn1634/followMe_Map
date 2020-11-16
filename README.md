@@ -2,11 +2,13 @@
 
 
 # followMe_Map
-병원 실시간 네비게이션 서비스              
-캡스톤 프로젝트
+    병원 실시간 길안내 프로젝트
 
 
 ### 참고사이트
+#### webAPI
+- https://documenter.getpostman.com/view/13059220/TVep8nfZ
+
 #### googleMap
 - https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap?hl=ko
 - https://developers.google.com/android/reference/com/google/android/gms/maps/OnMapReadyCallback"
@@ -43,7 +45,8 @@
 
 - https://developer.android.com/training/volley/simple?hl=ko
 - https://ju-hy.tistory.com/66
-
+- https://velog.io/@dlrmwl15/%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C-Volley%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-HTTP-%ED%86%B5%EC%8B%A0
+- https://lktprogrammer.tistory.com/175
 
 #### googleMap 회전
 - https://developer.android.com/guide/topics/sensors/sensors_position?hl=ko#java
