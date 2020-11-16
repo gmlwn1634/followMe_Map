@@ -365,6 +365,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //진료동선 표시
     void drawPolyline() {
+
         mMap.addPolyline(new PolylineOptions()
                 .add(startPoint,
                         new LatLng(flowLatLng[1][0], flowLatLng[1][1]), //꺾는점1
