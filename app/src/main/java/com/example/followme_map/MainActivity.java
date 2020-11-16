@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener {
 
     private ActivityMainBinding binding;
@@ -104,10 +105,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //해당 프로젝트의 설정 된 minSdkVersion 이후에 나온 API를 사용할 때
     //Warring을 없애고 개발자가 해당 APi를 사용할 수 있게 합니다.
 
-    //RequestQueue는 한번 생성하면 어디서든 접근할 수 있도록 AppHelper 클래스에 static으로 선언
-    public static class AppHelper {
-        public static RequestQueue requestQueue;
-    }
 
 
     @Override
