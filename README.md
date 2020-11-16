@@ -39,7 +39,7 @@
     사용자가 Request 객체에 요청 내용을 담아 RequestQueue에 추가하기만 하면,
     RequestQueue가 알아서 쓰레드를 생성하여 서버에 요청을 보내고 응답을 받는다.
     응답이 오면 RequestQueue에서 Request에 등록된 ResponseListener로 응답을 전달해준다.
-    따라서 사용자는 별도의 쓰레드 관리 뿐 아니라 UI 접근을 위한 handler 또한 다룰 필요가 없다.
+    따라서 사용자는 별도의 쓰레드 관리 뿐 아니라 UI 접근을 위한 handler 또한 다룰 필요가 없다..
 
 - https://developer.android.com/training/volley/simple?hl=ko
 - https://ju-hy.tistory.com/66
