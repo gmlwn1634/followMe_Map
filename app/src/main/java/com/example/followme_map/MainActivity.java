@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //Warring을 없애고 개발자가 해당 APi를 사용할 수 있게 합니다.
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -350,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        final StringRequest request;
 //
 //        request = new StringRequest(
-//                Request.Method.GET,
+//                Request.Method.POST,
 //                url,
 //                new Response.Listener<String>() {
 //                    @Override
@@ -372,6 +371,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //                            }
 //                        } catch (JSONException e) {
 //                            e.printStackTrace();
+//                            Log.i(TAG, "서버에 진료동선 요청 실패" + e.getMessage());
 //                        }
 //
 //                        for (int i = 0; i < flowList.size(); i++) {
@@ -386,9 +386,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //                },
 //                new Response.ErrorListener() {
 //                    @Override
-//                    public void onErrorResponse(VolleyError error) {
+//                    public void onErrorResponse(VolleyError e) {
 //                        //에러 발생 시 자동 호출
-//                        Log.i(TAG, "서버에 진료동선 요청 실패" + error.getMessage());
+//                        e.printStackTrace();
+//                        Log.i(TAG, "서버에 진료동선 요청 실패" + e.getMessage());
 //                    }
 //                }
 //        ) {
