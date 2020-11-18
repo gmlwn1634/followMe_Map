@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ActivityMainBinding binding;
     private final String TAG = "MainActivity";
 
-
     //구글맵 Values---------------
     private GoogleMap mMap; //구글맵 오버레이
     private CameraPosition camPosition;
@@ -64,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private Marker thisMarker;
     private boolean setThisMarker = false;
-
 
     //소켓통신 Values--------------
     private Socket socket;
@@ -91,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean azimutFull = false;
     private int index = 0;
 
-
     //실시간 이동 임의 좌표---------
 //    float testLat = 35.896688f;
 //    float testLng = 128.620400f;
@@ -113,9 +110,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(binding.getRoot());
 
         // Volley 통신 requestQueue 생성 및 초기화
-        if (AppHelper.requestQueue == null) {
+        if (AppHelper.requestQueue != null)
             AppHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
-        }
 
         //센서 값 받기
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -129,6 +125,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //구글맵 오버레이를 위한 프레그먼트
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    //파이썬에서 실시간 좌표를 받아왔다치고
+    //임의의 데이터로 작업
+    void connectPyTest() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+//                        testLatLng();
+                        setCameraPosition();
+                        Thread.sleep(300);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     // cameraPosition 업데이트
@@ -195,12 +210,143 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         receiveFlow();
 
         //도착지에 마커표시
-        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+//        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
 
         //동선표시
-        drawPolyline();
+//        drawPolyline();
 
     }
+
+    //구글맵 오버레이 (3층) - 구글맵이 준비되면 호출
+    void mapOverlay() {
+        mMap.addGroundOverlay(new GroundOverlayOptions()
+                .image(BitmapDescriptorFactory
+                        .fromResource(R.drawable.map_3th_floor))
+                .position(schoolPoint, 148f));
+    }
+
+    //진료동선 받기(임의데이터) - 구글맵이 준비되면 호출
+    public void receiveFlow() {
+        String url = "http://192.168.0.8:8000/api/patient/flow";
+        StringRequest request = new StringRequest(
+                Request.Method.POST,
+                url,
+                new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            flowList.clear();
+                            JSONObject jsonResponse = new JSONObject(response);
+//                            boolean check = jsonResponse.getBoolean("check"); //완료된 동선, 미완료 동선
+                            JSONArray flowArr = jsonResponse.getJSONArray("nodeFlow"); //첫번째 진료동선에 대한 노드 정보
+
+                            for (int i = 0; i < flowArr.length(); i++) {
+                                JSONObject flowObj = flowArr.getJSONObject(i);
+                                Flow flow = new Flow();
+
+                                flow.setMinor(flowObj.getInt("beacon_id_minor"));
+                                flow.setFloor(flowObj.getInt("floor"));
+                                flow.setLatLng(flowObj.getDouble("lat"), flowObj.getDouble("lng"));
+                                flowList.add(flow);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.i(TAG, "서버에 진료동선 요청 실패" + e.getMessage());
+                        }
+
+                        for (int i = 0; i < flowList.size(); i++) {
+                            Log.i(TAG, "진료동선 요청 성공/ 진료동선 1 [" + i + "] minor : " + flowList.get(i).getMinor());
+                            Log.i(TAG, "진료동선 요청 성공/ 진료동선 1 [" + i + "] floor : " + flowList.get(i).getFloor());
+                            Log.i(TAG, "진료동선 요청 성공/ 진료동선 1 [" + i + "] latLng : " + flowList.get(i).getLatLng());
+                        }
+
+                        System.out.println("넌 뭐니" + flowList);
+                        startPoint = flowList.get(0).getLatLng();
+                        endPoint = flowList.get(flowList.size() - 1).getLatLng();
+                        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+                        drawPolyline();
+                    }
+                },
+                new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
+                    @Override
+                    public void onErrorResponse(VolleyError e) {
+                        e.printStackTrace();
+                        Log.i(TAG, "서버에 진료동선 요청 실패" + e.getMessage());
+
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("patient_id", "1");
+                params.put("token", "dslfklsdkflasmfkdsjgkdfkgjskdjfgksdjfksdjfksd");
+                return params;
+            }
+        };
+        request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
+        AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
+        AppHelper.requestQueue.add(request);
+    }
+
+    //진료동선 표시
+    void drawPolyline() {
+
+        PolylineOptions polyOpt = new PolylineOptions();
+        for (int i = 0; i < flowList.size(); i++) {
+            polyOpt.add(flowList.get(i).getLatLng());
+
+            System.out.println("polyOPT" + flowList.get(i).getLatLng());
+        }
+
+
+        polyOpt.startCap(new RoundCap());
+        polyOpt.endCap(new RoundCap());
+        polyOpt.width(25f);
+        Polyline polyline = mMap.addPolyline(polyOpt);
+//        polyline.setWidth(12);
+    }
+
+
+    //진료 동선
+    public class Flow {
+        private int minor;
+        private int floor;
+        private LatLng latLng;
+
+//        public Flow(int argMinor, int argFloor, double argLat, double argLng) {
+//            minor = argMinor;
+//            floor = argFloor;
+//            latLng = new LatLng(argLat, argLng);
+//        }
+
+
+        public int getMinor() {
+            return minor;
+        }
+
+        public int getFloor() {
+            return floor;
+        }
+
+        public LatLng getLatLng() {
+            return latLng;
+        }
+
+        public void setMinor(int argMinor) {
+            this.minor = argMinor;
+        }
+
+        public void setFloor(int argFloor) {
+            this.floor = argFloor;
+        }
+
+        public void setLatLng(double argLat, double argLng) {
+            this.latLng = new LatLng(argLat, argLng);
+        }
+    }
+
 
     // 센서의 변화를 감지
     @Override
@@ -247,6 +393,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //values[1] : Pitch - x축에 대한 회전 방위각
         //values[2] : Roll - y축에 대한 회전 방위각
 
+    }
+
+    //방위각에 따른 지도 회전
+    void changeCamera() {
+        zoomLevel = mMap.getCameraPosition().zoom;
+        camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
     }
 
     // 화면 회전 부드럽게
@@ -312,166 +465,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    //진료 동선
-    public class Flow {
-        private int minor;
-        private int floor;
-        private LatLng latLng;
-
-        public int getMinor() {
-            return minor;
-        }
-
-        public int getFloor() {
-            return floor;
-        }
-
-        public LatLng getLatLng() {
-            return latLng;
-        }
-
-        public void setMinor(int argMinor) {
-            this.minor = argMinor;
-        }
-
-        public void setFloor(int argFloor) {
-            this.floor = argFloor;
-        }
-
-        public void setLatLng(double argLat, double argLng) {
-            this.latLng = new LatLng(argLat, argLng);
-        }
-    }
-
-    //진료동선 받기(임의데이터) - 구글맵이 준비되면 호출
-    public void receiveFlow() {
-//        String url = "http://192.168.0.8:8000/api/patient/flow";
-//        final StringRequest request;
-//
-//        request = new StringRequest(
-//                Request.Method.POST,
-//                url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        //응답 수신 성공 시 자동 호출
-//                        try {
-//                            JSONObject jsonResponse = new JSONObject(response);
-////                            boolean check = jsonResponse.getBoolean("check"); //완료된 동선, 미완료 동선
-//                            JSONArray flowArr = jsonResponse.getJSONArray("nodeFlow"); //첫번째 진료동선에 대한 노드 정보
-//
-//                            for (int i = 0; i < flowArr.length(); i++) {
-//                                JSONObject flowObj = flowArr.getJSONObject(i);
-//                                Flow flow = new Flow();
-//
-//                                flow.setMinor(flowObj.getInt("beacon_id_minor"));
-//                                flow.setFloor(flowObj.getInt("floor"));
-//                                flow.setLatLng(flowObj.getDouble("lat"), flowObj.getDouble("lon"));
-//                                flowList.add(flow);
-//                            }
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                            Log.i(TAG, "서버에 진료동선 요청 실패" + e.getMessage());
-//                        }
-//
-//                        for (int i = 0; i < flowList.size(); i++) {
-//                            Log.i(TAG, "진료동선 요청 성공/ 진료동선 1 [" + i + "] minor : " + flowList.get(i).getMinor());
-//                            Log.i(TAG, "진료동선 요청 성공/ 진료동선 1 [" + i + "] floor : " + flowList.get(i).getFloor());
-//                            Log.i(TAG, "진료동선 요청 성공/ 진료동선 1 [" + i + "] latLng : " + flowList.get(i).getLatLng());
-//                        }
-//
-//                        startPoint = flowList.get(0).getLatLng();
-//                        endPoint = flowList.get(flowList.size() - 1).getLatLng();
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError e) {
-//                        //에러 발생 시 자동 호출
-//                        e.printStackTrace();
-//                        Log.i(TAG, "서버에 진료동선 요청 실패" + e.getMessage());
-//                    }
-//                }
-//        ) {
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                //요청을 보낼 때 포함시킬 파라미터
-//                Map<String, String> params = new HashMap<String, String>();
-//                params.put("patient_id", "1");
-//                params.put("token", "dslfklsdkflasmfkdsjgkdfkgjskdjfgksdjfksdjfksd");
-//                return params;
-//            }
-//        };
-//
-//        // 이전 결과가 있더라도 새로 요청
-//        request.setShouldCache(false);
-//        AppHelper.requestQueue = Volley.newRequestQueue(this); //requestQueue 초기화 필수
-//        AppHelper.requestQueue.add(request);
-
-        Flow flow1_1 = new Flow();
-        Flow flow1_2 = new Flow();
-        Flow flow1_3 = new Flow();
-        flow1_1.setMinor(1);
-        flow1_1.setFloor(1);
-        flow1_1.setLatLng(35.896761, 128.620373);
-
-        flow1_2.setMinor(2);
-        flow1_2.setFloor(2);
-        flow1_2.setLatLng(35.896708, 128.620389);
-
-        flow1_3.setMinor(3);
-        flow1_3.setFloor(3);
-        flow1_3.setLatLng(35.896750, 128.620584);
-
-
-        flowList.add(flow1_1);
-        flowList.add(flow1_2);
-        flowList.add(flow1_3);
-
-        startPoint = flowList.get(0).getLatLng();
-        endPoint = flowList.get(flowList.size() - 1).getLatLng();
-    }
-
-
-    //구글맵 오버레이 (3층) - 구글맵이 준비되면 호출
-    void mapOverlay() {
-        mMap.addGroundOverlay(new GroundOverlayOptions()
-                .image(BitmapDescriptorFactory
-                        .fromResource(R.drawable.map_3th_floor))
-                .position(schoolPoint, 148f));
-    }
-
-    //파이썬에서 실시간 좌표를 받아왔다치고
-    //임의의 데이터로 작업
-    void connectPyTest() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-//                        testLatLng();
-                        setCameraPosition();
-                        Thread.sleep(300);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
-    }
-
-    //진료동선 표시
-    void drawPolyline() {
-
-        PolylineOptions polyOpt = new PolylineOptions();
-        for (int i = 0; i < flowList.size(); i++)
-            polyOpt.add(flowList.get(i).getLatLng());
-
-        polyOpt.startCap(new RoundCap());
-        polyOpt.endCap(new RoundCap());
-
-        Polyline polyline = mMap.addPolyline(polyOpt);
-    }
 
     //파이썬 Socket 통신
 //    void connectPy() {
@@ -550,14 +543,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        testNum++;
 //
 //    }
-
-    //방위각에 따른 지도 회전
-    void changeCamera() {
-        zoomLevel = mMap.getCameraPosition().zoom;
-        camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
-    }
-
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
