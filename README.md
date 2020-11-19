@@ -20,6 +20,15 @@
 - https://breadboy.tistory.com/287
 - https://developers.google.com/android/reference/com/google/android/gms/maps/model/PolylineOptions
 
+#### googleMap Compass
+- https://developer.android.com/guide/topics/sensors/sensors_position?hl=ko#java
+- https://stackoverflow.com/questions/50996340/android-getorientation-description-does-not-match-output-values
+- http://androstudio77.blogspot.com/p/blog-page_13.html
+- https://biig.tistory.com/36
+- https://copycoding.tistory.com/116
+- https://swlock.blogspot.com/2017/10/android-cameracompass.html
+- https://developer.android.com/guide/topics/sensors/sensors_position?hl=ko
+
 #### thread
 - https://recipes4dev.tistory.com/150
 - https://mine-it-record.tistory.com/246
@@ -49,16 +58,6 @@
 - https://ju-hy.tistory.com/66
 - https://velog.io/@dlrmwl15/%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C-Volley%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-HTTP-%ED%86%B5%EC%8B%A0
 - https://lktprogrammer.tistory.com/175
-
-#### googleMap 회전
-- https://developer.android.com/guide/topics/sensors/sensors_position?hl=ko#java
-- https://stackoverflow.com/questions/50996340/android-getorientation-description-does-not-match-output-values
-- http://androstudio77.blogspot.com/p/blog-page_13.html
-- https://biig.tistory.com/36
-- https://copycoding.tistory.com/116
-- https://swlock.blogspot.com/2017/10/android-cameracompass.html
-- https://developer.android.com/guide/topics/sensors/sensors_position?hl=ko
-
 
 #### 기타
 - https://developer.android.com/guide/topics/ui/controls/spinner?hl=ko#java
