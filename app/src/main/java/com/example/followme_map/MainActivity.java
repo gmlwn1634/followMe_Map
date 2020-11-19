@@ -47,7 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener, GoogleMap.OnMarkerDragListener {
 
     private ActivityMainBinding binding;
     private final String TAG = "MainActivity";
@@ -209,6 +209,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // 동선 정보 받아옴
         receiveFlow();
 
+        mMap.setOnMarkerDragListener(this);
+
         //도착지에 마커표시
 //        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
 
@@ -221,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     void mapOverlay() {
         mMap.addGroundOverlay(new GroundOverlayOptions()
                 .image(BitmapDescriptorFactory
-                        .fromResource(R.drawable.map_3th_floor))
+                        .fromResource(R.drawable.map_3th_floor_2))
                 .position(schoolPoint, 148f));
     }
 
@@ -240,15 +242,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //                            boolean check = jsonResponse.getBoolean("check"); //완료된 동선, 미완료 동선
                             JSONArray flowArr = jsonResponse.getJSONArray("nodeFlow"); //첫번째 진료동선에 대한 노드 정보
 
-                            for (int i = 0; i < flowArr.length(); i++) {
-                                JSONObject flowObj = flowArr.getJSONObject(i);
-                                Flow flow = new Flow();
+                            flowList.add(new Flow(1, 1, 35.896731, 128.620416));
+                            flowList.add(new Flow(1, 1, 35.896793, 128.620396));
+                            flowList.add(new Flow(1, 1, 35.896721, 128.620368));
+                            flowList.add(new Flow(1, 1, 35.896783, 128.620350));
 
-                                flow.setMinor(flowObj.getInt("beacon_id_minor"));
-                                flow.setFloor(flowObj.getInt("floor"));
-                                flow.setLatLng(flowObj.getDouble("lat"), flowObj.getDouble("lng"));
-                                flowList.add(flow);
-                            }
+//                            for (int i = 0; i < flowArr.length(); i++) {
+//                                JSONObject flowObj = flowArr.getJSONObject(i);
+//                                Flow flow = new Flow();
+//
+//                                flow.setMinor(flowObj.getInt("beacon_id_minor"));
+//                                flow.setFloor(flowObj.getInt("floor"));
+//                                flow.setLatLng(flowObj.getDouble("lat"), flowObj.getDouble("lng"));
+//                                flowList.add(flow);
+//                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -260,8 +267,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Log.i(TAG, "진료동선 요청 성공/ 진료동선 1 [" + i + "] floor : " + flowList.get(i).getFloor());
                             Log.i(TAG, "진료동선 요청 성공/ 진료동선 1 [" + i + "] latLng : " + flowList.get(i).getLatLng());
                         }
-
-                        System.out.println("넌 뭐니" + flowList);
                         startPoint = flowList.get(0).getLatLng();
                         endPoint = flowList.get(flowList.size() - 1).getLatLng();
                         mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
@@ -273,7 +278,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
                         Log.i(TAG, "서버에 진료동선 요청 실패" + e.getMessage());
-
                     }
                 }
         ) {
@@ -290,12 +294,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         AppHelper.requestQueue.add(request);
     }
 
+
     //진료동선 표시
     void drawPolyline() {
 
         PolylineOptions polyOpt = new PolylineOptions();
         for (int i = 0; i < flowList.size(); i++) {
             polyOpt.add(flowList.get(i).getLatLng());
+            mMap.addMarker(new MarkerOptions()
+                    .position(flowList.get(i).getLatLng())
+                    .draggable(true))
+                    .setTitle(flowList.get(i).getLatLng().toString());
 
             System.out.println("polyOPT" + flowList.get(i).getLatLng());
         }
@@ -305,7 +314,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         polyOpt.endCap(new RoundCap());
         polyOpt.width(25f);
         Polyline polyline = mMap.addPolyline(polyOpt);
-//        polyline.setWidth(12);
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        marker.setTitle(marker.getPosition().toString());
     }
 
 
@@ -315,11 +338,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         private int floor;
         private LatLng latLng;
 
-//        public Flow(int argMinor, int argFloor, double argLat, double argLng) {
-//            minor = argMinor;
-//            floor = argFloor;
-//            latLng = new LatLng(argLat, argLng);
-//        }
+        public Flow(int argMinor, int argFloor, double argLat, double argLng) {
+            minor = argMinor;
+            floor = argFloor;
+            latLng = new LatLng(argLat, argLng);
+        }
 
 
         public int getMinor() {
