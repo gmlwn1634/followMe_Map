@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private float zoomLevel = 25;
 
     private LatLng schoolPoint = new LatLng(35.896797, 128.620944);  //본관좌표
+//    private LatLng thisPoint = new LatLng(35.896781, 128.620778);
     private LatLng thisPoint = new LatLng(35.896759, 128.620387);
     private LatLng startPoint, endPoint;
 
@@ -161,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             thisMarker.remove();
                         thisMarker = mMap.addMarker(new MarkerOptions()
                                 .position(thisPoint)
+                                .visible(false)
                                 .anchor(0.5f, 0.5f)
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
 
@@ -242,10 +244,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //                            boolean check = jsonResponse.getBoolean("check"); //완료된 동선, 미완료 동선
                             JSONArray flowArr = jsonResponse.getJSONArray("nodeFlow"); //첫번째 진료동선에 대한 노드 정보
 
-                            flowList.add(new Flow(1, 1, 35.896731, 128.620416));
-                            flowList.add(new Flow(1, 1, 35.896793, 128.620396));
-                            flowList.add(new Flow(1, 1, 35.896721, 128.620368));
-                            flowList.add(new Flow(1, 1, 35.896783, 128.620350));
+                            flowList.add(new Flow(1, 1, 35.896732, 128.620416));
+                            flowList.add(new Flow(1, 1, 35.896789, 128.620399));
+                            flowList.add(new Flow(1, 1, 35.896724, 128.620368));
+                            flowList.add(new Flow(1, 1, 35.896780, 128.620351));
 
 //                            for (int i = 0; i < flowArr.length(); i++) {
 //                                JSONObject flowObj = flowArr.getJSONObject(i);
@@ -269,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                         startPoint = flowList.get(0).getLatLng();
                         endPoint = flowList.get(flowList.size() - 1).getLatLng();
-                        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+//                        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
                         drawPolyline();
                     }
                 },
@@ -300,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         PolylineOptions polyOpt = new PolylineOptions();
         for (int i = 0; i < flowList.size(); i++) {
-            polyOpt.add(flowList.get(i).getLatLng());
+//            polyOpt.add(flowList.get(i).getLatLng());
             mMap.addMarker(new MarkerOptions()
                     .position(flowList.get(i).getLatLng())
                     .draggable(true))
@@ -310,10 +312,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
 
-        polyOpt.startCap(new RoundCap());
-        polyOpt.endCap(new RoundCap());
-        polyOpt.width(25f);
-        Polyline polyline = mMap.addPolyline(polyOpt);
+//        polyOpt.startCap(new RoundCap());
+//        polyOpt.endCap(new RoundCap());
+//        polyOpt.width(25f);
+//        Polyline polyline = mMap.addPolyline(polyOpt);
     }
 
     @Override
