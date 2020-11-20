@@ -20,6 +20,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.followme_map.databinding.ActivityMainBinding;
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,6 +35,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,7 +45,7 @@ import org.json.JSONObject;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,9 +71,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean setThisMarker = false;
 
     //소켓통신 Values--------------
-    private Socket socket;
-    private DataOutputStream dos;
-    private DataInputStream dis;
+    private Socket mSocket;
 
     //방위각 계산 Values-----------
     private SensorManager sm;
@@ -98,12 +100,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private ArrayList<Flow> flowList = new ArrayList<Flow>();
 
-
-    @SuppressLint("ServiceCast")
-    //@SuppressLint("NewApi")는
-    //해당 프로젝트의 설정 된 minSdkVersion 이후에 나온 API를 사용할 때
-    //Warring을 없애고 개발자가 해당 APi를 사용할 수 있게 합니다.
-
+    {
+        try {
+            //"http://chat.socket.io" 용 소켓을 반환
+            mSocket = IO.socket("http://chat.socket.io");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -115,6 +119,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (AppHelper.requestQueue != null)
             AppHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
 
+        // python 소켓통신
+        mSocket.on("receive thisPoint", receiveThisPoint);
+        mSocket.connect();
+
         //센서 값 받기
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelSensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); //가속도 센서
@@ -122,57 +130,100 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //현위치 갱신
         //connectPy(); //파이썬 소켓통신
-        connectPyTest(); //임의로
+//        connectPyTest(); //임의로
 
         //구글맵 오버레이를 위한 프레그먼트
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
+
+    //파이썬 socket.io
+    private Emitter.Listener receiveThisPoint = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    Double thisLat;
+                    Double thisLng;
+                    try {
+                        thisLat = data.getDouble("thisLat");
+                        thisLng = data.getDouble("thisLng");
+                    } catch (JSONException e) {
+                        e.getStackTrace();
+                        return;
+                    }
+
+                    //현위치 설정
+                    thisPoint = new LatLng(thisLat, thisLng);
+
+                    //지도 초점
+                    zoomLevel = mMap.getCameraPosition().zoom;
+                    camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).target(thisPoint).bearing(getChangedAzimut() - 14.7f).build();
+                    mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+
+                    //현위치 마커 재설정
+                    if (setThisMarker)
+                        thisMarker.remove();
+                    thisMarker = mMap.addMarker(new MarkerOptions()
+                            .position(thisPoint)
+                            .anchor(0.5f, 0.5f)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
+
+                    setThisMarker = true;
+
+                }
+            });
+        }
+    };
+
+
     //파이썬에서 실시간 좌표를 받아왔다치고
     //임의의 데이터로 작업
-    void connectPyTest() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-//                        testLatLng();
-                        setCameraPosition();
-                        Thread.sleep(300);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
-    }
+//    void connectPyTest() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    try {
+////                        testLatLng();
+//                        setCameraPosition();
+//                        Thread.sleep(300);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }).start();
+//    }
 
     // cameraPosition 업데이트
-    void setCameraPosition() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        zoomLevel = mMap.getCameraPosition().zoom;
-                        camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).target(thisPoint).bearing(getChangedAzimut() - 14.7f).build();
-                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
-                        if (setThisMarker)
-                            thisMarker.remove();
-                        thisMarker = mMap.addMarker(new MarkerOptions()
-                                .position(thisPoint)
-                                .visible(false)
-                                .anchor(0.5f, 0.5f)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
-
-                        setThisMarker = true;
-                    }
-                });
-            }
-        }).start();
-    }
+//    void setCameraPosition() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        zoomLevel = mMap.getCameraPosition().zoom;
+//                        camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).target(thisPoint).bearing(getChangedAzimut() - 14.7f).build();
+//                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+//                        if (setThisMarker)
+//                            thisMarker.remove();
+//                        thisMarker = mMap.addMarker(new MarkerOptions()
+//                                .position(thisPoint)
+//                                .visible(false)
+//                                .anchor(0.5f, 0.5f)
+//                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
+//
+//                        setThisMarker = true;
+//                    }
+//                });
+//            }
+//        }).start();
+//    }
 
 
     // 구글맵 준비됨
@@ -277,13 +328,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         AppHelper.requestQueue.add(request);
     }
 
-
     //진료동선 표시
     void drawPolyline() {
 
         PolylineOptions polyOpt = new PolylineOptions();
         for (int i = 0; i < flowList.size(); i++) {
-//            polyOpt.add(flowList.get(i).getLatLng());
+            polyOpt.add(flowList.get(i).getLatLng());
             mMap.addMarker(new MarkerOptions()
                     .position(flowList.get(i).getLatLng())
                     .draggable(true))
@@ -293,12 +343,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
 
-//        polyOpt.startCap(new RoundCap());
-//        polyOpt.endCap(new RoundCap());
-//        polyOpt.width(25f);
-//        Polyline polyline = mMap.addPolyline(polyOpt);
+        polyOpt.startCap(new RoundCap());
+        polyOpt.endCap(new RoundCap());
+        polyOpt.width(25f);
+        Polyline polyline = mMap.addPolyline(polyOpt);
     }
-
 
     //진료 동선
     public class Flow {
@@ -336,71 +385,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         public void setLatLng(double argLat, double argLng) {
             this.latLng = new LatLng(argLat, argLng);
         }
-    }
-
-
-    //파이썬 Socket 통신
-    void connectPy() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //ui 변경을 위해
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String pyIp = "192.168.10.10";
-                        int port = 8000;
-
-                        //--- 서버 접속
-                        try {
-                            socket = new Socket(pyIp, port);
-                            Log.i(TAG, "Python 소켓 연결 성공");
-                        } catch (IOException e) {
-                            Log.i(TAG, "Python 소켓 연결 실패");
-                            e.printStackTrace();
-                        }
-                        Log.i(TAG, "안드로이드 -> Python 소켓 연결 요청");
-
-                        //
-                        try {
-
-                            //데이터 송신을 위한 버퍼
-                            dos = new DataOutputStream(socket.getOutputStream());
-
-                            //데이터 수신을 위한 버퍼
-                            dis = new DataInputStream(socket.getInputStream());
-
-                            Log.i(TAG, "버퍼 생성 성공");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            Log.i(TAG, "버퍼 생성 실패");
-                        }
-
-                        while (true) {
-                            try {
-                                //2개를 받는 것이 불가능하다면 json객체나 String으로 변환해서 주고 받기
-                                thisLat = (float) dis.readFloat();
-                                thisLng = (float) dis.readFloat();
-
-                                if (thisLat > 0 && thisLng > 0) {
-                                    dos.writeUTF("Python 서버로부터 수신 / 위도 : " + thisLat + "경도 : " + thisLng);
-                                    dos.flush(); //찌꺼기 털어주기
-                                    thisPoint = new LatLng(thisLat, thisLng);
-
-                                    //카메라 포지션 및 현위치 바꾸기
-                                    setCameraPosition();
-
-                                }
-
-                            } catch (Exception e) {
-                                Log.i(TAG, "Python 서버로부터 수신 실패");
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-            }
-        }).start();
     }
 
     //임의의 좌표 생성
@@ -576,5 +560,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         sm.unregisterListener(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        mSocket.disconnect();
+        mSocket.off("receive thisPoint", receiveThisPoint);
+    }
 
 }

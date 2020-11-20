@@ -40,6 +40,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:18.0.0'
     implementation 'com.google.firebase:firebase-messaging:21.0.0'
 
+    //socket.io
+    implementation 'com.github.nkzawa:socket.io-client:0.6.0'
+
     //volley 통신
     implementation 'com.android.volley:volley:1.1.1';
 

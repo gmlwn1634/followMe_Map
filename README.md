@@ -45,6 +45,9 @@
 - https://seopseop911.tistory.com/15
 - https://m.blog.naver.com/PostView.nhn?blogId=rhrkdfus&logNo=221406915879&proxyReferer=https:%2F%2Fwww.google.com%2F
 
+#### Socket.io
+-https://socket.io/blog/native-socket-io-and-android/
+
 #### Volley 통신
     앱에서 서버와 http 통신을 할 때 HttpURLConnection을 사용하면 직접 요청과 응답을 받는 것이 가능하다. 
     하지만 직접 쓰레드를 구현해야 하며, 기본적인 코드 양 또한 많아 코드가 복잡해진다는 단점이 있다. 
