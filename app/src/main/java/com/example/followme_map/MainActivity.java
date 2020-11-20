@@ -58,8 +58,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private float zoomLevel = 25;
 
     private LatLng schoolPoint = new LatLng(35.896797, 128.620944);  //본관좌표
-//    private LatLng thisPoint = new LatLng(35.896781, 128.620778);
     private LatLng thisPoint = new LatLng(35.896759, 128.620387);
+    private float thisLat;
+    private float thisLng;
     private LatLng startPoint, endPoint;
 
     private Marker thisMarker;
@@ -173,26 +174,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }).start();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        //가속도 센서에 대한 딜레이 설정
-        if (mAccelSensor != null)
-            sm.registerListener(this, mAccelSensor, SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
-
-        //지자기 센서에 대한 딜레이 설정
-        if (mMagnetSensor != null)
-            sm.registerListener(this, mMagnetSensor, SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        //센서 업데이트 중지
-        sm.unregisterListener(this);
-    }
 
     // 구글맵 준비됨
     @Override
@@ -244,20 +225,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //                            boolean check = jsonResponse.getBoolean("check"); //완료된 동선, 미완료 동선
                             JSONArray flowArr = jsonResponse.getJSONArray("nodeFlow"); //첫번째 진료동선에 대한 노드 정보
 
-                            flowList.add(new Flow(1, 1, 35.896732, 128.620416));
-                            flowList.add(new Flow(1, 1, 35.896789, 128.620399));
-                            flowList.add(new Flow(1, 1, 35.896724, 128.620368));
-                            flowList.add(new Flow(1, 1, 35.896780, 128.620351));
+//                            flowList.add(new Flow(1, 1, 35.896732, 128.620416));
+//                            flowList.add(new Flow(1, 1, 35.896789, 128.620399));
+//                            flowList.add(new Flow(1, 1, 35.896724, 128.620368));
+//                            flowList.add(new Flow(1, 1, 35.896780, 128.620351));
 
-//                            for (int i = 0; i < flowArr.length(); i++) {
-//                                JSONObject flowObj = flowArr.getJSONObject(i);
-//                                Flow flow = new Flow();
-//
-//                                flow.setMinor(flowObj.getInt("beacon_id_minor"));
-//                                flow.setFloor(flowObj.getInt("floor"));
-//                                flow.setLatLng(flowObj.getDouble("lat"), flowObj.getDouble("lng"));
-//                                flowList.add(flow);
-//                            }
+                            for (int i = 0; i < flowArr.length(); i++) {
+                                JSONObject flowObj = flowArr.getJSONObject(i);
+                                Flow flow = new Flow();
+
+                                flow.setMinor(flowObj.getInt("beacon_id_minor"));
+                                flow.setFloor(flowObj.getInt("floor"));
+                                flow.setLatLng(flowObj.getDouble("lat"), flowObj.getDouble("lng"));
+                                flowList.add(flow);
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -318,21 +299,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        Polyline polyline = mMap.addPolyline(polyOpt);
     }
 
-    @Override
-    public void onMarkerDragStart(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDrag(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDragEnd(Marker marker) {
-        marker.setTitle(marker.getPosition().toString());
-    }
-
 
     //진료 동선
     public class Flow {
@@ -340,11 +306,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         private int floor;
         private LatLng latLng;
 
-        public Flow(int argMinor, int argFloor, double argLat, double argLng) {
-            minor = argMinor;
-            floor = argFloor;
-            latLng = new LatLng(argLat, argLng);
-        }
+//        public Flow(int argMinor, int argFloor, double argLat, double argLng) {
+//            minor = argMinor;
+//            floor = argFloor;
+//            latLng = new LatLng(argLat, argLng);
+//        }
 
 
         public int getMinor() {
@@ -372,6 +338,85 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+
+    //파이썬 Socket 통신
+    void connectPy() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //ui 변경을 위해
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String pyIp = "192.168.10.10";
+                        int port = 8000;
+
+                        //--- 서버 접속
+                        try {
+                            socket = new Socket(pyIp, port);
+                            Log.i(TAG, "Python 소켓 연결 성공");
+                        } catch (IOException e) {
+                            Log.i(TAG, "Python 소켓 연결 실패");
+                            e.printStackTrace();
+                        }
+                        Log.i(TAG, "안드로이드 -> Python 소켓 연결 요청");
+
+                        //
+                        try {
+
+                            //데이터 송신을 위한 버퍼
+                            dos = new DataOutputStream(socket.getOutputStream());
+
+                            //데이터 수신을 위한 버퍼
+                            dis = new DataInputStream(socket.getInputStream());
+
+                            Log.i(TAG, "버퍼 생성 성공");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Log.i(TAG, "버퍼 생성 실패");
+                        }
+
+                        while (true) {
+                            try {
+                                //2개를 받는 것이 불가능하다면 json객체나 String으로 변환해서 주고 받기
+                                thisLat = (float) dis.readFloat();
+                                thisLng = (float) dis.readFloat();
+
+                                if (thisLat > 0 && thisLng > 0) {
+                                    dos.writeUTF("Python 서버로부터 수신 / 위도 : " + thisLat + "경도 : " + thisLng);
+                                    dos.flush(); //찌꺼기 털어주기
+                                    thisPoint = new LatLng(thisLat, thisLng);
+
+                                    //카메라 포지션 및 현위치 바꾸기
+                                    setCameraPosition();
+
+                                }
+
+                            } catch (Exception e) {
+                                Log.i(TAG, "Python 서버로부터 수신 실패");
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+            }
+        }).start();
+    }
+
+    //임의의 좌표 생성
+//    void testLatLng() {
+//        if (testNum == 52) {
+//            //끝지점에 도달->시작지점으로 초기화
+//            testLat = 35.896688f;
+//            testLng = 128.620400f;
+//            testNum = 0;
+//        }
+//        thisPoint = new LatLng(lat, lng);
+//        testLat += 0.000003f;
+//        testLng += 0.000008f;
+//        testNum++;
+//
+//    }
 
     // 센서의 변화를 감지
     @Override
@@ -490,88 +535,45 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    @Override
+    public void onMarkerDragStart(Marker marker) {
 
-    //파이썬 Socket 통신
-//    void connectPy() {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                //ui 변경을 위해
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        String pyIp = "192.168.10.10";
-//                        int port = 8000;
-//
-//                        //--- 서버 접속
-//                        try {
-//                            socket = new Socket(pyIp, port);
-//                            Log.i(TAG, "Python 서버 접속 성공");
-//                        } catch (IOException e) {
-//                            Log.i(TAG, "Python 서버 접속 실패");
-//                            e.printStackTrace();
-//                        }
-//                        Log.i(TAG, "안드로이드 -> Python 서버 연결 요청");
-//
-//                        //
-//                        try {
-//
-//                            //데이터 송신을 위한 버퍼
-//                            dos = new DataOutputStream(socket.getOutputStream());
-//
-//                            //데이터 수신을 위한 버퍼
-//                            dis = new DataInputStream(socket.getInputStream());
-//
-//                            Log.i(TAG, "버퍼 생성 성공");
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                            Log.i(TAG, "버퍼 생성 실패");
-//                        }
-//
-//                        while (true) {
-//                            try {
-//                                //2개를 받는 것이 불가능하다면 json객체나 String으로 변환해서 주고 받기
-//                                thisLat = (float) dis.readFloat();
-//                                thisLng = (float) dis.readFloat();
-//
-//                                if (thisLat > 0 && thisLng > 0) {
-//                                    dos.writeUTF("Python 서버로부터 수신 / 위도 : " + thisLat + "경도 : " + thisLng);
-//                                    dos.flush(); //찌꺼기 털어주기
-//
-//                                    //카메라 포지션 및 현위치 바꾸기
-//                                    setCameraPosition();
-//
-//                                }
-//
-//                            } catch (Exception e) {
-//                                Log.i(TAG, "Python 서버로부터 수신 실패");
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//                });
-//            }
-//        }).start();
-//    }
+    }
 
-    //임의의 좌표 생성
-//    void testLatLng() {
-//        if (testNum == 52) {
-//            //끝지점에 도달->시작지점으로 초기화
-//            testLat = 35.896688f;
-//            testLng = 128.620400f;
-//            testNum = 0;
-//        }
-//        thisPoint = new LatLng(lat, lng);
-//        testLat += 0.000003f;
-//        testLng += 0.000008f;
-//        testNum++;
-//
-//    }
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        marker.setTitle(marker.getPosition().toString());
+    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
         //센서의 정확도가 변경되면 조치를 취하자
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //가속도 센서에 대한 딜레이 설정
+        if (mAccelSensor != null)
+            sm.registerListener(this, mAccelSensor, SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+
+        //지자기 센서에 대한 딜레이 설정
+        if (mMagnetSensor != null)
+            sm.registerListener(this, mMagnetSensor, SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //센서 업데이트 중지
+        sm.unregisterListener(this);
     }
 
 
