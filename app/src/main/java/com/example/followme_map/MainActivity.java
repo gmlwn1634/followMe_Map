@@ -2,7 +2,6 @@ package com.example.followme_map;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,11 +9,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -35,16 +32,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
-import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,15 +56,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private LatLng schoolPoint = new LatLng(35.896797, 128.620944);  //본관좌표
     private LatLng thisPoint = new LatLng(35.896759, 128.620387);
-    private float thisLat;
-    private float thisLng;
     private LatLng startPoint, endPoint;
+    private ArrayList<Flow> flowList = new ArrayList<Flow>();
 
     private Marker thisMarker;
     private boolean setThisMarker = false;
 
-    //소켓통신 Values--------------
-    private Socket mSocket;
 
     //방위각 계산 Values-----------
     private SensorManager sm;
@@ -98,12 +88,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //    float testLng = 128.620400f;
 //    int testNum = 0;
 
-    private ArrayList<Flow> flowList = new ArrayList<Flow>();
+
+    //소켓통신 Values--------------
+    private Socket mSocket;
 
     {
         try {
             //"http://chat.socket.io" 용 소켓을 반환
-            mSocket = IO.socket("http://chat.socket.io");
+            mSocket = IO.socket("http://서버ip:포트번호");
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -119,10 +111,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (AppHelper.requestQueue != null)
             AppHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
 
-        // python 소켓통신
-        mSocket.on("receive thisPoint", receiveThisPoint);
-        mSocket.connect();
-
         //센서 값 받기
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelSensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); //가속도 센서
@@ -135,11 +123,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //구글맵 오버레이를 위한 프레그먼트
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        // python 소켓통신
+        // mSocket.on(서버로부터 받을 이벤트명, 리스너);
+        mSocket.on("beaconLatLng", setThisPoint);
+        mSocket.connect();
     }
 
 
     //파이썬 socket.io
-    private Emitter.Listener receiveThisPoint = new Emitter.Listener() {
+    private Emitter.Listener setThisPoint = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
@@ -151,29 +144,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     try {
                         thisLat = data.getDouble("thisLat");
                         thisLng = data.getDouble("thisLng");
+
+                        //현위치 설정
+                        thisPoint = new LatLng(thisLat, thisLng);
+
+                        //지도 초점 - 현위치에 따라 이동할 것
+                        zoomLevel = mMap.getCameraPosition().zoom;
+//                    camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).target(thisPoint).bearing(getChangedAzimut() - 14.7f).build();
+                        camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).target(schoolPoint).bearing(getChangedAzimut() - 14.7f).build();
+                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+
+                        //현위치 마커 재설정
+                        if (setThisMarker)
+                            thisMarker.remove();
+                        thisMarker = mMap.addMarker(new MarkerOptions()
+                                .position(thisPoint)
+                                .anchor(0.5f, 0.5f)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
+
+                        setThisMarker = true;
+
                     } catch (JSONException e) {
                         e.getStackTrace();
                         return;
                     }
-
-                    //현위치 설정
-                    thisPoint = new LatLng(thisLat, thisLng);
-
-                    //지도 초점
-                    zoomLevel = mMap.getCameraPosition().zoom;
-                    camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).target(thisPoint).bearing(getChangedAzimut() - 14.7f).build();
-                    mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
-
-                    //현위치 마커 재설정
-                    if (setThisMarker)
-                        thisMarker.remove();
-                    thisMarker = mMap.addMarker(new MarkerOptions()
-                            .position(thisPoint)
-                            .anchor(0.5f, 0.5f)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
-
-                    setThisMarker = true;
-
                 }
             });
         }
@@ -233,7 +227,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mMap = googleMap;
 
-        camPosition = new CameraPosition.Builder().target(thisPoint).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
+//        camPosition = new CameraPosition.Builder().target(thisPoint).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
+        camPosition = new CameraPosition.Builder().target(schoolPoint).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
 
 
@@ -245,8 +240,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mMap.setOnMarkerDragListener(this);
 
-        //도착지에 마커표시
-//        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
 
         //동선표시
 //        drawPolyline();
@@ -303,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                         startPoint = flowList.get(0).getLatLng();
                         endPoint = flowList.get(flowList.size() - 1).getLatLng();
-//                        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+                        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
                         drawPolyline();
                     }
                 },
@@ -334,10 +327,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         PolylineOptions polyOpt = new PolylineOptions();
         for (int i = 0; i < flowList.size(); i++) {
             polyOpt.add(flowList.get(i).getLatLng());
-            mMap.addMarker(new MarkerOptions()
-                    .position(flowList.get(i).getLatLng())
-                    .draggable(true))
-                    .setTitle(flowList.get(i).getLatLng().toString());
+//            mMap.addMarker(new MarkerOptions()
+//                    .position(flowList.get(i).getLatLng())
+//                    .draggable(true))
+//                    .setTitle(flowList.get(i).getLatLng().toString());
 
             System.out.println("polyOPT" + flowList.get(i).getLatLng());
         }
@@ -565,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onDestroy();
 
         mSocket.disconnect();
-        mSocket.off("receive thisPoint", receiveThisPoint);
+        mSocket.off("receive thisPoint", setThisPoint);
     }
 
 }
