@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:uiRotateGestures="false"
-        app:uiScrollGestures="false"
+        app:uiScrollGestures="true"
         app:uiTiltGestures="false"
         app:uiZoomGestures="true"
         tools:layout="@layout/activity_main" />

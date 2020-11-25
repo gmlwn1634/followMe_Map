@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap; //구글맵 오버레이
     private CameraPosition camPosition;
     private float zoomLevel = 25;
+    private LatLng movePosition = new LatLng(35.896759, 128.620387);
 
     private LatLng schoolPoint = new LatLng(35.896797, 128.620944);  //본관좌표
     private LatLng thisPoint = new LatLng(35.896759, 128.620387);
@@ -94,8 +95,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     {
         try {
-            //"http://chat.socket.io" 용 소켓을 반환
-            mSocket = IO.socket("http://서버ip:포트번호");
+            mSocket = IO.socket("http://localhost:3000");
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -124,54 +124,84 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // python 소켓통신
+        // node.js 소켓통신
         // mSocket.on(서버로부터 받을 이벤트명, 리스너);
-        mSocket.on("beaconLatLng", setThisPoint);
+        mSocket.on("sendData", sendData);
         mSocket.connect();
+
     }
 
 
     //파이썬 socket.io
-    private Emitter.Listener setThisPoint = new Emitter.Listener() {
+    private Emitter.Listener sendData = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
+
                 @Override
                 public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    Double thisLat;
-                    Double thisLng;
-                    try {
-                        thisLat = data.getDouble("thisLat");
-                        thisLng = data.getDouble("thisLng");
+                    System.out.println("받은 데이터" + args[0].toString());
 
-                        //현위치 설정
-                        thisPoint = new LatLng(thisLat, thisLng);
 
-                        //지도 초점 - 현위치에 따라 이동할 것
-                        zoomLevel = mMap.getCameraPosition().zoom;
-//                    camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).target(thisPoint).bearing(getChangedAzimut() - 14.7f).build();
-                        camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).target(schoolPoint).bearing(getChangedAzimut() - 14.7f).build();
-                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
-
-                        //현위치 마커 재설정
-                        if (setThisMarker)
-                            thisMarker.remove();
-                        thisMarker = mMap.addMarker(new MarkerOptions()
-                                .position(thisPoint)
-                                .anchor(0.5f, 0.5f)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
-
-                        setThisMarker = true;
-
-                    } catch (JSONException e) {
-                        e.getStackTrace();
-                        return;
-                    }
+//                    try {
+//                        strData = data.getString("Data");
+//                        System.out.println(strData);
+//
+//                    } catch (JSONException e) {
+//                        e.getStackTrace();
+//                        return;
+//                    }
                 }
             });
         }
     };
+
+
+//
+//    //파이썬 socket.io
+//    private Emitter.Listener setThisPoint = new Emitter.Listener() {
+//        @Override
+//        public void call(final Object... args) {
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    JSONObject data = (JSONObject) args[0];
+//                    Double thisLat;
+//                    Double thisLng;
+//
+//
+//                    try {
+//                        thisLat = data.getDouble("thisLat");
+//                        thisLng = data.getDouble("thisLng");
+//
+//                        //현위치 설정
+//                        thisPoint = new LatLng(thisLat, thisLng);
+//
+//                        //지도 초점 - 현위치에 따라 이동할 것
+//                        zoomLevel = mMap.getCameraPosition().zoom;
+////                    camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).target(thisPoint).bearing(getChangedAzimut() - 14.7f).build();
+////                        camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).target(schoolPoint).bearing(getChangedAzimut() - 14.7f).build();
+//                        camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).target(movePosition).bearing(getChangedAzimut() - 14.7f).build();
+//                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+//
+//                        //현위치 마커 재설정
+//                        if (setThisMarker)
+//                            thisMarker.remove();
+//                        thisMarker = mMap.addMarker(new MarkerOptions()
+//                                .position(thisPoint)
+//                                .anchor(0.5f, 0.5f)
+//                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
+//
+//                        setThisMarker = true;
+//
+//                    } catch (JSONException e) {
+//                        e.getStackTrace();
+//                        return;
+//                    }
+//                }
+//            });
+//        }
+//    };
 
 
     //파이썬에서 실시간 좌표를 받아왔다치고
@@ -228,7 +258,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
 
 //        camPosition = new CameraPosition.Builder().target(thisPoint).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
-        camPosition = new CameraPosition.Builder().target(schoolPoint).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
+//        camPosition = new CameraPosition.Builder().target(schoolPoint).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
+        camPosition = new CameraPosition.Builder().target(movePosition).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
 
 
@@ -327,10 +358,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         PolylineOptions polyOpt = new PolylineOptions();
         for (int i = 0; i < flowList.size(); i++) {
             polyOpt.add(flowList.get(i).getLatLng());
-//            mMap.addMarker(new MarkerOptions()
-//                    .position(flowList.get(i).getLatLng())
-//                    .draggable(true))
-//                    .setTitle(flowList.get(i).getLatLng().toString());
+            mMap.addMarker(new MarkerOptions()
+                    .position(flowList.get(i).getLatLng())
+                    .draggable(true))
+                    .setTitle(flowList.get(i).getLatLng().toString());
 
             System.out.println("polyOPT" + flowList.get(i).getLatLng());
         }
@@ -445,7 +476,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //방위각에 따른 지도 회전
     void changeCamera() {
         zoomLevel = mMap.getCameraPosition().zoom;
-        camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
+        movePosition = mMap.getCameraPosition().target;
+//        camPosition = new CameraPosition.Builder(camPosition).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
+        camPosition = new CameraPosition.Builder(camPosition).target(movePosition).zoom(zoomLevel).bearing(getChangedAzimut() - 14.7f).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
     }
 
@@ -558,7 +591,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onDestroy();
 
         mSocket.disconnect();
-        mSocket.off("receive thisPoint", setThisPoint);
+        mSocket.off("sendData", sendData);
     }
 
 }
