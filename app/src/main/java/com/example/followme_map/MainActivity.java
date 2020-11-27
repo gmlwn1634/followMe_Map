@@ -699,6 +699,11 @@ public class MainActivity extends AppCompatActivity {
         });
     } //redirectFlow()
 
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        unregisterReceiver(mBroadcastReceiver);
+    }
 
 
 
