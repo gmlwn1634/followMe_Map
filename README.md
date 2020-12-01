@@ -6,6 +6,11 @@
 
 
 ### 참고사이트
+
+#### AdobeXD
+- https://helpx.adobe.com/kr/xd/tutorials.html
+- https://www.youtube.com/watch?v=rpRUWz9bBj0&feature=youtu.be
+
 #### webAPI
 - https://documenter.getpostman.com/view/13059220/TVep8nfZ
 
@@ -28,6 +33,7 @@
 - https://copycoding.tistory.com/116
 - https://swlock.blogspot.com/2017/10/android-cameracompass.html
 - https://developer.android.com/guide/topics/sensors/sensors_position?hl=ko
+- https://stackoverflow.com/questions/33877621/how-to-detect-movecamera-is-finished-on-the-google-map-service/33878134
 
 #### thread
 - https://recipes4dev.tistory.com/150
@@ -84,5 +90,6 @@
 #### 기타
 - https://developer.android.com/guide/topics/ui/controls/spinner?hl=ko#java
 - https://patents.google.com/patent/KR20070013526A/ko
+- https://qastack.kr/gis/11409/calculating-the-distance-between-a-point-and-a-virtual-line-of-two-lat-lngs
 
 
