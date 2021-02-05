@@ -10,12 +10,12 @@ public class Node {
     private int index;
 
     //test용
-    public Node(int argId, int argFloor, double argLat, double argLng, int argStairCheck, int argIndex) {
-        this.id = argId;
-        this.floor = argFloor;
-        this.latLng = new LatLng(argLat, argLng);
-        this.stairCheck = argStairCheck;
-        this.index = argIndex;
+    public Node(int id, int floor, double lat, double lng, int stairCheck, int index) {
+        this.id = id;
+        this.floor = floor;
+        this.latLng = new LatLng(lat, lng);
+        this.stairCheck = stairCheck;
+        this.index = index;
     }
 
 

@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -64,9 +65,12 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     private CameraPosition camPosition;
     private float zoomLevel = 25;
     private LatLng thisPoint = new LatLng(35.8967921072645, 128.6212324187639);
+    //        private LatLng thisPoint = new LatLng(35.89688068548272, 128.62134048562515);
     private LatLng schoolPoint = new LatLng(35.89679977286669, 128.62092742557013);
     private LatLng startPoint, endPoint;
     private ArrayList<Node> nodeList = new ArrayList<Node>();
+    private ArrayList<Flow> flowList = new ArrayList<Flow>();
+    private JSONArray flowArr;
 
     private Marker thisMarker;
     private boolean setThisMarker = false;
@@ -93,11 +97,15 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int index = 0;
     int testNum = 0;
 
+    //안내 재생
+    private MediaPlayer mediaPlayer;
+
 
     //Thread
     boolean frag = true;
     private Thread changeTurnThread;
     private Thread setCameraThread;
+    private Thread connectThread;
 
     //recyclerView
     RecyclerView.LayoutManager mLayoutManager;
@@ -143,15 +151,21 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        mSocket.connect();
 
         //안내시작 버튼을 누르면 첫번째 동선만 보여준다.
-        binding.naviStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                binding.naviStart.setVisibility(View.INVISIBLE);
-                binding.navigation.setVisibility(View.VISIBLE);
-                binding.recyclerView.setVisibility(View.GONE);
-                getFirstFlow();
-            }
-        });
+//        binding.naviStart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                binding.naviStart.setVisibility(View.INVISIBLE);
+//                binding.navigation.setVisibility(View.VISIBLE);
+//                binding.recyclerView.setVisibility(View.GONE);
+//
+//                // 경로 안내 시작 음성
+//                mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.flow_start_sound);
+//                mediaPlayer.start();
+//
+//
+////                getFirstFlow();
+//            }
+//        });
 
         //recyclerView
         binding.recyclerView.setHasFixedSize(true);
@@ -186,15 +200,14 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        }
 //    };
 
-    //첫번째 진료동선
-    public void getFirstFlow() {
-        receiveFlow();
-        connectPyTest();
-        camPosition = new CameraPosition.Builder().target(thisPoint).zoom(25).bearing(-14.7f).build();
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+    @Override
+    // 구글맵 준비됨
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mapOverlay(); // 본관 좌표를 기준으로 구글맵에 도면 오버레이
+        getAllFlow(); // 전체 동선 가져오기
+    } //onMapReady()
 
-
-    } //getFirstFlow()
 
     //전체 진료동선
     public void getAllFlow() {
@@ -206,18 +219,21 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     } //getAllFlow()
 
 
-    @Override
-    // 구글맵 준비됨
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mapOverlay(); // 본관 좌표를 기준으로 구글맵에 도면 오버레이
-        getAllFlow();
-    } //onMapReady()
+    //첫번째 진료동선
+    public void getFirstFlow() {
+        receiveFlow();
+        connectPyTest();
+        camPosition = new CameraPosition.Builder().target(thisPoint).zoom(25).bearing(-14.7f).build();
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+
+
+    } //getFirstFlow()
+
 
     //파이썬에서 실시간 좌표를 받아왔다치고
     //임의의 데이터로 작업
     void connectPyTest() {
-        new Thread(new Runnable() {
+        connectThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
@@ -233,14 +249,14 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 }
             }
-        }).start();
+        });
+        connectThread.start();
     } //connectPyTest()
 
     // 방향전환 계산
     // : 현위치에서 가장 가까운 노드 찾기 nearNode()
     // : nearNode()에서 5번째 후의 노드와 방위각 계산
     // : 방위각이 몇에서 몇이면 좌회전, 우회전 -> 테스트필요
-
 
 
     void changeTurn() {
@@ -256,15 +272,12 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if ((nearNode().getIndex() + 1) >= nodeList.size()) {
                             frag = false;
 
-                            // 안내음
-                            MediaPlayer mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.arrival_sound);
+                            // 도착안내
+                            mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.arrival_sound);
                             mediaPlayer.start();
-
                             binding.turn.setText("목적지 도착");
                             binding.turn.setText("");
                             binding.turnImg.setImageResource(R.drawable.arrive);
-                            changeTurnThread.interrupt();
-                            setCameraThread.interrupt();
 
 
                             // 안내 메세지
@@ -273,11 +286,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 public void onPositiveClick() {
                                     Intent intent = new Intent(FlowActivity.this, HomeActivity.class);
                                     startActivity(intent);
-                                    try {
-                                        Thread.sleep(1);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
                                 }
                             });
                             customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
@@ -334,24 +342,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         changeTurnThread.start();
     } //setCameraPosition()
 
-    private double getDistanceMeter(LatLng latLng1, LatLng latLng2) {
-
-        double lat1 = latLng1.latitude;
-        double lng1 = latLng1.longitude;
-        double lat2 = latLng2.latitude;
-        double lng2 = latLng2.longitude;
-
-        double theta = lng1 - lng2;
-        double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2))
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(theta));
-
-        dist = Math.acos(dist);
-        dist = Math.toDegrees(dist);
-        dist = dist * 60 * 1.1515 * 1609.344;
-
-        return dist;
-    }
-
     //좌회전 우회전 판단
     double getAngle(LatLng NodeA, LatLng NodeB, LatLng NodeC) {
 
@@ -364,7 +354,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         double angle = Math.acos(d / Math.sqrt(l2)); //삼각형 내적각
 
         return Math.toDegrees(angle);
-    }
+    } //getAngle()
 
     //좌회전 우회전 판단
     int ccw(LatLng nodeA, LatLng nodeB, LatLng nodeC) {
@@ -406,7 +396,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         return 0;
 
 
-    }
+    } //ccw()
 
     // cameraPosition 업데이트
     void setCameraPosition() {
@@ -459,23 +449,27 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                         try {
 
                             System.out.println("전송됨");
-//                            nodeList.clear();
+                            nodeList.clear();
                             JSONObject jsonResponse = new JSONObject(response);
 
-//                            JSONArray nodeArr = jsonResponse.getJSONArray("nodeFlow"); //첫번째 진료동선에 대한 노드 정보
+                            flowArr = jsonResponse.getJSONArray("flow_list"); //전체 동선
 
-//                            for (int i = 0; i < nodeArr.length(); i++) {
-//                                JSONObject nodeObj = nodeArr.getJSONObject(i);
-//                                Node node = new Node();
+                            Log.i("flowList", flowArr.toString());
+                            for (int i = 0; i < flowArr.length(); i++) {
+                                JSONObject flowObj = flowArr.getJSONObject(i);
+                                Log.i("flowList", flowObj.toString());
+                                Flow flow = new Flow();
+                                flow.setFlowId(flowObj.getInt("flow_id"));
+                                flow.setPatientId(flowObj.getInt("patient_id"));
+                                flow.setFlowSequence(flowObj.getInt("flow_sequence"));
+                                flow.setFlowStatus(flowObj.getInt("flow_status_check"));
+                                JSONObject roomObj = flowObj.getJSONObject("room_location");
+                                flow.setRoomLocationID(roomObj.getInt("room_location_id"));
+                                flow.setRoomNode(roomObj.getInt("room_node"));
+                                flow.setRoomName(roomObj.getString("room_name"));
+                                flowList.add(flow);
 //
-//                                node.setId(nodeObj.getInt("node_id"));
-//                                node.setFloor(nodeObj.getInt("floor"));
-//                                node.setLatLng(nodeObj.getDouble("lat"), nodeObj.getDouble("lng"));
-//                                node.setStairCheck(nodeObj.getInt("stair_check"));
-//                                node.setIndex(i);
-//                                nodeList.add(node);
-//
-//                            }
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -483,19 +477,17 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
 
 
+                        Log.i("flowList", "length" + flowArr.length());
+                        for (int i = 0; i < flowArr.length() - 1; i++) {
+                            destInfoArrayList.add(new DestInfo(flowList.get(i).getRoomName(), flowList.get(i + 1).getRoomName()));
+                        }
+                        DestAdapter destAdapter = new DestAdapter(destInfoArrayList);
+                        binding.recyclerView.setAdapter(destAdapter);
+
 //                        startPoint = nodeList.get(0).getLatLng();
 //                        endPoint = nodeList.get(nodeList.size() - 1).getLatLng();
 //                        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
 //                        drawPolyline();
-//
-//                        destInfoArrayList.add(new DestInfo(startPoint.toString(), endPoint.toString()));
-//                        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-//                        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-//                        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-//                        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-//
-//                        DestAdapter destAdapter = new DestAdapter(destInfoArrayList);
-//                        binding.recyclerView.setAdapter(destAdapter);
                     }
                 },
                 new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
@@ -523,50 +515,50 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         };
 
         ///test
-        nodeList.clear();
-        nodeList.add(new Node(1, 2, 35.8967921072645, 128.6212324187639, 0, 0));
-        nodeList.add(new Node(1, 2, 35.89683827901731, 128.6212109610923, 0, 1));
-        nodeList.add(new Node(1, 2, 35.89688010517016, 128.62119956170423, 0, 2));
-        nodeList.add(new Node(1, 2, 35.896861093285246, 128.62111976598788, 0, 3));
+//        nodeList.clear();
+//        nodeList.add(new Node(1, 2, 35.8967921072645, 128.6212324187639, 0, 0));
+//        nodeList.add(new Node(1, 2, 35.89683827901731, 128.6212109610923, 0, 1));
+//        nodeList.add(new Node(1, 2, 35.89688010517016, 128.62119956170423, 0, 2));
+//        nodeList.add(new Node(1, 2, 35.896861093285246, 128.62111976598788, 0, 3));
+//
+//        nodeList.add(new Node(1, 2, 35.89683664942651, 128.6211465880774, 0, 4));
+//        nodeList.add(new Node(1, 2, 35.89679536644795, 128.62112311874907, 0, 5));
+//        nodeList.add(new Node(1, 2, 35.89681926712237, 128.62110501383864, 0, 6));
+//        nodeList.add(new Node(1, 2, 35.896851315742666, 128.62109830831625, 0, 7));
+//
+//        nodeList.add(new Node(1, 2, 35.896840995001526, 128.6210553929682, 0, 8));
+//        nodeList.add(new Node(1, 2, 35.89681546474243, 128.62103125308758, 0, 9));
+//        nodeList.add(new Node(1, 2, 35.89683882221384, 128.6209876671921, 0, 10));
+//        nodeList.add(new Node(1, 2, 35.89679645284199, 128.62098431443093, 0, 11));
+//        nodeList.add(new Node(1, 2, 35.896756256237445, 128.62099303161, 0, 12));
+//
+//
+//        nodeList.add(new Node(1, 2, 35.89674213310069, 128.62092932914433, 0, 13));
+//        nodeList.add(new Node(1, 2, 35.89675354024934, 128.6208414868011, 0, 14));
+//        nodeList.add(new Node(1, 2, 35.89678232971241, 128.62078516041308, 0, 15));
+//        nodeList.add(new Node(1, 2, 35.8968203535155, 128.6207462683833, 0, 16));
+//        nodeList.add(new Node(1, 2, 35.89682469909184, 128.6206852481296, 0, 17));
+//        nodeList.add(new Node(1, 2, 35.89677146576499, 128.62062623952872, 0, 18));
+//        nodeList.add(new Node(1, 2, 35.896798082432184, 128.6205947235716, 0, 19));
+//
+//        nodeList.add(new Node(1, 2, 35.89678830488179, 128.62050419901945, 0, 20));
+//        nodeList.add(new Node(1, 2, 35.89673996030942, 128.62052096282537, 0, 21));
+//        nodeList.add(new Node(1, 2, 35.89668238134201, 128.6205437616015, 0, 22));
 
-        nodeList.add(new Node(1, 2, 35.89683664942651, 128.6211465880774, 0, 4));
-        nodeList.add(new Node(1, 2, 35.89679536644795, 128.62112311874907, 0, 5));
-        nodeList.add(new Node(1, 2, 35.89681926712237, 128.62110501383864, 0, 6));
-        nodeList.add(new Node(1, 2, 35.896851315742666, 128.62109830831625, 0, 7));
 
-        nodeList.add(new Node(1, 2, 35.896840995001526, 128.6210553929682, 0, 8));
-        nodeList.add(new Node(1, 2, 35.89681546474243, 128.62103125308758, 0, 9));
-        nodeList.add(new Node(1, 2, 35.89683882221384, 128.6209876671921, 0, 10));
-        nodeList.add(new Node(1, 2, 35.89679645284199, 128.62098431443093, 0, 11));
-        nodeList.add(new Node(1, 2, 35.896756256237445, 128.62099303161, 0, 12));
-
-
-        nodeList.add(new Node(1, 2, 35.89674213310069, 128.62092932914433, 0, 13));
-        nodeList.add(new Node(1, 2, 35.89675354024934, 128.6208414868011, 0, 14));
-        nodeList.add(new Node(1, 2, 35.89678232971241, 128.62078516041308, 0, 15));
-        nodeList.add(new Node(1, 2, 35.8968203535155, 128.6207462683833, 0, 16));
-        nodeList.add(new Node(1, 2, 35.89682469909184, 128.6206852481296, 0, 17));
-        nodeList.add(new Node(1, 2, 35.89677146576499, 128.62062623952872, 0, 18));
-        nodeList.add(new Node(1, 2, 35.896798082432184, 128.6205947235716, 0, 19));
-
-        nodeList.add(new Node(1, 2, 35.89678830488179, 128.62050419901945, 0, 20));
-        nodeList.add(new Node(1, 2, 35.89673996030942, 128.62052096282537, 0, 21));
-        nodeList.add(new Node(1, 2, 35.89668238134201, 128.6205437616015, 0, 22));
-
-
-        startPoint = nodeList.get(0).getLatLng();
-        endPoint = nodeList.get(nodeList.size() - 1).getLatLng();
-        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
-        drawPolyline();
-
-        destInfoArrayList.add(new DestInfo(startPoint.toString(), endPoint.toString()));
-        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-
-        DestAdapter destAdapter = new DestAdapter(destInfoArrayList);
-        binding.recyclerView.setAdapter(destAdapter);
+//        startPoint = nodeList.get(0).getLatLng();
+//        endPoint = nodeList.get(nodeList.size() - 1).getLatLng();
+//        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+//        drawPolyline();
+//
+//        destInfoArrayList.add(new DestInfo(startPoint.toString(), endPoint.toString()));
+//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
+//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
+//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
+//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
+//
+//        DestAdapter destAdapter = new DestAdapter(destInfoArrayList);
+//        binding.recyclerView.setAdapter(destAdapter);
         ///>>>>>>>>>>>
 
         request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
@@ -625,6 +617,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else if (testNum < 120) {
             thisPoint = new LatLng(thisPoint.latitude - 0.0000040196604545, thisPoint.longitude + 0.000000871717907);
         } else if (testNum < 130) {
+            thisPoint = new LatLng(35.89688068548272, 128.62134048562515); //test
             thisPoint = new LatLng(thisPoint.latitude - 0.0000014123136755, thisPoint.longitude - 0.000006370246567);
         } else if (testNum < 140) {
             thisPoint = new LatLng(thisPoint.latitude + 0.000001140714865, thisPoint.longitude - 0.000008784234323);
@@ -645,6 +638,18 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else if (testNum < 220) {
             thisPoint = new LatLng(thisPoint.latitude - 0.000005757896741, thisPoint.longitude + 0.000002279877613);
         }
+
+        if (getDistanceMeter(thisPoint, nearNode().getLatLng()) >= 10) {
+            Log.i("경로이탈", "이탈이탈");
+            frag = false;
+            mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.off_road_sound);
+            mediaPlayer.start();
+
+            //다시 올바른 길로 갈 때
+//            thisPoint = new LatLng(35.8967921072645, 128.6212324187639);
+//            testNum = 0;
+        }
+
         testNum++;
 
     } //testLatLng()
@@ -790,8 +795,9 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         nearNode = nodeList.get((int) distArr[0][1]);
 
         return nearNode;
-    }//nearNode()
+    } //nearNode()
 
+    //좌표 간 거리 계산
     private double getDistance(LatLng a, LatLng b) {
 
         double lat1 = a.latitude;
@@ -807,15 +813,16 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         return Math.toDegrees(distance);
 
 
-    }
+    } //getDistance()
 
-    private double getDistance(LatLng a, LatLng b, String unit) {
+    //좌표 간 거리 계산 - meter
+    private double getDistanceMeter(LatLng latLng1, LatLng latLng2) {
 
+        double lat1 = latLng1.latitude;
+        double lng1 = latLng1.longitude;
+        double lat2 = latLng2.latitude;
+        double lng2 = latLng2.longitude;
 
-        double lat1 = a.latitude;
-        double lng1 = a.longitude;
-        double lat2 = b.latitude;
-        double lng2 = b.longitude;
         double theta = lng1 - lng2;
         double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2))
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(theta));
@@ -824,11 +831,8 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         dist = Math.toDegrees(dist);
         dist = dist * 60 * 1.1515 * 1609.344;
 
-
         return dist;
-
-
-    }
+    } //getDistanceMeter()
 
     // 현위치 회전 부드럽게
     private void changeAzimut(float mAzimut) {
@@ -896,12 +900,12 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMarkerDragStart(Marker marker) {
 
-    } //onMarkerDragStart() test용
+    } //onMarkerDragStart()
 
     @Override
     public void onMarkerDrag(Marker marker) {
 
-    }//onMarkerDrag() test용
+    }//onMarkerDrag()
 
 
     @Override
