@@ -27,7 +27,6 @@ public class PaymentActivity extends AppCompatActivity {
 
 
     private ActivityPaymentBinding binding;
-    private final String TAG = "PaymentActivity";
     private int totalPrice;
 
 
@@ -52,13 +51,13 @@ public class PaymentActivity extends AppCompatActivity {
         getPayList();
 
 
+    } //onCreate()
 
-    }
 
-
+    //결제내역 가져옴
     protected void getPayList() {
 
-        String url = "http://172.26.3.122:8000/api/patient/storage";
+        String url = GlobalVar.URL+GlobalVar.URL_STORAGE;
         StringRequest request = new StringRequest(
                 Request.Method.POST,
                 url,
@@ -66,8 +65,6 @@ public class PaymentActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         try {
-
-                            System.out.println("전송됨");
                             JSONObject jsonResponse = new JSONObject(response);
 
                             JSONArray paymentArr = jsonResponse.getJSONArray("storage");
@@ -81,18 +78,18 @@ public class PaymentActivity extends AppCompatActivity {
                             binding.recyclerView.setAdapter(paymentAdapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.i(TAG, "서버에 결제내역 요청 실패" + e.getMessage());
+                            Log.i(GlobalVar.TAG_ACTIVITY_PAYMENT, "서버에 결제내역 요청 실패" + e.getMessage());
                         }
 
 
-                        binding.totalPrice.setText(totalPrice+" 원");
+                        binding.totalPrice.setText(totalPrice + " 원");
                     }
                 },
                 new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
-                        Log.i(TAG, "서버에 결제내역 요청 실패" + e.getMessage());
+                        Log.i(GlobalVar.TAG_ACTIVITY_PAYMENT, "서버에 결제내역 요청 실패" + e.getMessage());
                     }
                 }
         ) {
@@ -116,7 +113,7 @@ public class PaymentActivity extends AppCompatActivity {
         request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
         AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
         AppHelper.requestQueue.add(request);
-    }
+    } //getPayList()
 
 
 }

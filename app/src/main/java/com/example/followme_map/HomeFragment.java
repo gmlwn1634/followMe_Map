@@ -38,7 +38,6 @@ public class HomeFragment extends Fragment {
 
 
     private FragmentHomeBinding binding;
-    private String TAG = "HomeFragment";
 
 
     @Nullable
@@ -77,12 +76,12 @@ public class HomeFragment extends Fragment {
         pusher.connect(new ConnectionEventListener() {
             @Override
             public void onConnectionStateChange(ConnectionStateChange change) {
-                Log.i("Pusher", "State changed from " + change.getPreviousState() + " to " + change.getCurrentState());
+                Log.i(GlobalVar.TAG_FRAGMENT_HOME, "State changed from " + change.getPreviousState() + " to " + change.getCurrentState());
             }
 
             @Override
             public void onError(String message, String code, Exception e) {
-                Log.i("Pusher", "There was a problem connecting " + "\ncode" + code + "\nmessage" + message + "\nException" + e);
+                Log.i(GlobalVar.TAG_FRAGMENT_HOME, "There was a problem connecting " + "\ncode" + code + "\nmessage" + message + "\nException" + e);
             }
         }, ConnectionState.ALL);
 
@@ -91,16 +90,17 @@ public class HomeFragment extends Fragment {
         channel.bind("FollowMe_standby_number", new SubscriptionEventListener() {
             @Override
             public void onEvent(PusherEvent event) {
-                receiveStandByNum();
+                getStandByNum();
             }
         });
 
         return binding.getRoot();
-    }
+    } //onCreateView()
 
-    public void receiveStandByNum() {
+    //대기순번 가져옴
+    public void getStandByNum() {
 
-        String url = "http://172.26.3.122:8000/api/patient/standby_number";
+        String url = GlobalVar.URL + GlobalVar.URL_STANDBY_NUMBER;
         StringRequest request = new StringRequest(
                 Request.Method.POST,
                 url,
@@ -114,11 +114,11 @@ public class HomeFragment extends Fragment {
                             binding.qrCodCardView.setVisibility(View.GONE);
                             binding.standbyNumCardView.setVisibility(View.VISIBLE);
 
-                            Log.i("Pusher", "대기순번 요청 성공");
+                            Log.i(GlobalVar.TAG_FRAGMENT_HOME, "대기순번 요청 성공");
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.i("Pusher", "대기순번 요청 실패" + e.getMessage());
+                            Log.i(GlobalVar.TAG_FRAGMENT_HOME, "대기순번 요청 실패" + e.getMessage());
                         }
 
                     }
@@ -127,7 +127,7 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
-                        Log.i("Pusher", "대기순번 요청 실패" + e.getMessage());
+                        Log.i(GlobalVar.TAG_FRAGMENT_HOME, "대기순번 요청 실패" + e.getMessage());
                     }
                 }
         ) {
@@ -151,7 +151,7 @@ public class HomeFragment extends Fragment {
         AppHelper.requestQueue = Volley.newRequestQueue(getActivity()); // requestQueue 초기화 필수
         AppHelper.requestQueue.add(request);
 
-    }
+    } //receiveStandByNum()
 }
 
 

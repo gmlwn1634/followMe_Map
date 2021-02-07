@@ -31,7 +31,6 @@ import java.util.Map;
 public class InfoFragment extends Fragment {
 
     private FragmentInfoBinding binding;
-    final String TAG = "infoFragment";
     private Context context;
 
     @Nullable
@@ -67,27 +66,23 @@ public class InfoFragment extends Fragment {
 
 
     public void sendToken() {
-        String url = "http://172.26.3.122:8000/api/patient/logout";
+        String url = GlobalVar.URL + GlobalVar.URL_LOGOUT;
         StringRequest request = new StringRequest(
                 Request.Method.POST,
                 url,
                 new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
                     @Override
                     public void onResponse(String response) {
-                        System.out.println("로그아웃 요청됨");
-
                         try {
                             JSONObject jsonObject = new JSONObject(response);
 
                             String message = jsonObject.getString("message");
 
-                            System.out.println("message" + message);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-
-                        Log.d(TAG, response);
+                        Log.i(GlobalVar.TAG_FRAGMENT_INFO, response);
                         Toast.makeText(context, "로그아웃에 성공하였습니다.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, LoginActivity.class);
                         startActivity(intent);
@@ -97,7 +92,7 @@ public class InfoFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
-                        Log.i(TAG, "로그아웃 실패" + e.getMessage());
+                        Log.i(GlobalVar.TAG_FRAGMENT_INFO, "로그아웃 실패" + e.getMessage());
                     }
                 }
         ) {

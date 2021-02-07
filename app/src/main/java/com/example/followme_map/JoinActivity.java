@@ -25,9 +25,8 @@ import java.util.Map;
 public class JoinActivity extends AppCompatActivity {
 
     private ActivityJoinBinding binding;
-    private String TAG = "JoinActivity";
 
-    private String emailVali = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+//    private String emailVali = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     private String pwdVali = "^.*(?=^.{8,20}$)(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$";
 
 
@@ -90,7 +89,7 @@ public class JoinActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), "패스워드 불일치", Toast.LENGTH_SHORT).show();
 
         else {
-            String url = "http://172.26.3.122:8000/api/patient/signup";
+            String url = GlobalVar.URL+ GlobalVar.URL_SIGNUP;
             StringRequest request = new StringRequest(
                     Request.Method.POST,
                     url,
@@ -100,8 +99,7 @@ public class JoinActivity extends AppCompatActivity {
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
                                 String message = jsonObject.getString("message");
-                                System.out.println("message" + message);
-                                Log.d(TAG, message);
+                                Log.d(GlobalVar.TAG_ACTIVITY_JOIN, message);
 
                                 Toast.makeText(getApplication(), "회원 등록에 성공하였습니다.", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(JoinActivity.this, LoginActivity.class);
@@ -117,7 +115,7 @@ public class JoinActivity extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError e) {
                             e.printStackTrace();
-                            Log.i(TAG, "회원가입 실패" + e.getMessage());
+                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "회원가입 실패" + e.getMessage());
                         }
                     }
             ) {

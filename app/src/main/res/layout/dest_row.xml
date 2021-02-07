@@ -1,54 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="20dp"
     android:layout_marginTop="20dp"
     android:layout_marginEnd="20dp"
-    app:cardCornerRadius="10dp"
-    app:cardMaxElevation="20dp">
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="14dp">
 
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/card"
-        android:orientation="vertical">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/selectableItemBackground">>
 
         <TextView
-            android:id="@+id/textView9"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="15dp"
-            android:text="From"
-            android:textColor="#8E8E8E" />
+            android:id="@+id/num"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="순번"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/from"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:text="TextView"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/textView13"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="13dp"
-            android:text="To"
-            android:textColor="#8E8E8E" />
+            android:gravity="center"
+            android:text="출발지"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toBottomOf="@+id/num"
+            app:layout_constraintEnd_toStartOf="@+id/to"
+            app:layout_constraintStart_toEndOf="@+id/num"
+            app:layout_constraintTop_toTopOf="@+id/num" />
 
         <TextView
             android:id="@+id/to"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:text="TextView"
-            android:textSize="16sp" />
+            android:gravity="center"
+            android:text="도착지"
 
-    </LinearLayout>
+            android:textSize="22sp"
+            app:layout_constraintBottom_toBottomOf="@+id/from"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/from"
+            app:layout_constraintTop_toTopOf="@+id/from" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.cardview.widget.CardView>

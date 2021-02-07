@@ -25,7 +25,6 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
-    private final String TAG = "LoginActivity";
     static String patientToken;
     static int patientId;
     static String patientName;
@@ -79,14 +78,13 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), "공란이 있습니다.", Toast.LENGTH_SHORT).show();
 
         else {
-            String url = "http://172.26.3.122:8000/api/patient/login";
+            String url = GlobalVar.URL+GlobalVar.URL_LOGIN;
             StringRequest request = new StringRequest(
                     Request.Method.POST,
                     url,
                     new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
                         @Override
                         public void onResponse(String response) {
-                            System.out.println("로그인 요청됨");
 
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
@@ -112,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
 
 
-                            Log.d(TAG, response);
+                            Log.d(GlobalVar.TAG_ACTIVITY_LOGIN, response);
                             Toast.makeText(getApplication(), "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                             startActivity(intent);
@@ -123,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError e) {
                             e.printStackTrace();
-                            Log.i(TAG, "로그인 실패" + e.getMessage());
+                            Log.i(GlobalVar.TAG_ACTIVITY_LOGIN, "로그인 실패" + e.getMessage());
                         }
                     }
             ) {

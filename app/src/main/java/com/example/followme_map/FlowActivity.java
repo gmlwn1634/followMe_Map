@@ -48,6 +48,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.microedition.khronos.opengles.GL;
+
 import static com.google.maps.android.PolyUtil.distanceToLine;
 
 //import com.github.nkzawa.emitter.Emitter;
@@ -58,7 +60,6 @@ import static com.google.maps.android.PolyUtil.distanceToLine;
 public class FlowActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener, GoogleMap.OnMarkerDragListener {
 
     private ActivityFlowBinding binding;
-    private final String TAG = "FlowActivity";
 
     //구글맵 Values---------------
     private GoogleMap mMap; //구글맵 오버레이
@@ -71,9 +72,11 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<Node> nodeList = new ArrayList<Node>();
     private ArrayList<Flow> flowList = new ArrayList<Flow>();
     private JSONArray flowArr;
+    private JSONArray nodeArr;
 
     private Marker thisMarker;
     private boolean setThisMarker = false;
+    private Polyline polyline;
 
 
     //방위각 계산 Values-----------
@@ -151,21 +154,22 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        mSocket.connect();
 
         //안내시작 버튼을 누르면 첫번째 동선만 보여준다.
-//        binding.naviStart.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                binding.naviStart.setVisibility(View.INVISIBLE);
-//                binding.navigation.setVisibility(View.VISIBLE);
-//                binding.recyclerView.setVisibility(View.GONE);
-//
-//                // 경로 안내 시작 음성
-//                mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.flow_start_sound);
-//                mediaPlayer.start();
-//
-//
-////                getFirstFlow();
-//            }
-//        });
+        binding.naviStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.naviStart.setVisibility(View.INVISIBLE);
+                binding.navigation.setVisibility(View.VISIBLE);
+                binding.recyclerView.setVisibility(View.GONE);
+
+                // 경로 안내 시작 음성
+                mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.flow_start_sound);
+                mediaPlayer.start();
+
+
+//                getAllFlow();
+//                getFirstFlow();
+            }
+        });
 
         //recyclerView
         binding.recyclerView.setHasFixedSize(true);
@@ -209,9 +213,133 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     } //onMapReady()
 
 
-    //전체 진료동선
+    //동선 목록 보여주기
     public void getAllFlow() {
-        receiveFlow();
+        String url = GlobalVar.URL + GlobalVar.URL_FLOW;
+        StringRequest request = new StringRequest(
+                Request.Method.POST,
+                url,
+                new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+
+                            flowList.clear();
+
+                            JSONObject jsonResponse = new JSONObject(response);
+
+                            flowArr = jsonResponse.getJSONArray("flow_list"); //전체 동선
+
+                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, flowArr.toString());
+                            for (int i = 0; i < flowArr.length(); i++) {
+                                JSONObject flowObj = flowArr.getJSONObject(i);
+                                Log.i(GlobalVar.TAG_ACTIVITY_FLOW, flowObj.toString());
+                                Flow flow = new Flow();
+                                flow.setFlowId(flowObj.getInt("flow_id"));
+                                flow.setPatientId(flowObj.getInt("patient_id"));
+                                flow.setFlowSequence(flowObj.getInt("flow_sequence"));
+                                flow.setFlowStatus(flowObj.getInt("flow_status_check"));
+                                JSONObject roomObj = flowObj.getJSONObject("room_location");
+                                flow.setRoomLocationID(roomObj.getInt("room_location_id"));
+                                flow.setRoomNode(roomObj.getInt("room_node"));
+                                flow.setRoomName(roomObj.getString("room_name"));
+                                flowList.add(flow);
+//
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "서버에 진료동선 요청 실패" + e.getMessage());
+                        }
+
+
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "length" + flowArr.length());
+                        for (int i = 0; i < flowArr.length() - 1; i++) {
+                            destInfoArrayList.add(new DestInfo((i + 1) + "", flowList.get(i).getRoomName(), flowList.get(i + 1).getRoomName()));
+                        }
+                        DestAdapter destAdapter = new DestAdapter(FlowActivity.this, destInfoArrayList);
+                        binding.recyclerView.setAdapter(destAdapter);
+
+//                        startPoint = nodeList.get(0).getLatLng();
+//                        endPoint = nodeList.get(nodeList.size() - 1).getLatLng();
+//                        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+//                        drawPolyline();
+                    }
+                },
+                new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
+                    @Override
+                    public void onErrorResponse(VolleyError e) {
+                        e.printStackTrace();
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "서버에 진료동선 요청 실패" + e.getMessage());
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", "Bearer " + LoginActivity.patientToken);
+                return headers;
+            }
+
+
+        };
+
+        ///test
+//        nodeList.clear();
+//        nodeList.add(new Node(1, 2, 35.8967921072645, 128.6212324187639, 0, 0));
+//        nodeList.add(new Node(1, 2, 35.89683827901731, 128.6212109610923, 0, 1));
+//        nodeList.add(new Node(1, 2, 35.89688010517016, 128.62119956170423, 0, 2));
+//        nodeList.add(new Node(1, 2, 35.896861093285246, 128.62111976598788, 0, 3));
+//
+//        nodeList.add(new Node(1, 2, 35.89683664942651, 128.6211465880774, 0, 4));
+//        nodeList.add(new Node(1, 2, 35.89679536644795, 128.62112311874907, 0, 5));
+//        nodeList.add(new Node(1, 2, 35.89681926712237, 128.62110501383864, 0, 6));
+//        nodeList.add(new Node(1, 2, 35.896851315742666, 128.62109830831625, 0, 7));
+//
+//        nodeList.add(new Node(1, 2, 35.896840995001526, 128.6210553929682, 0, 8));
+//        nodeList.add(new Node(1, 2, 35.89681546474243, 128.62103125308758, 0, 9));
+//        nodeList.add(new Node(1, 2, 35.89683882221384, 128.6209876671921, 0, 10));
+//        nodeList.add(new Node(1, 2, 35.89679645284199, 128.62098431443093, 0, 11));
+//        nodeList.add(new Node(1, 2, 35.896756256237445, 128.62099303161, 0, 12));
+//
+//
+//        nodeList.add(new Node(1, 2, 35.89674213310069, 128.62092932914433, 0, 13));
+//        nodeList.add(new Node(1, 2, 35.89675354024934, 128.6208414868011, 0, 14));
+//        nodeList.add(new Node(1, 2, 35.89678232971241, 128.62078516041308, 0, 15));
+//        nodeList.add(new Node(1, 2, 35.8968203535155, 128.6207462683833, 0, 16));
+//        nodeList.add(new Node(1, 2, 35.89682469909184, 128.6206852481296, 0, 17));
+//        nodeList.add(new Node(1, 2, 35.89677146576499, 128.62062623952872, 0, 18));
+//        nodeList.add(new Node(1, 2, 35.896798082432184, 128.6205947235716, 0, 19));
+//
+//        nodeList.add(new Node(1, 2, 35.89678830488179, 128.62050419901945, 0, 20));
+//        nodeList.add(new Node(1, 2, 35.89673996030942, 128.62052096282537, 0, 21));
+//        nodeList.add(new Node(1, 2, 35.89668238134201, 128.6205437616015, 0, 22));
+
+
+//        startPoint = nodeList.get(0).getLatLng();
+//        endPoint = nodeList.get(nodeList.size() - 1).getLatLng();
+//        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+//        drawPolyline();
+//
+//        destInfoArrayList.add(new DestInfo(startPoint.toString(), endPoint.toString()));
+//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
+//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
+//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
+//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
+//
+//        DestAdapter destAdapter = new DestAdapter(destInfoArrayList);
+//        binding.recyclerView.setAdapter(destAdapter);
+        ///>>>>>>>>>>>
+
+        request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
+        AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
+        AppHelper.requestQueue.add(request);
         camPosition = new CameraPosition.Builder().target(schoolPoint).zoom(18.5f).bearing(-14.7f).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
 
@@ -219,15 +347,81 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     } //getAllFlow()
 
 
-    //첫번째 진료동선
-    public void getFirstFlow() {
-        receiveFlow();
-        connectPyTest();
-        camPosition = new CameraPosition.Builder().target(thisPoint).zoom(25).bearing(-14.7f).build();
+    //동선의 노드 표시
+    public void getNFlowNode(int n) {
+        final String startFlowId = (n + 1) + "";
+        final String endFlowId = (n + 2) + "";
+        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "start : " + startFlowId + "end : " + endFlowId);
+        String url = GlobalVar.URL + GlobalVar.URL_FLOW_NODE;
+        StringRequest request = new StringRequest(
+                Request.Method.POST,
+                url,
+                new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+
+                            nodeList.clear();
+                            JSONObject jsonResponse = new JSONObject(response);
+
+                            nodeArr = jsonResponse.getJSONArray("nodeFlow"); //첫번째 동선의 노드
+
+                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, nodeArr.toString());
+                            for (int i = 0; i < nodeArr.length(); i++) {
+                                JSONObject nodeObj = nodeArr.getJSONObject(i);
+                                Node node = new Node();
+                                node.setIndex(i);
+                                node.setId(nodeObj.getInt("node_id"));
+                                node.setFloor(nodeObj.getInt("floor"));
+                                node.setLatLng(nodeObj.getDouble("lat"), nodeObj.getDouble("lng"));
+                                nodeList.add(node);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "서버에 진료동선 요청 실패" + e.getMessage());
+                        }
+
+                        startPoint = nodeList.get(0).getLatLng();
+                        endPoint = nodeList.get(nodeList.size() - 1).getLatLng();
+                        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+                        drawPolyline();
+                    }
+                },
+                new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
+                    @Override
+                    public void onErrorResponse(VolleyError e) {
+                        e.printStackTrace();
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "서버에 진료동선 요청 실패" + e.getMessage());
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("start_flow_id", startFlowId);
+                params.put("end_flow_id", endFlowId);
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", "Bearer " + LoginActivity.patientToken);
+                return headers;
+            }
+
+
+        };
+
+        request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
+        AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
+        AppHelper.requestQueue.add(request);
+        camPosition = new CameraPosition.Builder().target(schoolPoint).zoom(18.5f).bearing(-14.7f).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
 
 
-    } //getFirstFlow()
+    } //getNFlowNode()
 
 
     //파이썬에서 실시간 좌표를 받아왔다치고
@@ -307,9 +501,9 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                         dist = Math.round(dist * 1000) / 1000.0;
 
 
-                        Log.i("nearNode", "nodeA : " + nearNode().getIndex());
-                        Log.i("nearNode", "nodeB : " + nodeList.get(nearNode().getIndex() + 1).getIndex());
-                        Log.i("nearNode", "nodeC : " + nodeList.get(nearNode().getIndex() + 2).getIndex());
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "nodeA : " + nearNode().getIndex());
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "nodeB : " + nodeList.get(nearNode().getIndex() + 1).getIndex());
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "nodeC : " + nodeList.get(nearNode().getIndex() + 2).getIndex());
 
                         //좌우판단
                         if (dist < 4) {
@@ -332,7 +526,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     break;
                             }
                         }
-                        Log.i("nearNode", "남은 거리 : " + dist);
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "남은 거리 : " + dist);
 
 
                     }
@@ -372,26 +566,26 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         double angle = getAngle(nodeA, nodeB, nodeC);
 
 
-        Log.i("nearNode", "angle : " + angle);
-        Log.i("nearNode", "temp1 : " + temp1);
-        Log.i("nearNode", "temp2 : " + temp2);
+        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "angle : " + angle);
+        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "temp1 : " + temp1);
+        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "temp2 : " + temp2);
 
         if (temp1 < temp2) {
             if (angle <= 18) {
-                Log.i("nearNode", "직진");
+                Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "직진");
                 return 0;
             }
-            Log.i("nearNode", "< 우회전");
+            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "< 우회전");
             return -1;
         } else if (temp1 > temp2) { //시계
             if (angle <= 18) {
-                Log.i("nearNode", "직진");
+                Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "직진");
                 return 0;
             }
-            Log.i("nearNode", "< 좌회전");
+            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "< 좌회전");
             return 1;
         } else  //직진
-            Log.i("nearNode", "직진");
+            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "직진");
 
         return 0;
 
@@ -437,139 +631,18 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     } //mapOverlay()
 
 
-    //진료동선 받기(임의데이터) - 구글맵이 준비되면 호출
-    public void receiveFlow() {
-        String url = "http://172.26.3.122:8000/api/patient/flow";
-        StringRequest request = new StringRequest(
-                Request.Method.POST,
-                url,
-                new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-
-                            System.out.println("전송됨");
-                            nodeList.clear();
-                            JSONObject jsonResponse = new JSONObject(response);
-
-                            flowArr = jsonResponse.getJSONArray("flow_list"); //전체 동선
-
-                            Log.i("flowList", flowArr.toString());
-                            for (int i = 0; i < flowArr.length(); i++) {
-                                JSONObject flowObj = flowArr.getJSONObject(i);
-                                Log.i("flowList", flowObj.toString());
-                                Flow flow = new Flow();
-                                flow.setFlowId(flowObj.getInt("flow_id"));
-                                flow.setPatientId(flowObj.getInt("patient_id"));
-                                flow.setFlowSequence(flowObj.getInt("flow_sequence"));
-                                flow.setFlowStatus(flowObj.getInt("flow_status_check"));
-                                JSONObject roomObj = flowObj.getJSONObject("room_location");
-                                flow.setRoomLocationID(roomObj.getInt("room_location_id"));
-                                flow.setRoomNode(roomObj.getInt("room_node"));
-                                flow.setRoomName(roomObj.getString("room_name"));
-                                flowList.add(flow);
-//
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.i(TAG, "서버에 진료동선 요청 실패" + e.getMessage());
-                        }
-
-
-                        Log.i("flowList", "length" + flowArr.length());
-                        for (int i = 0; i < flowArr.length() - 1; i++) {
-                            destInfoArrayList.add(new DestInfo(flowList.get(i).getRoomName(), flowList.get(i + 1).getRoomName()));
-                        }
-                        DestAdapter destAdapter = new DestAdapter(destInfoArrayList);
-                        binding.recyclerView.setAdapter(destAdapter);
-
-//                        startPoint = nodeList.get(0).getLatLng();
-//                        endPoint = nodeList.get(nodeList.size() - 1).getLatLng();
-//                        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
-//                        drawPolyline();
-                    }
-                },
-                new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
-                    @Override
-                    public void onErrorResponse(VolleyError e) {
-                        e.printStackTrace();
-                        Log.i(TAG, "서버에 진료동선 요청 실패" + e.getMessage());
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                return params;
-            }
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", "Bearer " + LoginActivity.patientToken);
-                return headers;
-            }
-
-
-        };
-
-        ///test
-//        nodeList.clear();
-//        nodeList.add(new Node(1, 2, 35.8967921072645, 128.6212324187639, 0, 0));
-//        nodeList.add(new Node(1, 2, 35.89683827901731, 128.6212109610923, 0, 1));
-//        nodeList.add(new Node(1, 2, 35.89688010517016, 128.62119956170423, 0, 2));
-//        nodeList.add(new Node(1, 2, 35.896861093285246, 128.62111976598788, 0, 3));
-//
-//        nodeList.add(new Node(1, 2, 35.89683664942651, 128.6211465880774, 0, 4));
-//        nodeList.add(new Node(1, 2, 35.89679536644795, 128.62112311874907, 0, 5));
-//        nodeList.add(new Node(1, 2, 35.89681926712237, 128.62110501383864, 0, 6));
-//        nodeList.add(new Node(1, 2, 35.896851315742666, 128.62109830831625, 0, 7));
-//
-//        nodeList.add(new Node(1, 2, 35.896840995001526, 128.6210553929682, 0, 8));
-//        nodeList.add(new Node(1, 2, 35.89681546474243, 128.62103125308758, 0, 9));
-//        nodeList.add(new Node(1, 2, 35.89683882221384, 128.6209876671921, 0, 10));
-//        nodeList.add(new Node(1, 2, 35.89679645284199, 128.62098431443093, 0, 11));
-//        nodeList.add(new Node(1, 2, 35.896756256237445, 128.62099303161, 0, 12));
-//
-//
-//        nodeList.add(new Node(1, 2, 35.89674213310069, 128.62092932914433, 0, 13));
-//        nodeList.add(new Node(1, 2, 35.89675354024934, 128.6208414868011, 0, 14));
-//        nodeList.add(new Node(1, 2, 35.89678232971241, 128.62078516041308, 0, 15));
-//        nodeList.add(new Node(1, 2, 35.8968203535155, 128.6207462683833, 0, 16));
-//        nodeList.add(new Node(1, 2, 35.89682469909184, 128.6206852481296, 0, 17));
-//        nodeList.add(new Node(1, 2, 35.89677146576499, 128.62062623952872, 0, 18));
-//        nodeList.add(new Node(1, 2, 35.896798082432184, 128.6205947235716, 0, 19));
-//
-//        nodeList.add(new Node(1, 2, 35.89678830488179, 128.62050419901945, 0, 20));
-//        nodeList.add(new Node(1, 2, 35.89673996030942, 128.62052096282537, 0, 21));
-//        nodeList.add(new Node(1, 2, 35.89668238134201, 128.6205437616015, 0, 22));
-
-
-//        startPoint = nodeList.get(0).getLatLng();
-//        endPoint = nodeList.get(nodeList.size() - 1).getLatLng();
-//        mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
-//        drawPolyline();
-//
-//        destInfoArrayList.add(new DestInfo(startPoint.toString(), endPoint.toString()));
-//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-//        destInfoArrayList.add(new DestInfo("MRI검사실", "채혈실"));
-//
-//        DestAdapter destAdapter = new DestAdapter(destInfoArrayList);
-//        binding.recyclerView.setAdapter(destAdapter);
-        ///>>>>>>>>>>>
-
-        request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
-        AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
-        AppHelper.requestQueue.add(request);
-    } //receiveFlow()
-
     //진료동선 표시
     void drawPolyline() {
 
+        //null 방지   ////////////오늘 여기까지 했다!!!!
         PolylineOptions polyOpt = new PolylineOptions();
+        polyline = mMap.addPolyline(polyOpt);
+        polyline.remove();
+
+        polyOpt = new PolylineOptions();
+        polyOpt.startCap(new RoundCap());
+        polyOpt.endCap(new RoundCap());
+        polyOpt.width(25f);
         for (int i = 0; i < nodeList.size(); i++) {
             polyOpt.add(nodeList.get(i).getLatLng());
             mMap.addMarker(new MarkerOptions()
@@ -577,14 +650,9 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .draggable(true))
                     .setTitle(nodeList.get(i).getLatLng().toString());
 
-            System.out.println("polyOPT" + nodeList.get(i).getLatLng());
         }
+        polyline = mMap.addPolyline(polyOpt);
 
-
-        polyOpt.startCap(new RoundCap());
-        polyOpt.endCap(new RoundCap());
-        polyOpt.width(25f);
-        Polyline polyline = mMap.addPolyline(polyOpt);
     } //drawPolyline()
 
     //임의의 좌표 생성
@@ -640,7 +708,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         if (getDistanceMeter(thisPoint, nearNode().getLatLng()) >= 10) {
-            Log.i("경로이탈", "이탈이탈");
+            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "이탈이탈");
             frag = false;
             mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.off_road_sound);
             mediaPlayer.start();

@@ -15,7 +15,6 @@ import com.example.followme_map.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    private final String TAG = "LoginActivity";
     private BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
 
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         //블루투스 지원 유무 확인
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "해당 기기는 블루투스를 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "블루투스 미지원 종료");
+            Log.i(GlobalVar.TAG_ACTIVITY_MAIN, "블루투스 미지원 종료");
             finish();
         }
     } //checkBluetooth()
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_CANCELED) {
             Toast.makeText(this, "블루투스를 허용하지 않았으므로 종료합니다.", Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "블루투스 비허용 종료");
+            Log.i(GlobalVar.TAG_ACTIVITY_MAIN, "블루투스 비허용 종료");
             finish();
         } else if (resultCode == RESULT_OK) {
             Intent intent = new Intent(this, LoginActivity.class);
