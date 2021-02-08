@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -101,6 +102,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean azimutFull = false;
     private int index = 0;
     int testNum = 0;
+    private boolean startttt = false;
 
     //안내 재생
     private MediaPlayer mediaPlayer;
@@ -168,8 +170,17 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.flow_start_sound);
                 mediaPlayer.start();
 
+                if (polyCheck) {
+                    polyline.remove();
+                }
+
+                if (endMarkerCheck) {
+                    endMarker.remove();
+                }
+
                 getNFlowNode(0); //첫번째 동선 표시
                 naviStart(); //
+
             }
         });
 
@@ -453,10 +464,16 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void run() {
                 while (true) {
+
                     try {
                         if (frag) {
-                            testLatLng();        //현위치 이동 (test)
                             setCameraPosition(); //지도 방향
+                            if (!startttt) {
+                                Thread.sleep(1500);
+                                startttt = true;
+                            }
+
+                            testLatLng();//현위치 이동 (test)
                             changeTurn();       // 방향회전 안내
                             Thread.sleep(100);
                         }
@@ -486,7 +503,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                             mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.arrival_sound);
                             mediaPlayer.start();
                             binding.turn.setText("목적지 도착");
-                            binding.turn.setText("");
+//                            binding.distance.setText("");
                             binding.turnImg.setImageResource(R.drawable.arrive);
 
 
@@ -499,6 +516,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 }
                             });
                             customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+                            customDialog.setCancelable(false);
                             customDialog.show();
 
 
@@ -523,7 +541,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         //좌우판단
                         if (dist < 4) {
-                            binding.distance.setText(dist + "m 남음");
+//                            binding.distance.setText(dist + "m 남음");
                             switch (ccw(nodeA, nodeB, nodeC)) {
 
                                 //이미지 변경
@@ -674,18 +692,14 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     //임의의 좌표 생성
     //실제로는 칼만필터 적용한 위치값으로
     void testLatLng() {
-
         if (testNum < 10) {
             thisPoint = new LatLng(thisPoint.latitude + 0.0000024715506346, thisPoint.longitude - 0.000000569969415);
         } else if (testNum < 20) {
             thisPoint = new LatLng(thisPoint.latitude + 0.0000004773993164, thisPoint.longitude + 0.000002136795842);
-
         } else if (testNum < 30) {
             thisPoint = new LatLng(thisPoint.latitude - 0.000001548113951, thisPoint.longitude + 0.000000569969416);
-
         } else if (testNum < 40) {
             thisPoint = new LatLng(thisPoint.latitude + 0.000000244439064, thisPoint.longitude + 0.000002481043339);
-
         }
 
 
