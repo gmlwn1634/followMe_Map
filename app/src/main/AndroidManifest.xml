@@ -24,7 +24,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CustomDialog"></activity>
+        <activity android:name=".MainActivity2"></activity>
+        <activity android:name=".CustomDialog" />
         <activity android:name=".PaymentActivity" />
         <activity android:name=".JoinActivity" />
         <activity android:name=".HomeActivity" />

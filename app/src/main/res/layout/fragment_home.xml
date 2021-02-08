@@ -15,10 +15,10 @@
             android:id="@+id/standbyNumCardView"
             android:layout_width="350dp"
             android:layout_height="350dp"
+            android:layout_marginTop="32dp"
             android:visibility="invisible"
             app:cardCornerRadius="20dp"
             app:cardElevation="2dp"
-            app:layout_constraintBottom_toTopOf="@+id/flowStartBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -146,10 +146,10 @@
             android:id="@+id/qrCodCardView"
             android:layout_width="350dp"
             android:layout_height="350dp"
+            android:layout_marginTop="32dp"
             android:visibility="visible"
             app:cardCornerRadius="20dp"
             app:cardElevation="2dp"
-            app:layout_constraintBottom_toTopOf="@+id/flowStartBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -199,12 +199,11 @@
             android:id="@+id/flowStartBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:visibility="visible"
             app:cardCornerRadius="10dp"
             app:layout_constraintBottom_toTopOf="@+id/DestSearchBtn"
-            app:layout_constraintEnd_toEndOf="@+id/qrCodCardView"
-            app:layout_constraintStart_toStartOf="@+id/qrCodCardView"
+            app:layout_constraintEnd_toEndOf="@+id/DestSearchBtn"
+            app:layout_constraintStart_toStartOf="@+id/DestSearchBtn"
             app:layout_constraintTop_toBottomOf="@+id/qrCodCardView">
 
 
@@ -219,7 +218,7 @@
                     android:layout_row="0"
                     android:layout_rowSpan="2"
                     android:layout_column="0"
-                    android:layout_margin="8dp"
+                    android:layout_margin="12dp"
                     app:srcCompat="@drawable/ic_routes" />
 
                 <TextView
@@ -228,11 +227,11 @@
                     android:layout_row="0"
                     android:layout_column="1"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="7dp"
                     android:text="진료 동선 안내"
                     android:textColor="#3C3C3C"
                     android:textColorHighlight="#FFFFFF"
-                    android:textSize="18sp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -241,7 +240,7 @@
                     android:layout_column="1"
                     android:layout_marginStart="10dp"
                     android:text="Registered Medical routes"
-                    android:textSize="15sp" />
+                    android:textSize="18sp" />
             </GridLayout>
         </androidx.cardview.widget.CardView>
 
@@ -252,9 +251,8 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="10dp"
             app:layout_constraintBottom_toTopOf="@+id/paymentBtn"
-            app:layout_constraintEnd_toEndOf="@+id/flowStartBtn"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/flowStartBtn"
+            app:layout_constraintEnd_toEndOf="@+id/standbyNumCardView"
+            app:layout_constraintStart_toStartOf="@+id/standbyNumCardView"
             app:layout_constraintTop_toBottomOf="@+id/flowStartBtn">
 
 
@@ -269,7 +267,7 @@
                     android:layout_row="0"
                     android:layout_rowSpan="2"
                     android:layout_column="0"
-                    android:layout_margin="8dp"
+                    android:layout_margin="12dp"
                     app:srcCompat="@drawable/ic_map2" />
 
                 <TextView
@@ -278,11 +276,11 @@
                     android:layout_row="0"
                     android:layout_column="1"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="7dp"
                     android:text="길찾기"
                     android:textColor="#3C3C3C"
                     android:textColorHighlight="#FFFFFF"
-                    android:textSize="18sp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -291,7 +289,7 @@
                     android:layout_column="1"
                     android:layout_marginStart="10dp"
                     android:text="Destination Search"
-                    android:textSize="15sp" />
+                    android:textSize="18sp" />
             </GridLayout>
         </androidx.cardview.widget.CardView>
 
@@ -319,7 +317,7 @@
                     android:layout_row="0"
                     android:layout_rowSpan="2"
                     android:layout_column="0"
-                    android:layout_margin="8dp"
+                    android:layout_margin="12dp"
                     app:srcCompat="@drawable/ic_payment" />
 
                 <TextView
@@ -328,11 +326,11 @@
                     android:layout_row="0"
                     android:layout_column="1"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="7dp"
                     android:text="결제"
                     android:textColor="#3C3C3C"
                     android:textColorHighlight="#FFFFFF"
-                    android:textSize="18sp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -341,7 +339,7 @@
                     android:layout_column="1"
                     android:layout_marginStart="10dp"
                     android:text="Payment"
-                    android:textSize="15sp" />
+                    android:textSize="18sp" />
             </GridLayout>
         </androidx.cardview.widget.CardView>
 

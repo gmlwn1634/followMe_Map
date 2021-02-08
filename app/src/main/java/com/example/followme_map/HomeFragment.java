@@ -113,6 +113,9 @@ public class HomeFragment extends Fragment {
                             binding.standByNum.setText(String.format("%03d", jsonResponse.getInt("standby_number")));
                             binding.qrCodCardView.setVisibility(View.GONE);
                             binding.standbyNumCardView.setVisibility(View.VISIBLE);
+                            binding.paymentBtn.setVisibility(View.GONE);
+                            binding.flowStartBtn.setVisibility(View.GONE);
+
 
                             Log.i(GlobalVar.TAG_FRAGMENT_HOME, "대기순번 요청 성공");
 

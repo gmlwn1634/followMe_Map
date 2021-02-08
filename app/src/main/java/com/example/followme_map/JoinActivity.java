@@ -26,8 +26,8 @@ public class JoinActivity extends AppCompatActivity {
 
     private ActivityJoinBinding binding;
 
-//    private String emailVali = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-    private String pwdVali = "^.*(?=^.{8,20}$)(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$";
+    //    private String emailVali = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    private String pwdVali = "^(?=.*[a-zA-Z0-9])(?=.*[a-zA-Z!@#$%^&*])(?=.*[0-9!@#$%^&*]).{8,15}$"; //숫자, 문자, 특수문자 중 2가지 포함(8~15자)
 
 
     @Override
@@ -45,7 +45,8 @@ public class JoinActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 registerAPI();
-                finish(); //test
+                Intent intent = new Intent(JoinActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -55,29 +56,19 @@ public class JoinActivity extends AppCompatActivity {
     public void registerAPI() {
 
         final String name = binding.name.getText().toString();
-        final String residentNumber1 = binding.residentNumber1.getText().toString();
-        final String residentNumber2 = binding.residentNumber2.getText().toString();
+        final String residentNumber = binding.residentNumber.getText().toString();
         final String id = binding.id.getText().toString();
         final String password = binding.password.getText().toString();
         final String passwordConfirm = binding.passwordConfirm.getText().toString();
-//        final String email = binding.email.getText().toString();
-        final String phone1 = binding.phoneNum1.getText().toString();
-        final String phone2 = binding.phoneNum2.getText().toString();
-        final String phone3 = binding.phoneNum3.getText().toString();
+        final String phone = binding.phoneNum.getText().toString();
         final String postalCode = binding.postalCode.getText().toString();
         final String address = binding.address.getText().toString();
         final String detailAddress = binding.detailAddress.getText().toString();
 
 
         //공란 체크
-        if (id.equals("") || residentNumber1.equals("") || residentNumber2.equals("") || password.equals("") || passwordConfirm.equals("") || name.equals("") || phone1.equals("") || phone2.equals("") || phone3.equals("") || postalCode.equals("") || address.equals("") || detailAddress.equals(""))
+        if (id.equals("") || residentNumber.equals("") || password.equals("") || passwordConfirm.equals("") || name.equals("") || phone.equals("") || postalCode.equals("") || address.equals("") || detailAddress.equals(""))
             Toast.makeText(getApplication(), "공란이 있습니다.", Toast.LENGTH_SHORT).show();
-
-//        else if (!email.matches(emailVali)) {
-//            Toast.makeText(getApplication(), "이메일형식 불일치", Toast.LENGTH_SHORT).show();
-//        } else if (!password.matches(pwdVali)) {
-//            Toast.makeText(getApplication(), "비밀번호 형식 불일치", Toast.LENGTH_SHORT).show();
-//        }
 
         //패스워드 형식 확인
         if (!password.matches(pwdVali)) {
@@ -89,7 +80,7 @@ public class JoinActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), "패스워드 불일치", Toast.LENGTH_SHORT).show();
 
         else {
-            String url = GlobalVar.URL+ GlobalVar.URL_SIGNUP;
+            String url = GlobalVar.URL + GlobalVar.URL_SIGNUP;
             StringRequest request = new StringRequest(
                     Request.Method.POST,
                     url,
@@ -126,11 +117,11 @@ public class JoinActivity extends AppCompatActivity {
                     params.put("login_id", id);
                     params.put("password", password);
                     params.put("password_confirmation", passwordConfirm);
-                    params.put("resident_number", residentNumber1 + "-" + residentNumber2); //주민번호
+                    params.put("resident_number", residentNumber); //주민번호
                     params.put("postal_code", postalCode);
                     params.put("address", address);
                     params.put("detail_address", detailAddress);
-                    params.put("phone_number", phone1+"-"+phone2+"-"+phone3);
+                    params.put("phone_number", phone);
 
 
                     return params;

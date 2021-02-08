@@ -45,25 +45,15 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
 
-        binding.LoginBtn.setOnClickListener(new View.OnClickListener() {
+        binding.loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 loginAPI();
-
-                //test
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                startActivity(intent);
-                //>>>>>>>>>>>
+//                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+//                startActivity(intent);
             }
         });
 
-        binding.JoinBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, JoinActivity.class);
-                startActivity(intent);
-            }
-        });
 
     }
 
@@ -78,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), "공란이 있습니다.", Toast.LENGTH_SHORT).show();
 
         else {
-            String url = GlobalVar.URL+GlobalVar.URL_LOGIN;
+            String url = GlobalVar.URL + GlobalVar.URL_LOGIN;
             StringRequest request = new StringRequest(
                     Request.Method.POST,
                     url,

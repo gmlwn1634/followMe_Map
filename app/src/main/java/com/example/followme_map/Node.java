@@ -4,7 +4,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class Node {
     private int id;
-    private int floor = 2; //test
+    private int floor = 3; //test
     private LatLng latLng;
     private int stairCheck;
     private int index;

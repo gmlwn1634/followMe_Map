@@ -4,17 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#12C8C3C3"
     tools:context=".JoinActivity">
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="wrap_content"
-        android:layout_height="424dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="130dp"
         android:fadeScrollbars="false"
-        app:layout_constraintEnd_toEndOf="@+id/textView14"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textView14"
-        app:layout_constraintTop_toBottomOf="@+id/textView14">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,18 +27,20 @@
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="319dp"
-                android:layout_height="950dp">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/textView18"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginEnd="283dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="8dp"
                     android:fontFamily="sans-serif"
                     android:text="이름"
+                    android:textSize="18sp"
                     android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/name"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
@@ -41,12 +48,12 @@
 
                 <EditText
                     android:id="@+id/name"
-                    android:layout_width="309dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    app:layout_constraintEnd_toEndOf="@+id/textView18"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView18" />
@@ -58,6 +65,7 @@
                     android:layout_marginTop="20dp"
                     android:fontFamily="sans-serif"
                     android:text="주민등록번호"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="@+id/name"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -65,37 +73,16 @@
                     app:layout_constraintTop_toBottomOf="@+id/name" />
 
                 <EditText
-                    android:id="@+id/residentNumber1"
-                    android:layout_width="150dp"
+                    android:id="@+id/residentNumber"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:ems="10"
+                    android:hint="'-'를 제외하고 입력해주세요."
                     android:inputType="numberDecimal"
-                    app:layout_constraintStart_toStartOf="@+id/textView5"
+                    app:layout_constraintEnd_toEndOf="@+id/name"
+                    app:layout_constraintStart_toStartOf="@+id/name"
                     app:layout_constraintTop_toBottomOf="@+id/textView5" />
-                <TextView
-                    android:id="@+id/textView19"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-"
-                    android:textSize="22sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/residentNumber1"
-                    app:layout_constraintStart_toEndOf="@+id/residentNumber1"
-                    app:layout_constraintTop_toTopOf="@+id/residentNumber1" />
-
-
-                <EditText
-                    android:id="@+id/residentNumber2"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="numberDecimal"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView19"
-                    app:layout_constraintEnd_toEndOf="@+id/textView5"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/textView19"
-                    app:layout_constraintTop_toTopOf="@+id/textView19"
-                    app:layout_constraintVertical_bias="0.466" />
 
 
                 <TextView
@@ -105,20 +92,21 @@
                     android:layout_marginTop="20dp"
                     android:fontFamily="sans-serif"
                     android:text="아이디"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="@+id/residentNumber1"
+                    app:layout_constraintEnd_toEndOf="@+id/residentNumber"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/residentNumber1"
-                    app:layout_constraintTop_toBottomOf="@+id/residentNumber1" />
+                    app:layout_constraintStart_toStartOf="@+id/residentNumber"
+                    app:layout_constraintTop_toBottomOf="@+id/residentNumber" />
 
                 <EditText
                     android:id="@+id/id"
-                    android:layout_width="309dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    app:layout_constraintEnd_toEndOf="@+id/textView12"
+                    app:layout_constraintEnd_toEndOf="@+id/residentNumber"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/textView12"
                     app:layout_constraintTop_toBottomOf="@+id/textView12" />
@@ -130,6 +118,7 @@
                     android:layout_marginTop="20dp"
                     android:fontFamily="sans-serif"
                     android:text="비밀번호"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="@+id/id"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -138,12 +127,13 @@
 
                 <EditText
                     android:id="@+id/password"
-                    android:layout_width="309dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:ems="10"
+                    android:hint="숫자, 문자, 특수문자 중 2가지 포함(8~15자)"
                     android:inputType="textPassword"
-                    app:layout_constraintEnd_toEndOf="@+id/textView16"
+                    app:layout_constraintEnd_toEndOf="@+id/id"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/textView16"
                     app:layout_constraintTop_toBottomOf="@+id/textView16" />
@@ -155,6 +145,7 @@
                     android:layout_marginTop="20dp"
                     android:fontFamily="sans-serif"
                     android:text="비밀번호 확인"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="@+id/password"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -163,42 +154,17 @@
 
                 <EditText
                     android:id="@+id/passwordConfirm"
-                    android:layout_width="309dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:ems="10"
+                    android:hint="숫자, 문자, 특수문자 중 2가지 포함(8~15자)"
                     android:inputType="textPassword"
-                    app:layout_constraintEnd_toEndOf="@+id/textView17"
+                    app:layout_constraintEnd_toEndOf="@+id/password"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/textView17"
                     app:layout_constraintTop_toBottomOf="@+id/textView17" />
 
-                <TextView
-                    android:id="@+id/textView15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:fontFamily="sans-serif"
-                    android:text="이메일"
-                    android:textStyle="bold"
-                    android:visibility="invisible"
-                    app:layout_constraintEnd_toEndOf="@+id/passwordConfirm"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/passwordConfirm"
-                    app:layout_constraintTop_toBottomOf="@+id/passwordConfirm" />
-
-                <EditText
-                    android:id="@+id/email"
-                    android:layout_width="309dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:ems="10"
-                    android:inputType="textEmailAddress"
-                    android:visibility="invisible"
-                    app:layout_constraintEnd_toEndOf="@+id/textView15"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/textView15"
-                    app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
                 <TextView
                     android:id="@+id/textView20"
@@ -207,64 +173,26 @@
                     android:layout_marginTop="20dp"
                     android:fontFamily="sans-serif"
                     android:text="핸드폰번호"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="@+id/email"
+                    app:layout_constraintEnd_toEndOf="@+id/passwordConfirm"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/email"
-                    app:layout_constraintTop_toBottomOf="@+id/email" />
+                    app:layout_constraintStart_toStartOf="@+id/passwordConfirm"
+                    app:layout_constraintTop_toBottomOf="@+id/passwordConfirm" />
 
                 <EditText
-                    android:id="@+id/phoneNum1"
-                    android:layout_width="100dp"
+                    android:id="@+id/phoneNum"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="16dp"
                     android:ems="10"
+
+                    android:hint="'-'를 제외하고 입력해주세요."
                     android:inputType="text"
-                    app:layout_constraintStart_toStartOf="@+id/textView20"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="@+id/passwordConfirm"
                     app:layout_constraintTop_toBottomOf="@+id/textView20" />
-
-                <TextView
-                    android:id="@+id/textView30"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-"
-                    android:textSize="22sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/phoneNum1"
-                    app:layout_constraintStart_toEndOf="@+id/phoneNum1"
-                    app:layout_constraintTop_toTopOf="@+id/phoneNum1" />
-
-                <EditText
-                    android:id="@+id/phoneNum2"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="text"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView30"
-                    app:layout_constraintStart_toEndOf="@+id/textView30"
-                    app:layout_constraintTop_toTopOf="@+id/textView30" />
-
-                <TextView
-                    android:id="@+id/textView31"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-"
-                    android:textSize="22sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/phoneNum2"
-                    app:layout_constraintStart_toEndOf="@+id/phoneNum2"
-                    app:layout_constraintTop_toTopOf="@+id/phoneNum2" />
-
-                <EditText
-                    android:id="@+id/phoneNum3"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="text"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView31"
-                    app:layout_constraintEnd_toEndOf="@+id/textView20"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/textView31"
-                    app:layout_constraintTop_toTopOf="@+id/textView31" />
-
 
                 <TextView
                     android:id="@+id/textView22"
@@ -272,18 +200,21 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="우편번호"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/phoneNum1"
-                    app:layout_constraintTop_toBottomOf="@+id/phoneNum1" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/phoneNum"
+                    app:layout_constraintTop_toBottomOf="@+id/phoneNum" />
 
                 <EditText
                     android:id="@+id/postal_code"
-                    android:layout_width="309dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:ems="10"
                     android:inputType="textPostalAddress"
-                    app:layout_constraintEnd_toEndOf="@+id/textView22"
+                    app:layout_constraintEnd_toEndOf="@+id/phoneNum"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/textView22"
                     app:layout_constraintTop_toBottomOf="@+id/textView22" />
@@ -295,6 +226,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="자택주소"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="@+id/postal_code"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -303,12 +235,12 @@
 
                 <EditText
                     android:id="@+id/address"
-                    android:layout_width="309dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:ems="10"
                     android:inputType="text"
-                    app:layout_constraintEnd_toEndOf="@+id/textView21"
+                    app:layout_constraintEnd_toEndOf="@+id/postal_code"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/textView21"
                     app:layout_constraintTop_toBottomOf="@+id/textView21" />
@@ -319,6 +251,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="상세주소"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="@+id/address"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -327,13 +260,13 @@
 
                 <EditText
                     android:id="@+id/detail_address"
-                    android:layout_width="309dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:ems="10"
                     android:inputType="textPersonName"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/textView25"
+                    app:layout_constraintEnd_toEndOf="@+id/address"
                     app:layout_constraintHorizontal_bias="0.0"
 
                     app:layout_constraintStart_toStartOf="@+id/textView25"
@@ -344,28 +277,15 @@
         </LinearLayout>
     </ScrollView>
 
-    <TextView
-        android:id="@+id/textView14"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="121dp"
-        android:text="Sign up"
-        android:textSize="30sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
         android:id="@+id/JoinBtn"
         android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#2B61C7"
-        android:text="Sign Up"
+        android:layout_height="48dp"
+        android:background="@drawable/button_style"
+        android:text="SIGN UP"
         android:textAllCaps="false"
-        android:textColor="#FFFFFF"
+        android:textColor="#3669CA"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/scrollView2"
         app:layout_constraintStart_toStartOf="@+id/scrollView2"
         app:layout_constraintTop_toBottomOf="@+id/scrollView2" />

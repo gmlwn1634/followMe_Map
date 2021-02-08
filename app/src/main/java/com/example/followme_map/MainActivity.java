@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         //블루투스가 켜져있으면 로그인화면으로 이동
         if (bluetoothAdapter.isEnabled()) {
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, MainActivity2.class);
             startActivity(intent);
         } else {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i(GlobalVar.TAG_ACTIVITY_MAIN, "블루투스 비허용 종료");
             finish();
         } else if (resultCode == RESULT_OK) {
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, MainActivity2.class);
             startActivity(intent);
         }
     }//onActivityResult()
