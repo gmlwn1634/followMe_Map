@@ -1,41 +1,70 @@
 package com.example.followme_map;
 
-import com.google.android.gms.maps.model.LatLng;
-
 public class Flow {
-    private int minor;
-    private int floor;
-    private LatLng latLng;
 
-    //test용
-    public Flow(int argMinor, int argFloor, double argLat, double argLng) {
-        minor = argMinor;
-        floor = argFloor;
-        latLng = new LatLng(argLat, argLng);
+    private int flowId;
+    private int patientId;
+    private int flowSequence;
+    private int flowStatus; //완료, 미완료 체크
+    private int roomLocationID;
+    private int roomNode;
+    private String roomName;
+
+    public void setFlowId(int flowId) {
+        this.flowId = flowId;
+    }
+
+    public void setPatientId(int patientId) {
+        this.patientId = patientId;
+    }
+
+    public void setFlowSequence(int flowSequence) {
+        this.flowSequence = flowSequence;
+    }
+
+    public void setFlowStatus(int flowStatus) {
+        this.flowStatus = flowStatus;
+    }
+
+    public void setRoomLocationID(int roomLocationID) {
+        this.roomLocationID = roomLocationID;
+    }
+
+    public void setRoomNode(int roomNode) {
+        this.roomNode = roomNode;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
     }
 
 
-    public int getMinor() {
-        return minor;
+    public int getFlowId() {
+        return this.flowId;
     }
 
-    public int getFloor() {
-        return floor;
+    public int getPatientId() {
+        return this.patientId;
     }
 
-    public LatLng getLatLng() {
-        return latLng;
+    public int getFlowSequence() {
+        return this.flowSequence;
     }
 
-    public void setMinor(int argMinor) {
-        this.minor = argMinor;
+    public int getFlowStatus() {
+        return this.flowStatus;
     }
 
-    public void setFloor(int argFloor) {
-        this.floor = argFloor;
+    public int getRoomLocationID() {
+        return this.roomLocationID;
     }
 
-    public void setLatLng(double argLat, double argLng) {
-        this.latLng = new LatLng(argLat, argLng);
+    public int getRoomNode() {
+        return this.roomNode;
     }
+
+    public String getRoomName() {
+        return this.roomName;
+    }
+
 }

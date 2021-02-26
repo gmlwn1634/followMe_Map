@@ -18,17 +18,28 @@
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".FlowActivity"></activity>
+        <activity android:name=".DestSearchActivity"></activity>
+        <activity android:name=".ImPortActivity" />
+        <activity android:name=".MainActivity2" /> <!-- <activity android:name=".CustomDialog" /> -->
+        <activity android:name=".PaymentActivity" />
+        <activity android:name=".JoinActivity" />
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".FlowActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDSzgetTCr0dP90rF4pDvnQ3bMhpcwRuhs" />
+            android:value="AIzaSyBAkKGi4PR849qH0W2cBKRnR2gEBr6Tsvk" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -36,7 +47,23 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="iamporttest" />
+            </intent-filter>
         </activity>
+
+        <service android:name="com.minew.beacon.ScanService" />
+
+        <receiver android:name="com.minew.beacon.BluetoothChangedReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

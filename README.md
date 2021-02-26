@@ -6,17 +6,19 @@
 
 
 ### 참고사이트
-
-#### AdobeXD
-- https://helpx.adobe.com/kr/xd/tutorials.html
-- https://www.youtube.com/watch?v=rpRUWz9bBj0&feature=youtu.be
-
 #### webAPI
 - https://documenter.getpostman.com/view/13059220/TVep8nfZ
 
+#### fragment
+    프래그먼트는 하나의 액티비티가 여러 개의 화면을 가지도록 만들기위해 고안된 개념
+    다양한 크기의 화면을 가진 모바일 환경이 늘어남에 따라 하나의 디스플레이 안에서 다양한 화면 요소들을 보여주기 위해 생김
+
+- https://tedrepository.tistory.com/5
+- https://www.youtube.com/watch?v=3Th96mVEpyo
+
 #### googleMap
 - https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap?hl=ko
-- https://developers.google.com/android/reference/com/google/android/gms/maps/OnMapReadyCallback"
+- https://developers.google.com/android/reference/com/google/android/gms/maps/OnMapReadyCallback
 - https://developers.google.com/maps/documentation/android-sdk/events
 - https://developers.google.com/android/reference/com/google/android/gms/maps/model/CameraPosition?hl=ko
 - https://developers.google.com/maps/documentation/android-sdk/marker
@@ -86,6 +88,13 @@
 - https://ju-hy.tistory.com/66
 - https://velog.io/@dlrmwl15/%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C-Volley%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-HTTP-%ED%86%B5%EC%8B%A0
 - https://lktprogrammer.tistory.com/175
+
+#### Recycler View
+- https://recipes4dev.tistory.com/168
+- https://recipes4dev.tistory.com/154
+
+#### QR코드
+- https://park-duck.tistory.com/108
 
 #### 기타
 - https://developer.android.com/guide/topics/ui/controls/spinner?hl=ko#java
