@@ -56,7 +56,8 @@ public class JoinActivity extends AppCompatActivity {
     public void registerAPI() {
 
         final String name = binding.name.getText().toString();
-        final String residentNumber = binding.residentNumber.getText().toString();
+        final String residentNumber1 = binding.residentNumber1.getText().toString();
+        final String residentNumber2 = binding.residentNumber2.getText().toString();
         final String id = binding.id.getText().toString();
         final String password = binding.password.getText().toString();
         final String passwordConfirm = binding.passwordConfirm.getText().toString();
@@ -67,7 +68,7 @@ public class JoinActivity extends AppCompatActivity {
 
 
         //공란 체크
-        if (id.equals("") || residentNumber.equals("") || password.equals("") || passwordConfirm.equals("") || name.equals("") || phone.equals("") || postalCode.equals("") || address.equals("") || detailAddress.equals(""))
+        if (id.equals("") || residentNumber1.equals("") || residentNumber2.equals("") || password.equals("") || passwordConfirm.equals("") || name.equals("") || phone.equals("") || postalCode.equals("") || address.equals("") || detailAddress.equals(""))
             Toast.makeText(getApplication(), "공란이 있습니다.", Toast.LENGTH_SHORT).show();
 
         //패스워드 형식 확인
@@ -117,7 +118,7 @@ public class JoinActivity extends AppCompatActivity {
                     params.put("login_id", id);
                     params.put("password", password);
                     params.put("password_confirmation", passwordConfirm);
-                    params.put("resident_number", residentNumber); //주민번호
+                    params.put("resident_number", residentNumber1 + "-" + residentNumber2); //주민번호
                     params.put("postal_code", postalCode);
                     params.put("address", address);
                     params.put("detail_address", detailAddress);

@@ -48,9 +48,9 @@ public class GlobalVar extends Application {
     public static final String URL_GET_NODE_BEACON = "/api/patient/app_node_beacon_get";
     public static final String URL_ROOM_LIST = "/api/patient/navigation_room_list";
 
-    public static int mode = 1;
-    public static int testNum = 0;
-    public static LatLng thisPoint = new LatLng(35.89666866704047, 128.62027197619136);
+//    public static int mode = 1;
+//    public static int testNum = 0;
+//    public static LatLng thisPoint = new LatLng(35.89666866704047, 128.62027197619136);
     //35.89666866704047, 128.62027197619136 //출발지
     //35.896758278816, 128.62047268466 //220호
     //35.896752650043,128.62071220482 //305호

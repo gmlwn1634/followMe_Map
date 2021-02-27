@@ -97,12 +97,6 @@ public class InfoFragment extends Fragment {
                 }
         ) {
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                return params;
-            }
-
-            @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("Authorization", "Bearer " + LoginActivity.patientToken);

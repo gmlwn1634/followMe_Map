@@ -25,7 +25,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="20dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:cardCornerRadius="5dp"
         app:cardElevation="10dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -83,7 +83,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/start_end_img"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -96,36 +96,29 @@
     </fragment>
 
 
-    <LinearLayout
-        android:id="@+id/floorLinear"
-        android:layout_width="0dp"
+    <RadioGroup
+        android:id="@+id/floorSelector"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:orientation="vertical"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/map"
         app:layout_constraintEnd_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="@+id/map"
         app:layout_constraintVertical_bias="0.07999998">
 
-        <RadioGroup
-            android:id="@+id/floorSelector"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/select2floor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="2floor" />
 
-            <RadioButton
-                android:id="@+id/select2floor"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="2floor" />
-
-            <RadioButton
-                android:id="@+id/select3floor"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="3floor" />
-        </RadioGroup>
-    </LinearLayout>
+        <RadioButton
+            android:id="@+id/select3floor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="3floor" />
+    </RadioGroup>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -150,6 +143,41 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView40"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="debug lat:"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="TextView"
+            app:layout_constraintStart_toEndOf="@+id/textView40"
+            app:layout_constraintTop_toTopOf="@+id/textView40" />
+
+        <TextView
+            android:id="@+id/textView42"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="lng:"
+            app:layout_constraintStart_toEndOf="@+id/lat"
+            app:layout_constraintTop_toTopOf="@+id/lat" />
+
+        <TextView
+            android:id="@+id/lng"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="TextView"
+            app:layout_constraintStart_toEndOf="@+id/textView42"
+            app:layout_constraintTop_toTopOf="@+id/textView42" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageButton

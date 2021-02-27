@@ -131,8 +131,6 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
     //2: 현위치-도착지
     private int mode = 1;
 
-    public DestSearchActivity() {
-    }
 
 
     @Override
@@ -694,11 +692,6 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
                             }
                         }
                 ) {
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<String, String>();
-                        return params;
-                    }
 
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {

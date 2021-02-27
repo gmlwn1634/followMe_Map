@@ -1,6 +1,7 @@
 package com.example.followme_map;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -8,7 +9,6 @@ import com.minew.beacon.BeaconValueIndex;
 import com.minew.beacon.MinewBeacon;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -17,16 +17,16 @@ import kr.hyosang.coordinate.CoordPoint;
 import kr.hyosang.coordinate.TransCoord;
 
 
-public class BeaconAdapter{
+public class BeaconAdapter {
     //-------비콘 정보--------
     private List<MinewBeacon> mMinewBeacons = new ArrayList<>(); // 실시간 수신된 비콘 목록
     private List<BeaconData> recievedBeacons = new ArrayList<>();
     private BeaconList BeaconList;   // LBS용 비콘 목록
 
     //-------구글맵--------
-    private GoogleMap mMap;         // 구글맵
-    private Marker marker;          // 구글맵 마커
-    private boolean makerState = false;  // 마커는 한개만 유지하는 논리형
+    public static GoogleMap mMap;         // 구글맵
+    public static Marker thisMarker;          // 구글맵 마커
+    public static boolean makerState = false;  // 마커는 한개만 유지하는 논리형
 
     // BeaconAdapter 생성자
     BeaconAdapter(BeaconList argBeaconList, GoogleMap googleMap) {
@@ -51,9 +51,9 @@ public class BeaconAdapter{
         // 현재 수신된 비콘 추가
         this.mMinewBeacons.addAll(newItems);
 
-        for(MinewBeacon e : this.mMinewBeacons) {
-            mDevice_minor   = e.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Minor).getStringValue();
-            if(this.BeaconList.checkLBSBeacon(mDevice_minor)){
+        for (MinewBeacon e : this.mMinewBeacons) {
+            mDevice_minor = e.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Minor).getStringValue();
+            if (this.BeaconList.checkLBSBeacon(mDevice_minor)) {
                 recievedBeaconData a = new recievedBeaconData(e);
 
                 this.recievedBeacons.add(BeaconList.getBeaconInfo(mDevice_minor));
@@ -64,15 +64,15 @@ public class BeaconAdapter{
         Collections.sort(recievedBeacons, new Comparator<BeaconData>() {
             @Override
             public int compare(BeaconData o1, BeaconData o2) {
-                if(o1.getK_RSSI() < o2.getK_RSSI())
+                if (o1.getK_RSSI() < o2.getK_RSSI())
                     return 1;
-                else if(o1.getK_RSSI() == o2.getK_RSSI())
+                else if (o1.getK_RSSI() == o2.getK_RSSI())
                     return o1.getMinor().compareTo(o2.getMinor());
                 else
                     return -1;
             }
         });
-        if(recievedBeacons.size() > 2){
+        if (recievedBeacons.size() > 2) {
             calculateLocation();
 
             location();
@@ -86,30 +86,30 @@ public class BeaconAdapter{
 
         BeaconData standardBeacon = recievedBeacons.get(0);
 
-        for(int iCount = 0; iCount < recievedBeacons.size(); iCount++){
-            if(standardBeacon.major.equals(recievedBeacons.get(iCount).major)){
+        for (int iCount = 0; iCount < recievedBeacons.size(); iCount++) {
+            if (standardBeacon.major.equals(recievedBeacons.get(iCount).major)) {
                 selectBeacons[number] = recievedBeacons.get(iCount);
                 number++;
-                if(number == 3){
+                if (number == 3) {
 
                     break;
                 }
             }
         }
 
-        System.out.println("점 ---------------------------------- ");
-        System.out.println("점1 - " + selectBeacons[0].minor + " " + selectBeacons[0].distance);
-        System.out.println("점2 - " + selectBeacons[1].minor + " " + selectBeacons[1].distance);
-        System.out.println("점3 - " + selectBeacons[2].minor + " " + selectBeacons[2].distance);
+//        System.out.println("점 ---------------------------------- ");
+//        System.out.println("점1 - " + selectBeacons[0].minor + " " + selectBeacons[0].distance);
+//        System.out.println("점2 - " + selectBeacons[1].minor + " " + selectBeacons[1].distance);
+//        System.out.println("점3 - " + selectBeacons[2].minor + " " + selectBeacons[2].distance);
 
-        if(selectBeacons[0].major== "2") {
+        if (selectBeacons[0].major == "2") {
             BeaconList.setLat(selectBeacons[0].lat_wgs84);
             BeaconList.setLng(selectBeacons[0].lng_wgs84);
-        }else {
+        } else {
             Trilateration tr = new Trilateration(recievedBeacons.get(0), recievedBeacons.get(1), recievedBeacons.get(2));
 
             CoordPoint pt = new CoordPoint(tr.resultX, tr.resultY);
-            CoordPoint TMToWgs84 = TransCoord.getTransCoord(pt,TransCoord.COORD_TYPE_TM, TransCoord.COORD_TYPE_WGS84);
+            CoordPoint TMToWgs84 = TransCoord.getTransCoord(pt, TransCoord.COORD_TYPE_TM, TransCoord.COORD_TYPE_WGS84);
 
             BeaconList.setLat(TMToWgs84.y);
             BeaconList.setLng(TMToWgs84.x);
@@ -146,18 +146,18 @@ public class BeaconAdapter{
 
     //구글 마커 찍는 함수
     void location() {
-        if(makerState) {
-            marker.remove();
+        if (makerState) {
+            thisMarker.remove();
             makerState = false;
         }
         makerState = true;
-        LatLng SEOUL = new LatLng(BeaconList.getLat(), BeaconList.getLng());
 
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(SEOUL);
-        markerOptions.title("현 위치");
-        //System.out.println("현 위치");
-        marker = mMap.addMarker(markerOptions);
+//        if(BeaconList.getFloor() == )
+        thisMarker = mMap.addMarker(new MarkerOptions()
+                .position(BeaconList.getLatLng())
+                .anchor(0.5f, 0.5f)
+                .rotation(FlowActivity.getChangedAzimut() - FlowActivity.camPosition.bearing)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
     }
 
     // 삼변측량에 필요한 비콘 3개 선별하는 함수
@@ -176,12 +176,12 @@ public class BeaconAdapter{
         private final double mDevice_rssi;
 
         recievedBeaconData(MinewBeacon minewBeacon) {
-            mMinewBeacon    = minewBeacon;
-            mDevice_name    = mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_MAC).getStringValue();
-            mDevice_uuid    = mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_UUID).getStringValue();
-            mDevice_majar   = mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Major).getStringValue();
-            mDevice_minor   = mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Minor).getStringValue();
-            mDevice_rssi    = mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getFloatValue();
+            mMinewBeacon = minewBeacon;
+            mDevice_name = mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_MAC).getStringValue();
+            mDevice_uuid = mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_UUID).getStringValue();
+            mDevice_majar = mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Major).getStringValue();
+            mDevice_minor = mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Minor).getStringValue();
+            mDevice_rssi = mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getFloatValue();
 
             updateRSSI();
             // System.out.printf("Recieved Data - Name: %s, Major: %s, Minor: %s, RSSI: %.2f \n", mDevice_name, mDevice_majar, mDevice_minor, mDevice_rssi);

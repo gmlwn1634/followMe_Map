@@ -71,16 +71,26 @@
                     app:layout_constraintTop_toBottomOf="@+id/name" />
 
                 <EditText
-                    android:id="@+id/residentNumber"
+                    android:id="@+id/residentNumber1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:ems="10"
-                    android:hint="'-'를 제외하고 입력해주세요."
-                    android:inputType="numberDecimal"
-                    app:layout_constraintEnd_toEndOf="@+id/name"
+                    android:inputType="numberSigned"
+                    app:layout_constraintEnd_toStartOf="@+id/textView41"
                     app:layout_constraintStart_toStartOf="@+id/name"
                     app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+                <TextView
+                    android:id="@+id/textView41"
+                    android:layout_width="8dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="-"
+                    app:layout_constraintBottom_toBottomOf="@+id/residentNumber1"
+                    app:layout_constraintEnd_toStartOf="@+id/residentNumber2"
+                    app:layout_constraintStart_toEndOf="@+id/residentNumber1"
+                    app:layout_constraintTop_toTopOf="@+id/residentNumber1" />
 
 
                 <TextView
@@ -91,10 +101,20 @@
                     android:text="아이디"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="@+id/residentNumber"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/residentNumber"
-                    app:layout_constraintTop_toBottomOf="@+id/residentNumber" />
+                    app:layout_constraintStart_toStartOf="@+id/residentNumber1"
+                    app:layout_constraintTop_toBottomOf="@+id/residentNumber1" />
+
+                <EditText
+                    android:id="@+id/residentNumber2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="numberSigned"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView41"
+                    app:layout_constraintEnd_toEndOf="@+id/name"
+                    app:layout_constraintStart_toEndOf="@+id/textView41"
+                    app:layout_constraintTop_toTopOf="@+id/textView41"
+                    app:layout_constraintVertical_bias="0.52" />
 
                 <EditText
                     android:id="@+id/id"
@@ -103,8 +123,7 @@
                     android:layout_marginTop="8dp"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    app:layout_constraintEnd_toEndOf="@+id/residentNumber"
-                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintEnd_toEndOf="@+id/residentNumber2"
                     app:layout_constraintStart_toStartOf="@+id/textView12"
                     app:layout_constraintTop_toBottomOf="@+id/textView12" />
 

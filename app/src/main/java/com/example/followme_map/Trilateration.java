@@ -24,7 +24,7 @@ public class   Trilateration {
         y3 = b3.getLng_TM();
         r3 = b3.getDistance();
 
-        System.out.printf("Cal - %f,%f,%f,%f,%f,%f,%f,%f,%f\n", x1,y1,r1,x2,y2,r2,x3,y3,r3);
+//        System.out.printf("Cal - %f,%f,%f,%f,%f,%f,%f,%f,%f\n", x1,y1,r1,x2,y2,r2,x3,y3,r3);
 
         double A = 2*x2 - 2*x1;
         double B = 2*y2 - 2*y1;
