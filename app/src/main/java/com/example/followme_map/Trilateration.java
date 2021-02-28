@@ -1,7 +1,7 @@
 package com.example.followme_map;
 
 
-public class   Trilateration {
+public class Trilateration {
     double resultX;
     double resultY;
     BeaconData b1;
@@ -24,17 +24,96 @@ public class   Trilateration {
         y3 = b3.getLng_TM();
         r3 = b3.getDistance();
 
-//        System.out.printf("Cal - %f,%f,%f,%f,%f,%f,%f,%f,%f\n", x1,y1,r1,x2,y2,r2,x3,y3,r3);
+        switch(b1.group) {
+            case "2": // 직선 그래프 + 매핑 (복도)
+                double inclination =  (y1-y2)/(x1-x2);  // 기울기
 
-        double A = 2*x2 - 2*x1;
-        double B = 2*y2 - 2*y1;
-        double C = Math.pow(r1,2) - Math.pow(r2, 2) - Math.pow(x1,2) + Math.pow(x2,2) - Math.pow(y1,2) + Math.pow(y2,2);
+                double d = y1 - inclination*x1 ;        // y절편
 
-        double D = 2*x3 - 2*x2;
-        double E = 2*y3 - 2*y2;
-        double F = Math.pow(r2,2) - Math.pow(r3,2) - Math.pow(x2,2) + Math.pow(x3,2) - Math.pow(y2,2) + Math.pow(y3,2);
+                double D1;
+                double D2;
 
-        resultX = (C*E - F*B) / (E*A - B*D);
-        resultY = (C*D - A*F) / (B*D - A*E);
+                double a = (inclination*inclination+1);
+                double b = 2*(inclination*d - inclination*y1 - x1);
+                double c = x1*x1-(r1*r1)+y1*y1+d*d-2*d*y1;
+
+                /* 2차 방정식의 판별식 */
+                D1 = b * b - 4 * a *c;
+
+                double result_x1 = -b / (2 * a) + Math.sqrt(D1) / (2 * a);
+                double result_x2 = -b / (2 * a) - Math.sqrt(D1) / (2 * a);
+
+                //-------------------------------------------------------------
+                a = (inclination*inclination+1);
+                b = 2*(inclination*d - inclination*y2 - x2);
+                c = x2*x2-(r2*r2)+y2*y2+d*d-2*d*y2;
+                /* 2차 방정식의 판별식 */
+                D2 = b * b - 4 * a * c;
+
+                double result_x3 = -b / (2 * a) + Math.sqrt(D2) / (2 * a);
+                double result_x4 = -b / (2 * a) - Math.sqrt(D2) / (2 * a);
+
+
+
+                int temp = 0;
+                double[] p = new double[4];
+
+                p[0] = result_x1 - result_x3 ;
+                p[1] = result_x1 - result_x4 ;
+                p[2] = result_x2 - result_x3 ;
+                p[3] = result_x2 - result_x4 ;
+
+                for(int i = 0; i < 2; i++) {
+                    if(p[temp] > p[i+1]) {
+                        temp = i+1;
+                    }
+                }
+
+
+                double x = 0;
+                double y = 0;
+
+                if(temp == 0)
+                    x = (result_x1 + result_x3)/2;
+                else if(temp == 1)
+                    x = (result_x1 + result_x4)/2;
+                else if(temp == 2)
+                    x = (result_x2 + result_x3)/2;
+                else
+                    x = (result_x2 + result_x4)/2;
+
+                y = inclination*x + d;
+
+//                System.out.println("기울기 :" + inclination);
+//                System.out.println("y절펀 :" + d);
+//                System.out.println("x1, y1, r1 :" + x1 + ", " + y1 + ", " + r1 );
+//                System.out.println("근 :" + result_x1 + ", " + result_x2);
+//                System.out.println("x2, y2, r2 :" + x2 + ", " + y2 + ", " + r2 );
+//                System.out.println("근 :" + result_x3 + ", " + result_x4);
+
+//                System.out.println("결과 값:" + x + ", "+ y);
+
+                resultX = x;
+                resultY = y;
+
+                break;
+
+            case "3": // 삼변측량 (룸)
+                double A = 2*x2 - 2*x1;
+                double B = 2*y2 - 2*y1;
+                double C = Math.pow(r1,2) - Math.pow(r2, 2) - Math.pow(x1,2) + Math.pow(x2,2) - Math.pow(y1,2) + Math.pow(y2,2);
+
+                double D = 2*x3 - 2*x2;
+                double E = 2*y3 - 2*y2;
+                double F = Math.pow(r2,2) - Math.pow(r3,2) - Math.pow(x2,2) + Math.pow(x3,2) - Math.pow(y2,2) + Math.pow(y3,2);
+
+                resultX = (C*E - F*B) / (E*A - B*D);
+                resultY = (C*D - A*F) / (B*D - A*E);
+
+                break;
+        }
+
+        //System.out.printf("Cal - %f,%f,%f,%f,%f,%f,%f,%f,%f\n", x1,y1,r1,x2,y2,r2,x3,y3,r3);
+
     }
 }

@@ -13,9 +13,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import kr.hyosang.coordinate.CoordPoint;
-import kr.hyosang.coordinate.TransCoord;
-
 
 public class BeaconAdapter {
     //-------비콘 정보--------
@@ -23,16 +20,22 @@ public class BeaconAdapter {
     private List<BeaconData> recievedBeacons = new ArrayList<>();
     private BeaconList BeaconList;   // LBS용 비콘 목록
 
+
     //-------구글맵--------
-    public static GoogleMap mMap;         // 구글맵
+    private GoogleMap mMap;         // 구글맵
     public static Marker thisMarker;          // 구글맵 마커
-    public static boolean makerState = false;  // 마커는 한개만 유지하는 논리형
+    private boolean makerState = false;  // 마커는 한개만 유지하는 논리형
+
+//    public int num = 0;
+//    public static LatLng testLatLng;
 
     // BeaconAdapter 생성자
     BeaconAdapter(BeaconList argBeaconList, GoogleMap googleMap) {
         BeaconList = argBeaconList; // LBS용 비콘 목록 받기
         mMap = googleMap;           // 구글맵 함수 사용하기 위함
+//        testLatLng = argBeaconList.getLatLng();
     }
+
 
     // 실시간 수신된 받은 모든 비콘 목록 추가
     public void setItems(List<MinewBeacon> newItems) {
@@ -83,41 +86,38 @@ public class BeaconAdapter {
     void calculateLocation() {
         BeaconData[] selectBeacons = new BeaconData[3];
         int number = 0;
+        int standard = 0;
+        while (number < 3) {
+            number = 0;
+            BeaconData standardBeacon = recievedBeacons.get(standard);
+            BeaconList.setFloor(standardBeacon.getMajor());
 
-        BeaconData standardBeacon = recievedBeacons.get(0);
-
-        for (int iCount = 0; iCount < recievedBeacons.size(); iCount++) {
-            if (standardBeacon.major.equals(recievedBeacons.get(iCount).major)) {
-                selectBeacons[number] = recievedBeacons.get(iCount);
-                number++;
-                if (number == 3) {
-
-                    break;
+            for (int iCount = 0; iCount < recievedBeacons.size(); iCount++) {
+                if (standardBeacon.group.equals(recievedBeacons.get(iCount).group)) {
+                    selectBeacons[number] = recievedBeacons.get(iCount);
+                    number++;
+                    if (number == 3) {
+                        break;
+                    }
                 }
             }
+            standard++;
         }
 
 //        System.out.println("점 ---------------------------------- ");
+//        System.out.println("점비1 - " + recievedBeacons.get(0).minor + " " + recievedBeacons.get(0).distance);
+//        System.out.println("점비2 - " + recievedBeacons.get(1).minor + " " + recievedBeacons.get(1).distance);
+//        System.out.println("점비3 - " + recievedBeacons.get(2).minor + " " + recievedBeacons.get(2).distance);
 //        System.out.println("점1 - " + selectBeacons[0].minor + " " + selectBeacons[0].distance);
 //        System.out.println("점2 - " + selectBeacons[1].minor + " " + selectBeacons[1].distance);
 //        System.out.println("점3 - " + selectBeacons[2].minor + " " + selectBeacons[2].distance);
+//        System.out.println("점 층수 - " + BeaconList.getFloor());
 
-        if (selectBeacons[0].major == "2") {
-            BeaconList.setLat(selectBeacons[0].lat_wgs84);
-            BeaconList.setLng(selectBeacons[0].lng_wgs84);
-        } else {
-            Trilateration tr = new Trilateration(recievedBeacons.get(0), recievedBeacons.get(1), recievedBeacons.get(2));
+        Trilateration tr = new Trilateration(selectBeacons[0], selectBeacons[1], selectBeacons[2]);
+        BeaconList.setTM_LatLng(tr.resultX, tr.resultY);
+        BeaconList.kalman();
 
-            CoordPoint pt = new CoordPoint(tr.resultX, tr.resultY);
-            CoordPoint TMToWgs84 = TransCoord.getTransCoord(pt, TransCoord.COORD_TYPE_TM, TransCoord.COORD_TYPE_WGS84);
-
-            BeaconList.setLat(TMToWgs84.y);
-            BeaconList.setLng(TMToWgs84.x);
-        }
-
-//        System.out.println("Result Data: " +  BeaconList.getLat() + ", " +BeaconList.getLng());
     }
-
 //    boolean calculaorsDgree(BeaconData[] argBeaconData) {
 //        double[] pointsDistance = new double[3];
 //        double x = 0;
@@ -150,14 +150,30 @@ public class BeaconAdapter {
             thisMarker.remove();
             makerState = false;
         }
+
         makerState = true;
+
+        //test
+//        if (FlowActivity.naviStartCheck) {
+//            testLatLng = FlowActivity.flowNodeList.get(num).getLatLng();
+//            num++;
+//            if (num >= FlowActivity.flowNodeList.size()) {
+//                num = 0;
+//            }
+//        }
+
 
 //        if(BeaconList.getFloor() == )
         thisMarker = mMap.addMarker(new MarkerOptions()
-                .position(BeaconList.getLatLng())
+                .position(BeaconList.getWGS_K_LatLng())
                 .anchor(0.5f, 0.5f)
                 .rotation(FlowActivity.getChangedAzimut() - FlowActivity.camPosition.bearing)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
+//        thisMarker = mMap.addMarker(new MarkerOptions()
+//                .position(testLatLng)
+//                .anchor(0.5f, 0.5f)
+//                .rotation(FlowActivity.getChangedAzimut() - FlowActivity.camPosition.bearing)
+//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
     }
 
     // 삼변측량에 필요한 비콘 3개 선별하는 함수

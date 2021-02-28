@@ -6,6 +6,7 @@ import com.minew.beacon.BeaconValueIndex;
 
 import java.util.Comparator;
 
+
 public class UserRssi implements Comparator<MinewBeacon> {
 
     @Override

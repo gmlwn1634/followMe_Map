@@ -110,7 +110,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     ArrayList<DestInfo> destInfoArrayList = new ArrayList<>();
 
     //동선, 노드
-    private final ArrayList<FlowNode> flowNodeList = new ArrayList<FlowNode>();
+    public static final ArrayList<FlowNode> flowNodeList = new ArrayList<FlowNode>();
     private final ArrayList<Flow> flowList = new ArrayList<Flow>();
     private JSONArray flowArr;
     private JSONArray nodeArr;
@@ -130,6 +130,10 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     //현위치 받아왔는지 표시
     boolean first = false;
     boolean polyStart_This = false; //현위치와 출발지 연결
+    public static boolean naviStartCheck = false;
+
+    //test 현위치
+    int testNum = 0;
 
 
     @Override
@@ -137,6 +141,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         binding = ActivityFlowBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
 
         // Volley 통신 requestQueue 생성 및 초기화
         if (AppHelper.requestQueue != null)
@@ -203,6 +208,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
 
                 polyStart_This = true;
+                naviStartCheck = true;
                 getNFlowNode(0); //첫번째 동선 표시
                 naviStart(); //
 
@@ -214,9 +220,9 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //> onMapReady()
         //카메라포지션
-        //구글맵 오버레이
         //전체 비콘 정보를 받아옴
         //비콘으로 현위치 계산
+        ////구글맵 오버레이
         //현위치에 따른 현위치 마커 찍기 (Thread)
         //서버에서 동선 받아옴
         //여기까지 완료되면 로딩화면 해제하고 맵표시
@@ -277,8 +283,9 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             final double R = 6372.8 * 1000;
 
             //같은 층의 노드인지 판단
-            if (flowNodeList.get(i).getFloor() == BeaconList.getFloor()) {
-                double a = getDistance(BeaconList.getLatLng(), flowNodeList.get(i).getLatLng());
+            if (flowNodeList.get(i).getFloor() == Integer.parseInt(BeaconList.getFloor())) {
+//                double a = getDistance(BeaconList.getLatLng(), flowNodeList.get(i).getLatLng());
+                double a = getDistance(BeaconAdapter.thisMarker.getPosition(), flowNodeList.get(i).getLatLng()); //test
                 double c = 2 * Math.asin(a);
                 double dist = R * c;
                 distArr[i][0] = dist; //거리
@@ -307,21 +314,21 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void run() {
                         //경로 이탈 - 현위치와 현위치에서 가장 가까운 노드
-                        if (getDistanceMeter(BeaconList.getLatLng(), getNearNode().getLatLng()) >= 14) {
+//                        if (getDistanceMeter(BeaconList.getLatLng(), getNearNode().getLatLng()) >= 14) {
+                        if (getDistanceMeter(BeaconAdapter.thisMarker.getPosition(), getNearNode().getLatLng()) >= 14) { //test
                             Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "이탈이탈");
                             binding.navigation.setVisibility(View.INVISIBLE);
                             flag = false;
                             mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.off_road_sound);
                             mediaPlayer.start();
 
-                            //경로 재탐색
 
                             // 안내 메세지
                             CustomDialog customDialog = new CustomDialog(FlowActivity.this, new CustomDialogClickListener() {
                                 @Override
                                 public void onPositiveClick() {
                                     flag = true;
-                                    getNFlowNode(0);
+                                    getNFlowNode(0);//경로 재탐색
 
                                 }
                             }, "경로에서 벗어났습니다.", "현재 위치를 재탐색합니다.");
@@ -345,8 +352,9 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if (flag) {
                             setCameraPosition(); //지도 방향
 //                            checkFloor(); //층 바뀌면 도면 전환
+//                            testLatLng(); //임시 현위치 이동
                             checkOffLoad(); //경로이탈 감지
-//                            changeTurn(); // 방향회전 안내
+                            changeTurn(); // 방향회전 안내
                             Thread.sleep(100);
                         }
                     } catch (InterruptedException e) {
@@ -357,6 +365,258 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         }).start();
     } //naviStart()
 
+    void arrived() {
+
+        // 도착안내
+        mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.arrival_sound);
+        mediaPlayer.start();
+        binding.turn.setText("목적지 도착");
+        binding.turnImg.setImageResource(R.drawable.arrive);
+
+
+        // 안내 메세지
+        CustomDialog customDialog = new CustomDialog(FlowActivity.this, new CustomDialogClickListener() {
+            @Override
+            public void onPositiveClick() {
+                String url = GlobalVar.URL + GlobalVar.URL_FLOW_END;
+                StringRequest request = new StringRequest(
+                        Request.Method.GET,
+                        url,
+                        new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
+                            @Override
+                            public void onResponse(String response) {
+                                try {
+                                    JSONObject jsonResponse = new JSONObject(response);
+                                    Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "목적지 도착 알림 성공");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "목적지 도착 알림 실패" + e.getMessage());
+
+                                }
+
+                            }
+                        },
+                        new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
+                            @Override
+                            public void onErrorResponse(VolleyError e) {
+                                e.printStackTrace();
+                                Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "목적지 도착 알림 실패" + e.getMessage());
+                            }
+                        }
+                ) {
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<String, String>();
+                        return params;
+                    }
+
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> headers = new HashMap<String, String>();
+                        headers.put("Authorization", "Bearer " + LoginActivity.patientToken);
+                        return headers;
+                    }
+
+
+                };
+                request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
+                AppHelper.requestQueue = Volley.newRequestQueue(getApplicationContext()); // requestQueue 초기화 필수
+                AppHelper.requestQueue.add(request);
+
+
+//                GlobalVar.thisPoint = new LatLng(35.896758278816, 128.62047268466);
+//                GlobalVar.testNum = 0;
+//                GlobalVar.mode = 2; //220호에서 305호
+//                GlobalVar.mode = 2;
+                System.out.println("비교 - mode : 2 로 바뀜");
+
+                Intent intent = new Intent(FlowActivity.this, HomeActivity.class);
+                startActivity(intent);
+                finish();
+
+            }
+
+
+        }, "목적지 부근에 도착했습니다.", "경로 안내를 종료합니다.");
+        customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        customDialog.setCancelable(false);
+        customDialog.show();
+
+    }
+
+
+    void changeTurn() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+
+                        LatLng nodeA = getNearNode().getLatLng();
+                        if ((getNearNode().getIndex() + 1) >= flowNodeList.size()) {
+                            flag = false;
+
+
+                            //도착
+                            arrived();
+
+
+                            return;
+
+                        } else {
+                            if ((getNearNode().getIndex() + 3) >= flowNodeList.size())
+                                return;
+                        }
+
+
+                        LatLng nodeB = flowNodeList.get(getNearNode().getIndex() + 1).getLatLng();
+                        LatLng nodeC = flowNodeList.get(getNearNode().getIndex() + 3).getLatLng();
+
+//                        double dist = getDistanceMeter(BeaconList.getLatLng(), nodeB);
+                        double dist = getDistanceMeter(BeaconAdapter.thisMarker.getPosition(), nodeB); //test
+                        dist = Math.round(dist * 1000) / 1000.0;
+
+
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "nodeA : " + getNearNode().getIndex());
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "nodeB : " + flowNodeList.get(getNearNode().getIndex() + 2).getIndex());
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "nodeC : " + flowNodeList.get(getNearNode().getIndex() + 3).getIndex());
+
+                        //좌우판단
+                        if (dist < 4) {
+//                            binding.distance.setText(dist + "m 남음");
+                            switch (ccw(nodeA, nodeB, nodeC)) {
+
+                                //이미지 변경
+                                case 1:
+                                    binding.navigation.setVisibility(View.VISIBLE);
+                                    binding.turn.setText("좌회전");
+                                    binding.turnImg.setImageResource(R.drawable.turn_left);
+                                    break;
+                                case -1:
+                                    binding.navigation.setVisibility(View.VISIBLE);
+                                    binding.turn.setText("우회전");
+                                    binding.turnImg.setImageResource(R.drawable.turn_right);
+                                    break;
+                                case 0:
+                                    binding.navigation.setVisibility(View.INVISIBLE);
+                                    break;
+                            }
+                        }
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "남은 거리 : " + dist);
+
+
+                    }
+                });
+            }
+        }).start();
+    } //changeTurn()
+
+
+    //좌회전 우회전 판단
+    int ccw(LatLng nodeA, LatLng nodeB, LatLng nodeC) {
+
+        double x1 = nodeA.latitude;
+        double y1 = nodeA.longitude;
+        double x2 = nodeB.latitude;
+        double y2 = nodeB.longitude;
+        double x3 = nodeC.latitude;
+        double y3 = nodeC.longitude;
+
+        double temp1 = (y2 - y1) * (x3 - x1) + y1 * (x2 - x1);
+        double temp2 = (x2 - x1) * y3;
+
+        double angle = getAngle(nodeA, nodeB, nodeC);
+
+
+        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "angle : " + angle);
+        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "temp1 : " + temp1);
+        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "temp2 : " + temp2);
+
+        if (temp1 < temp2) {
+            if (angle <= 18) {
+                Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "직진");
+                return 0;
+            }
+            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "< 우회전");
+            return -1;
+        } else if (temp1 > temp2) { //시계
+            if (angle <= 18) {
+                Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "직진");
+                return 0;
+            }
+            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "< 좌회전");
+            return 1;
+        } else  //직진
+            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "직진");
+
+        return 0;
+
+
+    } //ccw()
+
+    //좌회전 우회전 판단
+    double getAngle(LatLng NodeA, LatLng NodeB, LatLng NodeC) {
+
+        double dx1 = NodeB.latitude - NodeA.latitude;
+        double dy1 = NodeB.longitude - NodeA.longitude;
+        double dx2 = NodeC.latitude - NodeB.latitude;
+        double dy2 = NodeC.longitude - NodeB.longitude;
+        double d = dx1 * dx2 + dy1 * dy2;
+        double l2 = (dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2);
+        double angle = Math.acos(d / Math.sqrt(l2)); //삼각형 내적각
+
+        return Math.toDegrees(angle);
+    } //getAngle()
+
+
+    //임의의 좌표 생성
+    //실제로는 칼만필터 적용한 위치값으로
+    void testLatLng() {
+        //-,+ 위->아래
+        //+,- 아래->위
+        //+,+ 왼쪽->오른쪽
+        //-,- 오른쪽->왼쪽
+
+//        if (testNum < 50) {
+//            BeaconAdapter.thisMarker.setPosition(new LatLng(BeaconAdapter.thisMarker.getPosition().latitude + 0.0000011729902506, BeaconAdapter.thisMarker.getPosition().longitude + 0.0000042220403728));
+//        }
+//        testNum++;
+
+
+        //35.89666866704047, 128.62027197619136 //출발지
+        //35.896758278816, 128.62047268466 //220호
+        //35.896752650043,128.62071220482 //305호
+//        System.out.println("22222222222222난데스까???????????");
+//        if (GlobalVar.mode == 1) {
+//            //출발지에서 220호
+//            if (GlobalVar.testNum < 50) {
+//                GlobalVar.thisPoint = new LatLng(GlobalVar.thisPoint.latitude + 0.0000011729902506, GlobalVar.thisPoint.longitude + 0.0000042220403728); //아래에서 위
+//
+//            } else if (GlobalVar.testNum < 60) {
+//                GlobalVar.thisPoint = new LatLng(GlobalVar.thisPoint.latitude + 0.0000030962263, GlobalVar.thisPoint.longitude - 0.000001039355); //아래에서 위
+//            }
+//
+//        } else if (GlobalVar.mode == 2) {
+//            //220호에서 305호
+//            if (GlobalVar.testNum < 10) {
+//                GlobalVar.thisPoint = new LatLng(GlobalVar.thisPoint.latitude - 0.0000030962263, GlobalVar.thisPoint.longitude + 0.000001039355);
+//            } else if (GlobalVar.testNum < 30) {
+//                GlobalVar.thisPoint = new LatLng(GlobalVar.thisPoint.latitude + 0.00000061109735, GlobalVar.thisPoint.longitude + 0.000002883375);
+//            } else if (GlobalVar.testNum < 50) {
+//                GlobalVar.thisPoint = new LatLng(GlobalVar.thisPoint.latitude - 0.0000040332444, GlobalVar.thisPoint.longitude + 0.0000010728835);
+//            }
+//        }
+//        GlobalVar.testNum++;
+
+
+        //다시 올바른 길로 갈 때
+//            thisPoint = new LatLng(35.8967921072645, 128.6212324187639);
+//            testNum = 0;
+    }
+
+
     // cameraPosition 업데이트
     void setCameraPosition() {
         new Thread(new Runnable() {
@@ -366,8 +626,11 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void run() {
 //                        zoomLevel = BeaconAdapter.mMap.getCameraPosition().zoom;
-                        camPosition = new CameraPosition.Builder(camPosition).zoom(25).target(BeaconList.getLatLng()).bearing(getBearing(flowNodeList.get(getNearDist()).getLatLng(), flowNodeList.get(getNearDist() + 1).getLatLng())).build();
-                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+//                        camPosition = new CameraPosition.Builder(camPosition).zoom(25).target(BeaconList.getLatLng()).bearing(getBearing(flowNodeList.get(getNearDist()).getLatLng(), flowNodeList.get(getNearDist() + 1).getLatLng())).build();
+//                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+
+                        camPosition = new CameraPosition.Builder(camPosition).zoom(25).target(BeaconAdapter.thisMarker.getPosition()).bearing(getBearing(flowNodeList.get(getNearDist()).getLatLng(), flowNodeList.get(getNearDist() + 1).getLatLng())).build();
+                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition)); //test
 
                     }
                 });
@@ -386,10 +649,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
 
 
-        //2. 구글맵 오버레이
-        mapOverlay(); // 본관 좌표를 기준으로 구글맵에 도면 오버레이
-
-
         //3. 현위치 계산
         //3.1 전체 비콘 정보를 받아옴
         getAllBeacon();
@@ -397,6 +656,13 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         initView(BeaconList, mMap); //어댑터 생성
         initManager(); //싱글톤 패턴
         initListener(); //비콘의 신호 수신
+
+        //2. 구글맵 오버레이
+        // 본관 좌표를 기준으로 구글맵에 도면 오버레이
+
+
+        //현위치 계산
+        //현재 층에 따른 구글맵 오버레이
 
 
     } //onMapReady()
@@ -408,7 +674,8 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //distToLines 배열에 현위치과 길의 거리를 저장
         for (int i = 0; i < flowNodeList.size() - 1; i++) {
-            distToLines[i][0] = distanceToLine(BeaconList.getLatLng(), flowNodeList.get(i).getLatLng(), flowNodeList.get(i + 1).getLatLng());
+//            distToLines[i][0] = distanceToLine(BeaconList.getLatLng(), flowNodeList.get(i).getLatLng(), flowNodeList.get(i + 1).getLatLng());
+            distToLines[i][0] = distanceToLine(BeaconAdapter.thisMarker.getPosition(), flowNodeList.get(i).getLatLng(), flowNodeList.get(i + 1).getLatLng()); //test
             distToLines[i][1] = i; //몇번째 동선
         }
 
@@ -457,7 +724,8 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startPoly.endCap(new RoundCap());
                 startPoly.width(15f);
                 startPoly.pattern(pattern);
-                startPoly.add(BeaconList.getLatLng());
+//                startPoly.add(BeaconList.getLatLng());
+                startPoly.add(BeaconAdapter.thisMarker.getPosition()); //test
                 startPoly.add(flowNodeList.get(0).getLatLng());
                 mMap.addPolyline(startPoly);
                 polyStart_This = false;
@@ -467,12 +735,12 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     polyOpt.add(flowNodeList.get(i).getLatLng());
 
                     if (i == 0) {
-                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
-                        startMarkerCheck = true;
+//                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+//                        startMarkerCheck = true;
                     }
                     if (i == flowNodeList.size() - 1) {
-                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
-                        endMarkerCheck = true;
+//                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+//                        endMarkerCheck = true;
                     }
                 }
             }
@@ -505,13 +773,13 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     void mapOverlay() {
 
-        switch (1) {
-            case 1:
+        switch (BeaconList.getFloor()) {
+            case "1":
                 groundOverlayOptions = groundOverlayOptions.image(BitmapDescriptorFactory.fromResource(R.drawable.map_2th_floor))
                         .positionFromBounds(new LatLngBounds(new LatLng(35.89651393057683, 128.6201298818298), new LatLng(35.89707923321034, 128.62176975983763)));
                 binding.floorSelector.check(binding.select2floor.getId());
                 break;
-            case 2:
+            case "2":
                 groundOverlayOptions = groundOverlayOptions.image(BitmapDescriptorFactory.fromResource(R.drawable.map_3th_floor))
                         .positionFromBounds(new LatLngBounds(new LatLng(35.89651393057683, 128.6201298818298), new LatLng(35.89707923321034, 128.62176975983763)));
                 binding.floorSelector.check(binding.select3floor.getId());
@@ -608,11 +876,12 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                         } else {
                             mAdapter.setItems(minewBeacons);
                             if (!first) {
-                                if (BeaconList.getLat() != 0.0) {
+                                if (BeaconList.getWGS_K_lat() != 0.0) {
                                     first = true;
+                                    mapOverlay();
                                     getAllFlow();
-                                    binding.lat.setText(BeaconList.getLat() + "");
-                                    binding.lng.setText(BeaconList.getLng() + "");
+                                    binding.lat.setText(BeaconList.getWGS_K_lat() + "");
+                                    binding.lng.setText(BeaconList.getWGS_K_lng() + "");
                                 }
                             }
                         }
@@ -641,24 +910,36 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public void getAllBeacon() {
+        BeaconList  = new BeaconList();
         //  2) 서버로부터 받은 비콘 정보를 비콘 리스트에 추가
-        BeaconList = new BeaconList();
-        BeaconList.add(new BeaconData("2", "15001", 35.896671, 128.620354));
-        BeaconList.add(new BeaconData("2", "15002", 35.896712, 128.620442));
-        BeaconList.add(new BeaconData("2", "15003", 35.896716, 128.620517));
-        BeaconList.add(new BeaconData("3", "15004", 35.896671, 128.620354));
-        BeaconList.add(new BeaconData("3", "15005", 35.896712, 128.620442));
-        BeaconList.add(new BeaconData("3", "15006", 35.896716, 128.620517));
-        BeaconList.add(new BeaconData("2 ", "15007", 35.896662, 128.620551));
-        BeaconList.add(new BeaconData("3", "15008", 35.896664, 128.620210));
-        BeaconList.add(new BeaconData("3", "15009", 35.896664, 128.620210));
-        BeaconList.add(new BeaconData("3", "15010", 35.896664, 128.620210));
-        BeaconList.add(new BeaconData("3", "15011", 35.896664, 128.620210));
-        BeaconList.add(new BeaconData("3", "15012", 35.896664, 128.620210));
-        BeaconList.add(new BeaconData("1", "15013", 35.896585, 128.620223));
-        BeaconList.add(new BeaconData("1", "15014", 35.896601, 128.620292));
-        BeaconList.add(new BeaconData("1", "15015", 35.896664, 128.620210));
-        BeaconList.add(new BeaconData("2", "15016", 35.896820, 128.620400));
+        // 1층 왼쪽
+        BeaconList.add(new BeaconData("2","1", "15001", 35.896671, 128.620354));
+        BeaconList.add(new BeaconData("2","1", "15002", 35.896698, 128.620431));
+        BeaconList.add(new BeaconData("2","1", "15003", 35.896716, 128.620517));
+
+        // 1~2 계단
+        BeaconList.add(new BeaconData("2","2", "15016", 35.896662, 128.620551));
+
+        // 2층 왼쪽
+        BeaconList.add(new BeaconData("2","2", "15004", 35.896671, 128.620354));
+        BeaconList.add(new BeaconData("2","2", "15005", 35.896698, 128.620431));
+        BeaconList.add(new BeaconData("2","2", "15006", 35.896716, 128.620517));
+
+        // 2층 오른쪽
+        BeaconList.add(new BeaconData("2","2", "15008", 35.896738, 128.620571));
+        BeaconList.add(new BeaconData("2","2", "15009", 35.896748, 128.620621));
+
+        // 2층 방
+        BeaconList.add(new BeaconData("3","2", "15010", 35.896786, 128.620605));
+        BeaconList.add(new BeaconData("3","2", "15011", 35.896814, 128.620574));
+        BeaconList.add(new BeaconData("3","2", "15012", 35.896825, 128.620606));
+
+        // 1층 방
+        BeaconList.add(new BeaconData("3","1", "15013", 35.896585, 128.620223));
+        BeaconList.add(new BeaconData("3","1", "15014", 35.896605, 128.620289));
+        BeaconList.add(new BeaconData("3","1", "15015", 35.896664, 128.620210));
+
+        // 1층 복도 추가 비콘
     } //getAllBeacon()
 
     @Override
@@ -786,9 +1067,12 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("lat", BeaconList.getLat() + "");
-                params.put("lng", BeaconList.getLng() + "");
-                params.put("major", BeaconList.getFloor() + ""); //층번호
+                params.put("lat", BeaconList.getWGS_K_lat() + "");
+                params.put("lng", BeaconList.getWGS_K_lng() + "");
+//                System.out.println("비교 - getAllFlow mode : " + GlobalVar.mode);
+//                System.out.println("비교 - 출발지 lat : " + BeaconList.getLat());
+//                System.out.println("비교 - 출발지 lng : " + BeaconList.getLng());
+                params.put("major", BeaconList.getFloor()); //층번호
                 return params;
             }
 
@@ -881,8 +1165,8 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 if (n == 0) {
-                    params.put("lat", BeaconList.getLat() + "");
-                    params.put("lng", BeaconList.getLng() + "");
+                    params.put("lat", BeaconList.getWGS_K_lat() + "");
+                    params.put("lng", BeaconList.getWGS_K_lng() + "");
                     params.put("major", BeaconList.getFloor() + "");
                     params.put("end_room_node", endRoomNode);
                 } else {
@@ -997,6 +1281,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        naviStartCheck = false;
         mMinewBeaconManager.stopScan();
         flag = false;
     } //onDestroy()
