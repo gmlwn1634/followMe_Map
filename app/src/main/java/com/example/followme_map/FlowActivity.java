@@ -910,36 +910,68 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public void getAllBeacon() {
-        BeaconList  = new BeaconList();
+        BeaconList = new BeaconList();
         //  2) 서버로부터 받은 비콘 정보를 비콘 리스트에 추가
         // 1층 왼쪽
-        BeaconList.add(new BeaconData("2","1", "15001", 35.896671, 128.620354));
-        BeaconList.add(new BeaconData("2","1", "15002", 35.896698, 128.620431));
-        BeaconList.add(new BeaconData("2","1", "15003", 35.896716, 128.620517));
 
-        // 1~2 계단
-        BeaconList.add(new BeaconData("2","2", "15016", 35.896662, 128.620551));
+        String url = GlobalVar.URL + GlobalVar.URL_BEACON_LIST;
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
+                    @Override
+                    public void onResponse(String response) {
+                        try {
 
-        // 2층 왼쪽
-        BeaconList.add(new BeaconData("2","2", "15004", 35.896671, 128.620354));
-        BeaconList.add(new BeaconData("2","2", "15005", 35.896698, 128.620431));
-        BeaconList.add(new BeaconData("2","2", "15006", 35.896716, 128.620517));
+                            JSONObject jsonResponse = new JSONObject(response);
 
-        // 2층 오른쪽
-        BeaconList.add(new BeaconData("2","2", "15008", 35.896738, 128.620571));
-        BeaconList.add(new BeaconData("2","2", "15009", 35.896748, 128.620621));
+                            JSONArray beaconList = jsonResponse.getJSONArray("beacon_list");
 
-        // 2층 방
-        BeaconList.add(new BeaconData("3","2", "15010", 35.896786, 128.620605));
-        BeaconList.add(new BeaconData("3","2", "15011", 35.896814, 128.620574));
-        BeaconList.add(new BeaconData("3","2", "15012", 35.896825, 128.620606));
+                            for (int i = 0; i < beaconList.length(); i++) {
+                                JSONObject beacon = beaconList.getJSONObject(i);
+                                String group = String.valueOf(beacon.getInt("group"));
+                                String major = String.valueOf(beacon.getInt("major"));
+                                String minor = String.valueOf(beacon.getInt("beacon_id_minor"));
+                                double lat = beacon.getDouble("lat");
+                                double lng = beacon.getDouble("lng");
+                                BeaconList.add(new BeaconData(group, major, minor, lat, lng));
 
-        // 1층 방
-        BeaconList.add(new BeaconData("3","1", "15013", 35.896585, 128.620223));
-        BeaconList.add(new BeaconData("3","1", "15014", 35.896605, 128.620289));
-        BeaconList.add(new BeaconData("3","1", "15015", 35.896664, 128.620210));
+                            }
 
-        // 1층 복도 추가 비콘
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "비콘 정보 요청 실패" + e.getMessage());
+                            Toast.makeText(getApplicationContext(), "등록된 비콘이 없습니다.", Toast.LENGTH_SHORT).show();
+                            finish();
+
+                        }
+                    }
+                },
+                new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
+                    @Override
+                    public void onErrorResponse(VolleyError e) {
+                        e.printStackTrace();
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "비콘 정보 요청 실패" + e.getMessage());
+                        Toast.makeText(getApplicationContext(), "등록된 비콘이 없습니다.", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", "Bearer " + LoginActivity.patientToken);
+                return headers;
+            }
+
+        };
+
+
+        request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
+        AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
+        AppHelper.requestQueue.add(request);
+
+
     } //getAllBeacon()
 
     @Override

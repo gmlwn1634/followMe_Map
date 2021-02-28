@@ -47,6 +47,7 @@ public class GlobalVar extends Application {
     public static final String URL_STANDBY_NUMBER = "/api/patient/standby_number";
     public static final String URL_GET_NODE_BEACON = "/api/patient/app_node_beacon_get";
     public static final String URL_ROOM_LIST = "/api/patient/navigation_room_list";
+    public static final String URL_BEACON_LIST = "/api/patient/beacon_list ";
 
 
 //    public static int mode = 1; //몇번째 동선
