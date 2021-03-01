@@ -876,10 +876,10 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
 
-            mMap.addMarker(new MarkerOptions()
-                    .position(flowNodeList.get(i).getLatLng())
-                    .draggable(true))
-                    .setTitle(flowNodeList.get(i).getIndex() + "," + flowNodeList.get(i).getFloor());
+//            mMap.addMarker(new MarkerOptions()
+//                    .position(flowNodeList.get(i).getLatLng())
+//                    .draggable(true))
+//                    .setTitle(flowNodeList.get(i).getIndex() + "," + flowNodeList.get(i).getFloor());
 
         }
 
