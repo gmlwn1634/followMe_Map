@@ -58,6 +58,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -104,6 +105,8 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final LatLng schoolPoint = new LatLng(35.89679977286669, 128.62092742557013);
     private GroundOverlay groundOverlay;
     private GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
+    private boolean overlayCheck = false;
+
 
     //recyclerView Value-------------
     RecyclerView.LayoutManager mLayoutManager;
@@ -135,6 +138,9 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     //test 현위치
     int testNum = 0;
 
+    FlowNode nearNode;
+
+    public static boolean recivedBeacon = true;
     public static String selectedFloor;
 
 
@@ -170,6 +176,10 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 drawPolyline();
+                if (overlayCheck) {
+                    groundOverlay.remove();
+                    overlayCheck = false;
+                }
                 if (binding.floorSelector.getCheckedRadioButtonId() == binding.select2floor.getId()) {
                     groundOverlayOptions = groundOverlayOptions.image(BitmapDescriptorFactory.fromResource(R.drawable.map_2th_floor));
                     selectedFloor = "1";
@@ -177,8 +187,8 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     groundOverlayOptions = groundOverlayOptions.image(BitmapDescriptorFactory.fromResource(R.drawable.map_3th_floor));
                     selectedFloor = "2";
                 }
-
                 groundOverlay = mMap.addGroundOverlay(groundOverlayOptions);
+                overlayCheck = true;
             }
         });
 
@@ -274,38 +284,64 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     } //getDistance()
 
     //현 위치에서 가장 가까운 노드 찾기
-    FlowNode getNearNode() {
-
-        FlowNode nearFlowNode = null;
-
-        double[][] distArr = new double[flowNodeList.size()][2];
-
-        //현재 층의 노드 중 현위치와 가장 가까운 노드 계산
-        for (int i = 0; i < flowNodeList.size(); i++) {
-            final double R = 6372.8 * 1000;
-
-            //같은 층의 노드인지 판단
-            if (flowNodeList.get(i).getFloor() == Integer.parseInt(BeaconList.getFloor())) {
-//                double a = getDistance(BeaconList.getLatLng(), flowNodeList.get(i).getLatLng());
-                double a = getDistance(BeaconAdapter.thisMarker.getPosition(), flowNodeList.get(i).getLatLng()); //test
-                double c = 2 * Math.asin(a);
-                double dist = R * c;
-                distArr[i][0] = dist; //거리
-                distArr[i][1] = i; //인덱스
-            }
-        }
-
-        Arrays.sort(distArr, new Comparator<double[]>() {
-            public int compare(double[] o1, double[] o2) {
-                return Double.compare(o1[0], o2[0]);
-            }
-        });
-        //가장 가까운 노드 저장
-
-        nearFlowNode = flowNodeList.get((int) distArr[0][1]);
-
-        return nearFlowNode;
-    } //getNearNode()
+//    FlowNode getNearNode() {
+//
+//        FlowNode nearFlowNode = null;
+//        int size = 0;
+//
+//        for (int i = 0; i < flowNodeList.size(); i++) {
+//            if (flowNodeList.get(i).getFloor() == Integer.parseInt(BeaconList.getFloor())) {
+//                size++;
+//            }
+//        }
+//        System.out.println("ㅓㅓㅓㅓㅓㅓ size" + size);
+//        double[][] distArr = new double[size][2];
+//
+//        //현재 층의 노드 중 현위치와 가장 가까운 노드 계산
+//        for (int i = 0; i < flowNodeList.size(); i++) {
+//            final double R = 6372.8 * 1000;
+//            //같은 층의 노드인지 판단
+//            if (flowNodeList.get(i).getFloor() == Integer.parseInt(BeaconList.getFloor())) {
+//                double a = getDistance(BeaconList.getWGS_K_LatLng(), flowNodeList.get(i).getLatLng());
+////                double a = getDistance(BeaconAdapter.thisMarker.getPosition(), flowNodeList.get(i).getLatLng()); //test
+//                double c = 2 * Math.asin(a);
+//                double dist = R * c;
+//                distArr[i][0] = dist; //거리
+//                distArr[i][1] = i; //인덱스
+//            }
+//        }
+//
+//        for (int i = 0; i < distArr.length; i++) {
+//            System.out.println("ㅓㅓㅓㅓㅓㅓ 정렬 전index" + i + "dist:" + distArr[i][0] + " index " + distArr[i][1]);
+//        }
+//
+////        double[][] min = new double[1][2];
+////        min[0][0] = distArr[0][0];
+////        min[0][1] = distArr[0][1];
+////        for (int i = 1; i < distArr.length; i++) {
+////            if (distArr[i][0] < min[0][0]) {
+////                min[0][0] = distArr[i][0];
+////                min[0][1] = distArr[i][1];
+////            }
+////        }
+//
+//        Arrays.sort(distArr, new Comparator<double[]>() {
+//            public int compare(double[] o1, double[] o2) {
+//                return Double.compare(o1[0], o2[0]);
+//            }
+//        });
+//
+//        //가장 가까운 노드 저장
+//
+//        nearFlowNode = flowNodeList.get((int) distArr[0][1]);
+//        for (int i = 0; i < distArr.length; i++) {
+//            System.out.println("ㅓㅓㅓㅓㅓㅓ index" + i + "dist:" + distArr[i][0] + " index " + distArr[i][1]);
+//        }
+//        System.out.println("ㅓㅓㅓㅓㅓㅓㅓㅓ 디버깅: 가까운 노드" + nearFlowNode.getIndex());
+//        System.out.println("ㅓㅓㅓㅓㅓㅓㅓㅓㅓ 현위치" + BeaconList.getWGS_K_LatLng());
+//
+//        return nearFlowNode;
+//    } //getNearNode()
 
     //경로이탈 감지
     void checkOffLoad() {
@@ -317,8 +353,10 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void run() {
                         //경로 이탈 - 현위치와 현위치에서 가장 가까운 노드
 //                        if (getDistanceMeter(BeaconList.getLatLng(), getNearNode().getLatLng()) >= 14) {
-                        if (getDistanceMeter(BeaconAdapter.thisMarker.getPosition(), getNearNode().getLatLng()) >= 14) { //test
+                        if (getDistanceMeter(BeaconAdapter.thisMarker.getPosition(), nearNode.getLatLng()) >= 14) { //test
                             Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "이탈이탈");
+//                            System.out.println("디버깅 이탈: 현위치" + BeaconAdapter.thisMarker.getPosition());
+//                            System.out.println("디버깅 이탈: 가까운 노드" + getNearNode().getIndex() + " 좌표 : " + getNearNode().getLatLng());
                             binding.navigation.setVisibility(View.INVISIBLE);
                             flag = false;
                             mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.off_road_sound);
@@ -329,15 +367,92 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                             CustomDialog customDialog = new CustomDialog(FlowActivity.this, new CustomDialogClickListener() {
                                 @Override
                                 public void onPositiveClick() {
-                                    flag = true;
                                     getNFlowNode(0);//경로 재탐색
-
+                                    flag = true;
                                 }
                             }, "경로에서 벗어났습니다.", "현재 위치를 재탐색합니다.");
                             customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
                             customDialog.setCancelable(false);
                             customDialog.show();
                         }
+                    }
+                });
+            }
+        }).start();
+    }
+
+    void naviStart() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+
+                    try {
+                        if (flag) {
+                            setCameraPosition(); //지도 방향
+                            checkFloor(); //층 바뀌면 도면 전환
+                            checkNearNode(); //가장 가까운 노드 확인
+                            checkOffLoad(); //경로이탈 감지
+                            changeTurn(); // 방향회전 안내
+                            Thread.sleep(100);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    } //naviStart()
+
+    void checkNearNode() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+
+                        ArrayList<FlowNode> nodeList = new ArrayList<FlowNode>();
+
+
+                        //현재 층의 노드 중 현위치와 가장 가까운 노드 계산
+                        for (int i = 0; i < flowNodeList.size(); i++) {
+                            final double R = 6372.8 * 1000;
+                            //같은 층의 노드인지 판단
+                            if (flowNodeList.get(i).getFloor() == Integer.parseInt(BeaconList.getFloor())) {
+                                double a = getDistance(BeaconList.getWGS_K_LatLng(), flowNodeList.get(i).getLatLng());
+                                double c = 2 * Math.asin(a);
+                                double dist = R * c;
+                                FlowNode fn = new FlowNode();
+                                fn.setFloor(flowNodeList.get(i).getFloor());
+                                fn.setLatLng(flowNodeList.get(i).getLatLng());
+                                fn.setDist(dist);
+                                fn.setIndex(i);
+
+                                nodeList.add(fn);
+                            }
+                        }
+
+
+                        Iterator<FlowNode> it = nodeList.iterator();
+                        FlowNode e = it.next();//hasNext를 해서 다음요소가 있는지 확인해야지만, it.next해서 그 요소를 불러올 수가 있다.
+                        nearNode = e;  //가장가까운노드
+                        System.out.println("맨 처음 가장 가까운 노드:" + nearNode.getIndex() + "," + nearNode.getDist());
+                        for (int i = 0; i < nodeList.size(); i++) {
+                            if (it.hasNext()) {//pc(프로그램카운터가 이동하여, 다음 요소가 있는지 확인)
+                                if (e.getDist() < nearNode.getDist()) {
+                                    nearNode = e;
+                                    System.out.println("갱신 가장 가까운 노드:" + nearNode.getIndex() + "," + nearNode.getDist());
+//                                    System.out.println("갱신 가장 가까운 노드:" + nearNode.getIndex());
+                                }
+                                e = it.next();//hasNext를 해서 다음요소가 있는지 확인해야지만, it.next해서 그 요소를 불러올 수가 있다.
+                            }
+                        }
+
+                        System.out.println("마지막 가장 가까운 노드:" + nearNode.getIndex() + "," + nearNode.getDist());
+
+
                     }
                 });
             }
@@ -352,54 +467,22 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //가장 가까운 비콘이 계단이고 1m 차이일 때 그림 바꿈
-                        if (getNearNode().getStairCheck() == 1) {
-                            if (getDistanceMeter(BeaconList.getWGS_K_LatLng(), getNearNode().getLatLng()) <= 1) {
-                                if (BeaconList.getFloor() == "1") {
-                                    if (getDistanceMeter(BeaconList.getWGS_K_LatLng(), getNearNode().getLatLng()) <= 1) {
-                                        binding.floorSelector.check(binding.select2floor.getId());
-                                    }
-                                } else if (BeaconList.getFloor() == "2") {
-                                    if (getDistanceMeter(BeaconList.getWGS_K_LatLng(), getNearNode().getLatLng()) <= 1) {
-                                        binding.floorSelector.check(binding.select3floor.getId());
-                                    }
-                                }
-                            }
-                        }
-
+                        //현재 층에 따른 도면 바꾸기
+                        if (BeaconList.getFloor().equals("1"))
+                            binding.floorSelector.check(binding.select2floor.getId());
+                        else if (BeaconList.getFloor().equals("2"))
+                            binding.floorSelector.check(binding.select3floor.getId());
                     }
                 });
             }
         }).start();
     }
 
-
-    void naviStart() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-
-                    try {
-                        if (flag) {
-                            setCameraPosition(); //지도 방향
-                            checkFloor(); //층 바뀌면 도면 전환
-                            checkOffLoad(); //경로이탈 감지
-                            changeTurn(); // 방향회전 안내
-                            Thread.sleep(100);
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
-    } //naviStart()
-
-
     void arrived() {
 
         // 도착안내
+        recivedBeacon = false;
+        mMinewBeaconManager.stopScan();
         mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.arrival_sound);
         mediaPlayer.start();
         binding.turn.setText("목적지 도착");
@@ -486,53 +569,48 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void run() {
 
 
-                        LatLng nodeA = getNearNode().getLatLng();
-                        if ((getNearNode().getIndex() + 1) >= flowNodeList.size()) {
+                        LatLng nodeA = nearNode.getLatLng();
+                        if ((nearNode.getIndex() + 1) >= flowNodeList.size()) {
+                            System.out.println("!!!!!도착 현노드 다음노드가 flowNodeList초과");
                             flag = false;
-                            //도착
-                            arrived();
+                            arrived();//도착
+                        } else if ((nearNode.getIndex() + 3) >= flowNodeList.size()) {
                             return;
-
-                        } else {
-                            if ((getNearNode().getIndex() + 2) >= flowNodeList.size())
-                                return;
+                        } else if ((nearNode.getIndex() + 4) >= flowNodeList.size()) {
+                            return;
                         }
+                        LatLng nodeB = flowNodeList.get(nearNode.getIndex() + 3).getLatLng();
+                        LatLng nodeC = flowNodeList.get(nearNode.getIndex() + 4).getLatLng();
 
-
-                        LatLng nodeB = flowNodeList.get(getNearNode().getIndex() + 1).getLatLng();
-                        LatLng nodeC = flowNodeList.get(getNearNode().getIndex() + 2).getLatLng();
-
-//                        double dist = getDistanceMeter(BeaconList.getLatLng(), nodeB);
-                        double dist = getDistanceMeter(BeaconAdapter.thisMarker.getPosition(), nodeB); //test
-                        dist = Math.round(dist * 1000) / 1000.0;
-
-
-                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "nodeA : " + getNearNode().getIndex());
-                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "nodeB : " + flowNodeList.get(getNearNode().getIndex() + 2).getIndex());
-                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "nodeC : " + flowNodeList.get(getNearNode().getIndex() + 3).getIndex());
+//                        double dist = getDistanceMeter(BeaconAdapter.thisMarker.getPosition(), nodeB); //test
+//                        dist = Math.round(dist * 1000) / 1000.0;
 
                         //좌우판단
-                        if (dist < 4) {
+//                        if (dist < 4) {
 //                            binding.distance.setText(dist + "m 남음");
-                            switch (ccw(nodeA, nodeB, nodeC)) {
+                        switch (ccw(nodeA, nodeB, nodeC)) {
 
-                                //이미지 변경
-                                case 1:
-                                    binding.navigation.setVisibility(View.VISIBLE);
-                                    binding.turn.setText("좌회전");
-                                    binding.turnImg.setImageResource(R.drawable.turn_left);
-                                    break;
-                                case -1:
-                                    binding.navigation.setVisibility(View.VISIBLE);
-                                    binding.turn.setText("우회전");
-                                    binding.turnImg.setImageResource(R.drawable.turn_right);
-                                    break;
-                                case 0:
-                                    binding.navigation.setVisibility(View.INVISIBLE);
-                                    break;
-                            }
+                            //이미지 변경
+                            case 1:
+                                System.out.println("!!!! case 1 : 좌회전");
+
+                                binding.navigation.setVisibility(View.VISIBLE);
+                                binding.turn.setText("좌회전");
+                                binding.turnImg.setImageResource(R.drawable.turn_left);
+                                break;
+                            case -1:
+                                System.out.println("!!!! case -1 : 우회전");
+                                binding.navigation.setVisibility(View.VISIBLE);
+                                binding.turn.setText("우회전");
+                                binding.turnImg.setImageResource(R.drawable.turn_right);
+                                break;
+                            case 0:
+                                System.out.println("!!!! case 0 : 직진");
+                                binding.navigation.setVisibility(View.INVISIBLE);
+                                break;
                         }
-                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "남은 거리 : " + dist);
+//                        }
+//                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "남은 거리 : " + dist);
 
 
                     }
@@ -552,15 +630,26 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         double x3 = nodeC.latitude;
         double y3 = nodeC.longitude;
 
+        System.out.println("!!!! nodeA : " + nearNode.getIndex() + "," + nearNode.getFloor() + "층");
+        System.out.println("!!!! nodeB : " + flowNodeList.get(nearNode.getIndex() + 3).getIndex() + "," + flowNodeList.get(nearNode.getIndex() + 3).getFloor() + "층");
+        System.out.println("!!!! nodeC : " + flowNodeList.get(nearNode.getIndex() + 4).getIndex() + "," + flowNodeList.get(nearNode.getIndex() + 4).getFloor() + "층");
+
+
+        if (nearNode.getFloor() != flowNodeList.get(nearNode.getIndex() + 3).getFloor()) {
+            return 0; //직진
+        } else if(nearNode.getFloor() != flowNodeList.get(nearNode.getIndex() + 4).getFloor()){
+            return 0; //직진
+        }
+
         double temp1 = (y2 - y1) * (x3 - x1) + y1 * (x2 - x1);
         double temp2 = (x2 - x1) * y3;
 
         double angle = getAngle(nodeA, nodeB, nodeC);
 
 
-        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "angle : " + angle);
-        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "temp1 : " + temp1);
-        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "temp2 : " + temp2);
+        System.out.println("!!!!! angle : " + angle);
+        System.out.println("!!!!! temp1 : " + temp1);
+        System.out.println("!!!!! temp2 : " + temp2);
 
         if (temp1 < temp2) {
             if (angle <= 18) {
@@ -659,6 +748,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         camPosition = new CameraPosition.Builder(camPosition).zoom(25).target(BeaconAdapter.thisMarker.getPosition()).bearing(getBearing(flowNodeList.get(getNearDist()).getLatLng(), flowNodeList.get(getNearDist() + 1).getLatLng())).build();
                         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition)); //test
+
 
                     }
                 });
@@ -763,12 +853,12 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     polyOpt.add(flowNodeList.get(i).getLatLng());
 
                     if (i == 0) {
-//                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
-//                        startMarkerCheck = true;
+                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+                        startMarkerCheck = true;
                     }
                     if (i == flowNodeList.size() - 1) {
-//                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
-//                        endMarkerCheck = true;
+                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+                        endMarkerCheck = true;
                     }
                 }
             }
@@ -786,10 +876,10 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
 
-//            mMap.addMarker(new MarkerOptions()
-//                    .position(flowNodeList.get(i).getLatLng())
-//                    .draggable(true))
-//                    .setTitle(flowNodeList.get(i).getLatLng().toString());
+            mMap.addMarker(new MarkerOptions()
+                    .position(flowNodeList.get(i).getLatLng())
+                    .draggable(true))
+                    .setTitle(flowNodeList.get(i).getIndex() + "," + flowNodeList.get(i).getFloor());
 
         }
 
@@ -800,6 +890,11 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     } //drawPolyline()
 
     void mapOverlay() {
+
+        if (overlayCheck) {
+            groundOverlay.remove();
+            overlayCheck = false;
+        }
 
         switch (BeaconList.getFloor()) {
             case "1":
@@ -815,7 +910,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         groundOverlay = mMap.addGroundOverlay(groundOverlayOptions);
-
+        overlayCheck = true;
 
     } //mapOverlay()
 
@@ -902,16 +997,22 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Log.e("tag", state + "");
                         if (state == 1 || state == 2) {
                         } else {
-                            mAdapter.setItems(minewBeacons);
-                            if (!first) {
-                                if (BeaconList.getWGS_K_lat() != 0.0) {
-                                    first = true;
-                                    mapOverlay();
-                                    getAllFlow();
-                                    binding.lat.setText(BeaconList.getWGS_K_lat() + "");
-                                    binding.lng.setText(BeaconList.getWGS_K_lng() + "");
+                            if (recivedBeacon) {
+                                mAdapter.setItems(minewBeacons);
+                                System.out.println("현위치 : " + BeaconList.getWGS_K_lat() + "," + BeaconList.getWGS_K_lng());
+                                if (!first) {
+                                    if (BeaconList.getWGS_K_lat() != 0.0) {
+                                        first = true;
+                                        mapOverlay();
+                                        getAllFlow();
+
+                                        binding.lat.setText(BeaconList.getWGS_K_lat() + "");
+                                        binding.lng.setText(BeaconList.getWGS_K_lng() + "");
+
+                                    }
                                 }
                             }
+
                         }
                     }
                 });
@@ -942,6 +1043,33 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         //  2) 서버로부터 받은 비콘 정보를 비콘 리스트에 추가
         // 1층 왼쪽
 
+//        BeaconList.add(new BeaconData("2","1", "15001", 35.896671, 128.620354));
+//        BeaconList.add(new BeaconData("2","1", "15002", 35.896698, 128.620431));
+//        BeaconList.add(new BeaconData("2","1", "15003", 35.896716, 128.620517));
+//
+//        // 1~2 계단
+//        BeaconList.add(new BeaconData("2","2", "15016", 35.896662, 128.620551));
+//
+//        // 2층 왼쪽
+//        BeaconList.add(new BeaconData("2","2", "15004", 35.896671, 128.620354));
+//        BeaconList.add(new BeaconData("2","2", "15005", 35.896698, 128.620431));
+//        BeaconList.add(new BeaconData("2","2", "15006", 35.896716, 128.620517));
+//
+//        // 2층 오른쪽
+//        BeaconList.add(new BeaconData("2","2", "15008", 35.896738, 128.620571));
+//        BeaconList.add(new BeaconData("2","2", "15009", 35.896748, 128.620621));
+//
+//        // 2층 방
+//        BeaconList.add(new BeaconData("3","2", "15010", 35.896786, 128.620605));
+//        BeaconList.add(new BeaconData("3","2", "15011", 35.896814, 128.620574));
+//        BeaconList.add(new BeaconData("3","2", "15012", 35.896825, 128.620606));
+//
+//        // 1층 방
+//        BeaconList.add(new BeaconData("3","1", "15013", 35.896585, 128.620223));
+//        BeaconList.add(new BeaconData("3","1", "15014", 35.896605, 128.620289));
+//        BeaconList.add(new BeaconData("3","1", "15015", 35.896664, 128.620210));
+
+
         String url = GlobalVar.URL + GlobalVar.URL_BEACON_LIST;
         StringRequest request = new StringRequest(
                 Request.Method.GET,
@@ -957,11 +1085,18 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             for (int i = 0; i < beaconList.length(); i++) {
                                 JSONObject beacon = beaconList.getJSONObject(i);
+//                                System.out.println("천은이가 보내는 minor_string:" + beacon.toString());
                                 String group = String.valueOf(beacon.getInt("group"));
                                 String major = String.valueOf(beacon.getInt("major"));
                                 String minor = String.valueOf(beacon.getInt("beacon_id_minor"));
+//                                System.out.println("천은이가 보내는 minor_string:" + minor);
+//                                System.out.println("천은이가 보내는 minor_int:" + beacon.getInt("beacon_id_minor"));
                                 double lat = beacon.getDouble("lat");
+
                                 double lng = beacon.getDouble("lng");
+//                                System.out.println("천은이가 보내는 minor_string:" + minor);
+                                System.out.println("천은이가 보내는  좦쇼:" + minor + ", " + lat + ", " + lng);
+
                                 BeaconList.add(new BeaconData(group, major, minor, lat, lng));
 
                             }
@@ -998,6 +1133,8 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
         AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
         AppHelper.requestQueue.add(request);
+
+//        BeaconList.getList();
 
 
     } //getAllBeacon()
@@ -1344,6 +1481,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         naviStartCheck = false;
         mMinewBeaconManager.stopScan();
         flag = false;
+
     } //onDestroy()
 
     @Override

@@ -290,6 +290,10 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
+
+
+
                         if (overlayMap == getThisFloor()) {
                             if (thisMarkerCheck)
                                 thisMarker.remove();

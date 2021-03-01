@@ -8,6 +8,7 @@ public class FlowNode {
     private LatLng latLng;
     private int stairCheck;
     private int index;
+    private double dist;
 
     //test용
 //    public Node(int id, int floor, double lat, double lng, int stairCheck, int index) {
@@ -18,6 +19,14 @@ public class FlowNode {
 //        this.index = index;
 //    }
 
+
+    public void setDist(double dist) {
+        this.dist = dist;
+    }
+
+    public double getDist() {
+        return dist;
+    }
 
     public int getId() {
         return this.id;
@@ -52,6 +61,10 @@ public class FlowNode {
     public void setLatLng(double argLat, double argLng) {
         this.latLng = new LatLng(argLat, argLng);
     }
+    public void setLatLng(LatLng argLatLng) {
+        this.latLng = argLatLng;
+    }
+
 
     public void setStairCheck(int argStairCheck) {
         this.stairCheck = argStairCheck;

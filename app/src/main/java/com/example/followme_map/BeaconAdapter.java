@@ -78,7 +78,10 @@ public class BeaconAdapter {
         if (recievedBeacons.size() > 2) {
             calculateLocation();
 
-            location();
+            if (FlowActivity.recivedBeacon) {
+                location();
+            }
+
         }
     }
 
@@ -104,45 +107,20 @@ public class BeaconAdapter {
             standard++;
         }
 
-//        System.out.println("점 ---------------------------------- ");
-//        System.out.println("점비1 - " + recievedBeacons.get(0).minor + " " + recievedBeacons.get(0).distance);
-//        System.out.println("점비2 - " + recievedBeacons.get(1).minor + " " + recievedBeacons.get(1).distance);
-//        System.out.println("점비3 - " + recievedBeacons.get(2).minor + " " + recievedBeacons.get(2).distance);
-//        System.out.println("점1 - " + selectBeacons[0].minor + " " + selectBeacons[0].distance);
-//        System.out.println("점2 - " + selectBeacons[1].minor + " " + selectBeacons[1].distance);
-//        System.out.println("점3 - " + selectBeacons[2].minor + " " + selectBeacons[2].distance);
-//        System.out.println("점 층수 - " + BeaconList.getFloor());
+        System.out.println("점 ---------------------------------- ");
+        System.out.println("점비1 - " + recievedBeacons.get(0).minor + " " + recievedBeacons.get(0).distance);
+        System.out.println("점비2 - " + recievedBeacons.get(1).minor + " " + recievedBeacons.get(1).distance);
+        System.out.println("점비3 - " + recievedBeacons.get(2).minor + " " + recievedBeacons.get(2).distance);
+        System.out.println("점1 - " + selectBeacons[0].minor + " " + selectBeacons[0].distance);
+        System.out.println("점2 - " + selectBeacons[1].minor + " " + selectBeacons[1].distance);
+        System.out.println("점3 - " + selectBeacons[2].minor + " " + selectBeacons[2].distance);
+        System.out.println("점 층수 - " + BeaconList.getFloor());
 
         Trilateration tr = new Trilateration(selectBeacons[0], selectBeacons[1], selectBeacons[2]);
         BeaconList.setTM_LatLng(tr.resultX, tr.resultY);
         BeaconList.kalman();
 
     }
-//    boolean calculaorsDgree(BeaconData[] argBeaconData) {
-//        double[] pointsDistance = new double[3];
-//        double x = 0;
-//        double y = 0;
-//        double distance = 0;
-//
-//        x = Math.pow(argBeaconData[0].lat_TM - argBeaconData[1].lat_TM, 2);
-//        y = Math.pow(argBeaconData[0].lat_TM - argBeaconData[1].lng_TM, 2);
-//        pointsDistance[0] = Math.pow(x+y,2);
-//
-//        x = Math.pow(argBeaconData[1].lat_TM - argBeaconData[2].lat_TM, 2);
-//        y = Math.pow(argBeaconData[1].lat_TM - argBeaconData[2].lng_TM, 2);
-//        pointsDistance[1] = Math.pow(x+y,2);
-//
-//        x = Math.pow(argBeaconData[2].lat_TM - argBeaconData[0].lat_TM, 2);
-//        y = Math.pow(argBeaconData[2].lat_TM - argBeaconData[0].lng_TM, 2);
-//        pointsDistance[2] = Math.pow(x+y,2);
-//
-//        Arrays.sort(pointsDistance);
-//
-//        if(pointsDistance[2]/4 > pointsDistance[2] - pointsDistance[0] + pointsDistance[0])
-//
-//
-//        return true;
-//    }
 
     //구글 마커 찍는 함수
     void location() {
@@ -151,26 +129,16 @@ public class BeaconAdapter {
             makerState = false;
         }
 
-        makerState = true;
+        if (BeaconList.getFloor().equals(FlowActivity.selectedFloor)) {
 
-        //test
-//        if (FlowActivity.naviStartCheck) {
-//            testLatLng = FlowActivity.flowNodeList.get(num).getLatLng();
-//            num++;
-//            if (num >= FlowActivity.flowNodeList.size()) {
-//                num = 0;
-//            }
-//        }
-
-
-        if (BeaconList.getFloor() == FlowActivity.selectedFloor) {
             thisMarker = mMap.addMarker(new MarkerOptions()
                     .position(BeaconList.getWGS_K_LatLng())
                     .anchor(0.5f, 0.5f)
                     .rotation(FlowActivity.getChangedAzimut() - FlowActivity.camPosition.bearing)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
-        }
 
+            makerState = true;
+        }
     }
 
     // 삼변측량에 필요한 비콘 3개 선별하는 함수

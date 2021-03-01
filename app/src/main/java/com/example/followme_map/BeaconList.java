@@ -16,6 +16,7 @@ class Node {
         BeaconInfo = argBeaconInfo;
         nextNode = argNextNode;
     }
+
 }
 
 public class BeaconList {
@@ -38,7 +39,7 @@ public class BeaconList {
     //    private double testLat;
 //    private double testLng;  //위도, 경도
 //    private int testFloor = 1; //test
-    public int testNum = 1;
+//    public int testNum = 1;
 
 
     BeaconList() {
@@ -71,8 +72,8 @@ public class BeaconList {
         double filteredY = mKalmanFilterY.update(y);
 
         //주석 풀 경우 칼만필터 미적용
-        //filteredX = x;
-        //filteredY = y;
+        filteredX = x;
+        filteredY = y;
 
         //이전 값 저장
         setTM_K_LatLng(filteredX, filteredY);
@@ -131,7 +132,8 @@ public class BeaconList {
         do {
             i++;
             temp = temp.nextNode;
-            System.out.println("Get list " + i + ": " + temp.BeaconInfo.getMinor());
+//            System.out.println("Get list " + i + ": " + temp.BeaconInfo.getMinor() + " 좌표 : " + temp.BeaconInfo.getLat_wgs84() + "," + temp.BeaconInfo.getLng_wgs84());
+
         } while (i != numOfData);
     }
 

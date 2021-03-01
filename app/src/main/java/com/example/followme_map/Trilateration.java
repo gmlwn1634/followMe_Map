@@ -24,6 +24,11 @@ public class Trilateration {
         y3 = b3.getLng_TM();
         r3 = b3.getDistance();
 
+        System.out.println("tlqkf1 : " +  x1 + ", "+y1+", "+r1);
+        System.out.println("tlqkf2 : " +  x2 + ", "+y2+", "+r2);
+        System.out.println("tlqkf3 : " +  x3 + ", "+y3+", "+r3);
+
+
         switch(b1.group) {
             case "2": // 직선 그래프 + 매핑 (복도)
                 double inclination =  (y1-y2)/(x1-x2);  // 기울기
@@ -58,10 +63,10 @@ public class Trilateration {
                 int temp = 0;
                 double[] p = new double[4];
 
-                p[0] = result_x1 - result_x3 ;
-                p[1] = result_x1 - result_x4 ;
-                p[2] = result_x2 - result_x3 ;
-                p[3] = result_x2 - result_x4 ;
+                p[0] = Math.abs(Math.pow(result_x1, 2) - Math.pow(result_x3, 2)) ;
+                p[1] = Math.abs(Math.pow(result_x1, 2) - Math.pow(result_x4, 2)) ;
+                p[2] = Math.abs(Math.pow(result_x2, 2) - Math.pow(result_x3, 2)) ;
+                p[3] = Math.abs(Math.pow(result_x2, 2) - Math.pow(result_x4, 2)) ;
 
                 for(int i = 0; i < 2; i++) {
                     if(p[temp] > p[i+1]) {
@@ -112,6 +117,7 @@ public class Trilateration {
 
                 break;
         }
+        System.out.println("tlqkf!! : "+ resultX +", " +resultY);
 
         //System.out.printf("Cal - %f,%f,%f,%f,%f,%f,%f,%f,%f\n", x1,y1,r1,x2,y2,r2,x3,y3,r3);
 
