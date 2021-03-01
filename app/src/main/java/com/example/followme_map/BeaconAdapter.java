@@ -162,11 +162,15 @@ public class BeaconAdapter {
 //            }
 //        }
 
+
+        if (BeaconList.getFloor() == FlowActivity.selectedFloor) {
             thisMarker = mMap.addMarker(new MarkerOptions()
                     .position(BeaconList.getWGS_K_LatLng())
                     .anchor(0.5f, 0.5f)
                     .rotation(FlowActivity.getChangedAzimut() - FlowActivity.camPosition.bearing)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
+        }
+
     }
 
     // 삼변측량에 필요한 비콘 3개 선별하는 함수

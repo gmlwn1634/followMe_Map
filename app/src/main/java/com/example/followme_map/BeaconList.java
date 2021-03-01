@@ -38,7 +38,7 @@ public class BeaconList {
     //    private double testLat;
 //    private double testLng;  //위도, 경도
 //    private int testFloor = 1; //test
-//    public int testNum = 1;
+    public int testNum = 1;
 
 
     BeaconList() {

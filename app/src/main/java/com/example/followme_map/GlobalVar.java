@@ -50,7 +50,9 @@ public class GlobalVar extends Application {
     public static final String URL_BEACON_LIST = "/api/patient/beacon_list ";
 
 
-//    public static int mode = 1; //몇번째 동선
+
+    //test>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    public static int mode = 1; //몇번째 동선
 
 
 //    public static int mode = 1;
