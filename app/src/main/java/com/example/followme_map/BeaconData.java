@@ -28,8 +28,7 @@ public class BeaconData {
         lat_wgs84 = argLat;
         lng_wgs84 = argLng;
 
-
-        System.out.println("뭐시다냐 group "+argGroup + "major "+argMajor+ "minor "+argMinor+ "lat_wgs84 "+argLat+ "lng_wgs84 "+argLng);
+        System.out.println("wgs84 "+argLat + ", " + argLng);
         setTMLocation();
     }
 

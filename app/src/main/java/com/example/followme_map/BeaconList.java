@@ -16,7 +16,6 @@ class Node {
         BeaconInfo = argBeaconInfo;
         nextNode = argNextNode;
     }
-
 }
 
 public class BeaconList {
@@ -72,8 +71,8 @@ public class BeaconList {
         double filteredY = mKalmanFilterY.update(y);
 
         //주석 풀 경우 칼만필터 미적용
-        filteredX = x;
-        filteredY = y;
+        //filteredX = x;
+        //filteredY = y;
 
         //이전 값 저장
         setTM_K_LatLng(filteredX, filteredY);
@@ -132,8 +131,7 @@ public class BeaconList {
         do {
             i++;
             temp = temp.nextNode;
-//            System.out.println("Get list " + i + ": " + temp.BeaconInfo.getMinor() + " 좌표 : " + temp.BeaconInfo.getLat_wgs84() + "," + temp.BeaconInfo.getLng_wgs84());
-
+            System.out.println("Get list " + i + ": " + temp.BeaconInfo.getMinor());
         } while (i != numOfData);
     }
 

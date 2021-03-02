@@ -70,7 +70,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ActivityFlowBinding binding;
 
     //beacon Value-------------------
-    public BeaconList BeaconList;
+    public BeaconList BeaconList = new BeaconList();
     private MinewBeaconManager mMinewBeaconManager;
     public BeaconAdapter mAdapter;
     private static final int REQUEST_ENABLE_BT = 2;
@@ -637,7 +637,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (nearNode.getFloor() != flowNodeList.get(nearNode.getIndex() + 3).getFloor()) {
             return 0; //직진
-        } else if(nearNode.getFloor() != flowNodeList.get(nearNode.getIndex() + 4).getFloor()){
+        } else if (nearNode.getFloor() != flowNodeList.get(nearNode.getIndex() + 4).getFloor()) {
             return 0; //직진
         }
 
@@ -853,12 +853,12 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     polyOpt.add(flowNodeList.get(i).getLatLng());
 
                     if (i == 0) {
-                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
-                        startMarkerCheck = true;
+//                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+//                        startMarkerCheck = true;
                     }
                     if (i == flowNodeList.size() - 1) {
-                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
-                        endMarkerCheck = true;
+//                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+//                        endMarkerCheck = true;
                     }
                 }
             }
@@ -866,12 +866,12 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (flowNodeList.get(i).getFloor() == 2) {
                     polyOpt.add(flowNodeList.get(i).getLatLng());
                     if (i == 0) {
-                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
-                        startMarkerCheck = true;
+//                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+//                        startMarkerCheck = true;
                     }
                     if (i == flowNodeList.size() - 1) {
-                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
-                        endMarkerCheck = true;
+//                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+//                        endMarkerCheck = true;
                     }
                 }
             }
@@ -1039,102 +1039,88 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public void getAllBeacon() {
-        BeaconList = new BeaconList();
+
+
         //  2) 서버로부터 받은 비콘 정보를 비콘 리스트에 추가
         // 1층 왼쪽
 
-//        BeaconList.add(new BeaconData("2","1", "15001", 35.896671, 128.620354));
-//        BeaconList.add(new BeaconData("2","1", "15002", 35.896698, 128.620431));
-//        BeaconList.add(new BeaconData("2","1", "15003", 35.896716, 128.620517));
+        BeaconList.add(new BeaconData("2", "1", "15001", 35.896697983871235, 128.6203462855552));
+        BeaconList.add(new BeaconData("2", "1", "15002", 35.89671482300457, 128.62042574599727));
+        BeaconList.add(new BeaconData("2", "1", "15003", 35.89673274852964, 128.6205085592006));
+        BeaconList.add(new BeaconData("2", "2", "15004", 35.896701975845126, 128.6203400822074));
+        BeaconList.add(new BeaconData("2", "2", "15005", 35.89671707059689, 128.62042146459254));
+        BeaconList.add(new BeaconData("2", "2", "15006", 35.89673472452264, 128.62050360724362));
+        BeaconList.add(new BeaconData("2", "2", "15008", 35.896749390857984, 128.62056999187578));
+        BeaconList.add(new BeaconData("2", "2", "15009", 35.896762699196934, 128.6206427467953));
+        BeaconList.add(new BeaconData("3", "2", "15010", 35.896780344554, 128.62064817263));
+        BeaconList.add(new BeaconData("3", "2", "15011", 35.896842540625, 128.62061430974));
+        BeaconList.add(new BeaconData("3", "2", "15012", 35.896848244192, 128.62064683152));
+        BeaconList.add(new BeaconData("3", "1", "15013", 35.896581540581, 128.62021097642));
+        BeaconList.add(new BeaconData("3", "1", "15014", 35.896596750143, 128.62029613655));
+        BeaconList.add(new BeaconData("3", "1", "15015", 35.896651613183, 128.62019085985));
+        BeaconList.add(new BeaconData("2", "1", "15016", 35.89665887361227, 128.6205622033809));
+
+//        String url = GlobalVar.URL + GlobalVar.URL_BEACON_LIST;
+//        StringRequest request = new StringRequest(
+//                Request.Method.GET,
+//                url,
+//                new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
+//                    @Override
+//                    public void onResponse(String response) {
+//                        try {
 //
-//        // 1~2 계단
-//        BeaconList.add(new BeaconData("2","2", "15016", 35.896662, 128.620551));
+//                            JSONObject jsonResponse = new JSONObject(response);
 //
-//        // 2층 왼쪽
-//        BeaconList.add(new BeaconData("2","2", "15004", 35.896671, 128.620354));
-//        BeaconList.add(new BeaconData("2","2", "15005", 35.896698, 128.620431));
-//        BeaconList.add(new BeaconData("2","2", "15006", 35.896716, 128.620517));
+//                            JSONArray beaconList = jsonResponse.getJSONArray("beacon_list");
 //
-//        // 2층 오른쪽
-//        BeaconList.add(new BeaconData("2","2", "15008", 35.896738, 128.620571));
-//        BeaconList.add(new BeaconData("2","2", "15009", 35.896748, 128.620621));
+//                            for (int i = 0; i < beaconList.length(); i++) {
+//                                JSONObject beacon = beaconList.getJSONObject(i);
+//                                String group = String.valueOf(beacon.getInt("group"));
+//                                String major = String.valueOf(beacon.getInt("major"));
+//                                String minor = String.valueOf(beacon.getInt("beacon_id_minor"));
+//                                double lat = beacon.getDouble("lat");
+//                                double lng = beacon.getDouble("lng");
+//                                System.out.println("천은: group" + group + "major : " + major + "minor: " + minor +
+//                                        " 좌표:" + lat + ", " + lng);
 //
-//        // 2층 방
-//        BeaconList.add(new BeaconData("3","2", "15010", 35.896786, 128.620605));
-//        BeaconList.add(new BeaconData("3","2", "15011", 35.896814, 128.620574));
-//        BeaconList.add(new BeaconData("3","2", "15012", 35.896825, 128.620606));
+//                                BeaconList.add(new BeaconData(group, major, minor, lat, lng));
 //
-//        // 1층 방
-//        BeaconList.add(new BeaconData("3","1", "15013", 35.896585, 128.620223));
-//        BeaconList.add(new BeaconData("3","1", "15014", 35.896605, 128.620289));
-//        BeaconList.add(new BeaconData("3","1", "15015", 35.896664, 128.620210));
+//                            }
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "비콘 정보 요청 실패" + e.getMessage());
+//                            Toast.makeText(getApplicationContext(), "등록된 비콘이 없습니다.", Toast.LENGTH_SHORT).show();
+//                            finish();
+//
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
+//                    @Override
+//                    public void onErrorResponse(VolleyError e) {
+//                        e.printStackTrace();
+//                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "비콘 정보 요청 실패" + e.getMessage());
+//                        Toast.makeText(getApplicationContext(), "등록된 비콘이 없습니다.", Toast.LENGTH_SHORT).show();
+//                        finish();
+//                    }
+//                }
+//        ) {
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                Map<String, String> headers = new HashMap<String, String>();
+//                headers.put("Authorization", "Bearer " + LoginActivity.patientToken);
+//                return headers;
+//            }
+//
+//        };
+//
+//
+//        request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
+//        AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
+//        AppHelper.requestQueue.add(request);
 
-
-        String url = GlobalVar.URL + GlobalVar.URL_BEACON_LIST;
-        StringRequest request = new StringRequest(
-                Request.Method.GET,
-                url,
-                new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-
-                            JSONObject jsonResponse = new JSONObject(response);
-
-                            JSONArray beaconList = jsonResponse.getJSONArray("beacon_list");
-
-                            for (int i = 0; i < beaconList.length(); i++) {
-                                JSONObject beacon = beaconList.getJSONObject(i);
-//                                System.out.println("천은이가 보내는 minor_string:" + beacon.toString());
-                                String group = String.valueOf(beacon.getInt("group"));
-                                String major = String.valueOf(beacon.getInt("major"));
-                                String minor = String.valueOf(beacon.getInt("beacon_id_minor"));
-//                                System.out.println("천은이가 보내는 minor_string:" + minor);
-//                                System.out.println("천은이가 보내는 minor_int:" + beacon.getInt("beacon_id_minor"));
-                                double lat = beacon.getDouble("lat");
-
-                                double lng = beacon.getDouble("lng");
-//                                System.out.println("천은이가 보내는 minor_string:" + minor);
-                                System.out.println("천은이가 보내는  좦쇼:" + minor + ", " + lat + ", " + lng);
-
-                                BeaconList.add(new BeaconData(group, major, minor, lat, lng));
-
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "비콘 정보 요청 실패" + e.getMessage());
-                            Toast.makeText(getApplicationContext(), "등록된 비콘이 없습니다.", Toast.LENGTH_SHORT).show();
-                            finish();
-
-                        }
-                    }
-                },
-                new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
-                    @Override
-                    public void onErrorResponse(VolleyError e) {
-                        e.printStackTrace();
-                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "비콘 정보 요청 실패" + e.getMessage());
-                        Toast.makeText(getApplicationContext(), "등록된 비콘이 없습니다.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", "Bearer " + LoginActivity.patientToken);
-                return headers;
-            }
-
-        };
-
-
-        request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
-        AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
-        AppHelper.requestQueue.add(request);
-
-//        BeaconList.getList();
+        BeaconList.getList();
 
 
     } //getAllBeacon()
