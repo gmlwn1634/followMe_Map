@@ -61,6 +61,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static com.google.maps.android.PolyUtil.distanceToLine;
 
@@ -413,46 +414,51 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void run() {
 
 
-                        ArrayList<FlowNode> nodeList = new ArrayList<FlowNode>();
+                        try {
+
+                            ArrayList<FlowNode> nodeList = new ArrayList<FlowNode>();
 
 
-                        //현재 층의 노드 중 현위치와 가장 가까운 노드 계산
-                        for (int i = 0; i < flowNodeList.size(); i++) {
-                            final double R = 6372.8 * 1000;
-                            //같은 층의 노드인지 판단
-                            if (flowNodeList.get(i).getFloor() == Integer.parseInt(BeaconList.getFloor())) {
-                                double a = getDistance(BeaconList.getWGS_K_LatLng(), flowNodeList.get(i).getLatLng());
-                                double c = 2 * Math.asin(a);
-                                double dist = R * c;
-                                FlowNode fn = new FlowNode();
-                                fn.setFloor(flowNodeList.get(i).getFloor());
-                                fn.setLatLng(flowNodeList.get(i).getLatLng());
-                                fn.setDist(dist);
-                                fn.setIndex(i);
+                            //현재 층의 노드 중 현위치와 가장 가까운 노드 계산
+                            for (int i = 0; i < flowNodeList.size(); i++) {
+                                final double R = 6372.8 * 1000;
+                                //같은 층의 노드인지 판단
+                                if (flowNodeList.get(i).getFloor() == Integer.parseInt(BeaconList.getFloor())) {
+                                    double a = getDistance(BeaconList.getWGS_K_LatLng(), flowNodeList.get(i).getLatLng());
+                                    double c = 2 * Math.asin(a);
+                                    double dist = R * c;
+                                    FlowNode fn = new FlowNode();
+                                    fn.setFloor(flowNodeList.get(i).getFloor());
+                                    fn.setLatLng(flowNodeList.get(i).getLatLng());
+                                    fn.setDist(dist);
+                                    fn.setIndex(i);
 
-                                nodeList.add(fn);
-                            }
-                        }
-
-
-                        Iterator<FlowNode> it = nodeList.iterator();
-                        FlowNode e = it.next();//hasNext를 해서 다음요소가 있는지 확인해야지만, it.next해서 그 요소를 불러올 수가 있다.
-                        nearNode = e;  //가장가까운노드
-                        System.out.println("맨 처음 가장 가까운 노드:" + nearNode.getIndex() + "," + nearNode.getDist());
-                        for (int i = 0; i < nodeList.size(); i++) {
-                            if (it.hasNext()) {//pc(프로그램카운터가 이동하여, 다음 요소가 있는지 확인)
-                                if (e.getDist() < nearNode.getDist()) {
-                                    nearNode = e;
-                                    System.out.println("갱신 가장 가까운 노드:" + nearNode.getIndex() + "," + nearNode.getDist());
-//                                    System.out.println("갱신 가장 가까운 노드:" + nearNode.getIndex());
+                                    nodeList.add(fn);
                                 }
-                                e = it.next();//hasNext를 해서 다음요소가 있는지 확인해야지만, it.next해서 그 요소를 불러올 수가 있다.
                             }
+
+
+                            Iterator<FlowNode> it = nodeList.iterator();
+                            FlowNode e = it.next();//hasNext를 해서 다음요소가 있는지 확인해야지만, it.next해서 그 요소를 불러올 수가 있다.
+                            nearNode = e;  //가장가까운노드
+                            System.out.println("맨 처음 가장 가까운 노드:" + nearNode.getIndex() + "," + nearNode.getDist());
+                            for (int i = 0; i < nodeList.size(); i++) {
+                                if (it.hasNext()) {//pc(프로그램카운터가 이동하여, 다음 요소가 있는지 확인)
+                                    if (e.getDist() < nearNode.getDist()) {
+                                        nearNode = e;
+                                        System.out.println("갱신 가장 가까운 노드:" + nearNode.getIndex() + "," + nearNode.getDist());
+//                                    System.out.println("갱신 가장 가까운 노드:" + nearNode.getIndex());
+                                    }
+                                    e = it.next();//hasNext를 해서 다음요소가 있는지 확인해야지만, it.next해서 그 요소를 불러올 수가 있다.
+                                }
+                            }
+
+                            System.out.println("마지막 가장 가까운 노드:" + nearNode.getIndex() + "," + nearNode.getDist());
+
+
+                        } catch (NoSuchElementException e) {
+                            return;
                         }
-
-                        System.out.println("마지막 가장 가까운 노드:" + nearNode.getIndex() + "," + nearNode.getDist());
-
-
                     }
                 });
             }
@@ -468,10 +474,14 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void run() {
                         //현재 층에 따른 도면 바꾸기
-                        if (BeaconList.getFloor().equals("1"))
+                        System.out.println("+++++checkFloor 현재 층:" + BeaconList.getFloor());
+                        if (BeaconList.getFloor().equals("1")) {
+                            System.out.println("+++++ if 1");
                             binding.floorSelector.check(binding.select2floor.getId());
-                        else if (BeaconList.getFloor().equals("2"))
+                        } else if (BeaconList.getFloor().equals("2")) {
+                            System.out.println("+++++ if 2");
                             binding.floorSelector.check(binding.select3floor.getId());
+                        }
                     }
                 });
             }

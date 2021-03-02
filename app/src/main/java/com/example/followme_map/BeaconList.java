@@ -151,16 +151,6 @@ public class BeaconList {
         return floor;
     }
 
-//    public int getTestFloor() {
-//        return this.testFloor;
-//    }
-
-
-//    public void setTestFloor(int argFloor) {
-//        this.testFloor = argFloor;
-//    }
-
-
     public int size() {
         return numOfData;
     }
