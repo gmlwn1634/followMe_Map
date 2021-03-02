@@ -159,8 +159,9 @@ public class HomeFragment extends Fragment {
 
                             int standByNum = jsonResponse.getInt("standby_number");
                             binding.standByNum.setText(String.format("%03d", standByNum));
-//                            binding.clinicPlace.setText(jsonResponse.get("clinic_info"));
-//                            binding.acceptTime.setText(String.format("%03d", jsonResponse.getInt("standby_number")));
+                            JSONObject clinicInfo = jsonResponse.getJSONObject("clinic_info");
+                            binding.clinicPlace.setText(clinicInfo.getString("clinic_subject_name"));
+                            binding.acceptTime.setText(clinicInfo.getString("clinic_time"));
                             if (LoginActivity.patientId == eventPatientID) {
                                 binding.qrCodCardView.setVisibility(View.VISIBLE);
                                 binding.standbyNumCardView.setVisibility(View.INVISIBLE);
