@@ -330,10 +330,10 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     try {
                         if (flag) {
-                            checkFloor(); //층 바뀌면 도면 전환
-                            checkNearDist(); //가장 가까운 길 확인
-                            setCameraPosition(); //지도 방향
                             checkNearNode(); //가장 가까운 노드 확인
+                            checkNearDist(); //가장 가까운 길 확인
+                            checkFloor(); //층 바뀌면 도면 전환
+                            setCameraPosition(); //지도 방향
                             checkOffLoad(); //경로이탈 감지
                             changeTurn(); // 방향회전 안내
                             Thread.sleep(100);
@@ -431,7 +431,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // 도착안내
         recivedBeacon = false;
-        mMinewBeaconManager.stopScan();
+//        mMinewBeaconManager.stopScan();
         mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.arrival_sound);
         mediaPlayer.start();
         binding.turn.setText("목적지 도착");
@@ -1452,7 +1452,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onDestroy() {
         super.onDestroy();
         naviStartCheck = false;
-        mMinewBeaconManager.stopScan();
+//        mMinewBeaconManager.stopScan();
         flag = false;
         finish();
 
