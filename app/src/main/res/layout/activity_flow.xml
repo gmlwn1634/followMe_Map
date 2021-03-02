@@ -178,6 +178,15 @@
             android:text="TextView"
             app:layout_constraintStart_toEndOf="@+id/textView42"
             app:layout_constraintTop_toTopOf="@+id/textView42" />
+
+        <TextView
+            android:id="@+id/floor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="floor :"
+            app:layout_constraintStart_toEndOf="@+id/lng"
+            app:layout_constraintTop_toTopOf="@+id/lng" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageButton

@@ -71,8 +71,8 @@ public class BeaconList {
         double filteredY = mKalmanFilterY.update(y);
 
         //주석 풀 경우 칼만필터 미적용
-        //filteredX = x;
-        //filteredY = y;
+        filteredX = x;
+        filteredY = y;
 
         //이전 값 저장
         setTM_K_LatLng(filteredX, filteredY);
