@@ -141,7 +141,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     FlowNode nearNode;
     Dist nearDist;
 
-    public static boolean recivedBeacon = true;
+//    public static boolean recivedBeacon = true;
     public static String selectedFloor;
 
 
@@ -364,7 +364,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     void arrived() {
 
         // 도착안내
-        recivedBeacon = false;
+        GlobalVar.recivedBeacon = false;
 //        mMinewBeaconManager.stopScan();
         mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.arrival_sound);
         mediaPlayer.start();
@@ -934,7 +934,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Collections.sort(minewBeacons, GlobalVar.comp);
                         if (GlobalVar.state == 1 || GlobalVar.state == 2) {
                         } else {
-                            if (recivedBeacon) {
+                            if (GlobalVar.recivedBeacon) {
                                 GlobalVar.mAdapter.setItems(minewBeacons);
                                 System.out.println("현위치 : " + GlobalVar.BeaconList.getWGS_K_lat() + "," + GlobalVar.BeaconList.getWGS_K_lng());
                                 if (!first) {

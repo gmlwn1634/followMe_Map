@@ -19,6 +19,7 @@
             android:visibility="invisible"
             app:cardCornerRadius="20dp"
             app:cardElevation="2dp"
+            app:layout_constraintBottom_toTopOf="@+id/flowStartBtn"
             app:layout_constraintEnd_toEndOf="@+id/flowStartBtn"
             app:layout_constraintStart_toStartOf="@+id/flowStartBtn"
             app:layout_constraintTop_toTopOf="parent">
@@ -146,6 +147,7 @@
             android:visibility="visible"
             app:cardCornerRadius="20dp"
             app:cardElevation="2dp"
+            app:layout_constraintBottom_toTopOf="@+id/flowStartBtn"
             app:layout_constraintEnd_toEndOf="@+id/flowStartBtn"
             app:layout_constraintStart_toStartOf="@+id/flowStartBtn"
             app:layout_constraintTop_toTopOf="parent">
@@ -195,11 +197,13 @@
             android:id="@+id/flowStartBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
             android:layout_marginBottom="24dp"
             app:cardCornerRadius="10dp"
             app:layout_constraintBottom_toTopOf="@+id/DestSearchBtn"
             app:layout_constraintEnd_toEndOf="@+id/DestSearchBtn"
-            app:layout_constraintStart_toStartOf="@+id/DestSearchBtn">
+            app:layout_constraintStart_toStartOf="@+id/DestSearchBtn"
+            app:layout_constraintTop_toBottomOf="@+id/standbyNumCardView">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

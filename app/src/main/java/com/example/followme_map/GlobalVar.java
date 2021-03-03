@@ -64,6 +64,9 @@ public class GlobalVar extends Application {
     public static UserRssi comp = new UserRssi();
     public static int state;
 
+    public static boolean recivedBeacon = true;
+//    public static boolean first = false;
+
     public void onCreate() {
 
         super.onCreate();
