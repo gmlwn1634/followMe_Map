@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.minew.beacon.MinewBeaconManager;
 
 public class GlobalVar extends Application {
 
@@ -52,15 +53,16 @@ public class GlobalVar extends Application {
 
 
     //test>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    public static int mode = 1; //몇번째 동선
+    public static boolean get = false;
 
-
-//    public static int mode = 1;
-//    public static int testNum = 0;
-//    public static LatLng thisPoint = new LatLng(35.89666866704047, 128.62027197619136);
-    //35.89666866704047, 128.62027197619136 //출발지
-    //35.896758278816, 128.62047268466 //220호
-    //35.896752650043,128.62071220482 //305호
+    //beacon Value-------------------
+    public static BeaconList BeaconList = new BeaconList();
+    public static MinewBeaconManager mMinewBeaconManager;
+    public static BeaconAdapter mAdapter;
+    public static final int REQUEST_ENABLE_BT = 2;
+    public static boolean isScanning = false;
+    public static UserRssi comp = new UserRssi();
+    public static int state;
 
     public void onCreate() {
 

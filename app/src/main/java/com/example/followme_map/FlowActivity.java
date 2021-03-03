@@ -71,13 +71,13 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ActivityFlowBinding binding;
 
     //beacon Value-------------------
-    public BeaconList BeaconList = new BeaconList();
-    private MinewBeaconManager mMinewBeaconManager;
-    public BeaconAdapter mAdapter;
-    private static final int REQUEST_ENABLE_BT = 2;
-    private boolean isScanning;
-    UserRssi comp = new UserRssi();
-    private int state;
+//    public BeaconList BeaconList = new BeaconList();
+//    private MinewBeaconManager mMinewBeaconManager;
+//    public BeaconAdapter mAdapter;
+//    private static final int REQUEST_ENABLE_BT = 2;
+//    private boolean isScanning;
+//    UserRssi comp = new UserRssi();
+//    private int state;
 
     //방위각 계산 Values-----------
     private SensorManager sm;
@@ -151,7 +151,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         binding = ActivityFlowBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
         // Volley 통신 requestQueue 생성 및 초기화
         if (AppHelper.requestQueue != null)
             AppHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -224,7 +223,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void run() {
                         //경로 이탈 - 현위치와 현위치에서 가장 가까운 노드
 //                        if (getDistanceMeter(BeaconList.getLatLng(), getNearNode().getLatLng()) >= 14) {
-                        if (getDistanceMeter(BeaconList.getWGS_K_LatLng(), nearNode.getLatLng()) >= 14) { //test
+                        if (getDistanceMeter(GlobalVar.BeaconList.getWGS_K_LatLng(), nearNode.getLatLng()) >= 14) { //test
                             flag = false;
                             Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "이탈이탈");
 //                            System.out.println("디버깅 이탈: 현위치" + BeaconAdapter.thisMarker.getPosition());
@@ -299,8 +298,8 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                             for (int i = 0; i < flowNodeList.size(); i++) {
                                 final double R = 6372.8 * 1000;
                                 //같은 층의 노드인지 판단
-                                if (flowNodeList.get(i).getFloor() == Integer.parseInt(BeaconList.getFloor())) {
-                                    double a = getDistance(BeaconList.getWGS_K_LatLng(), flowNodeList.get(i).getLatLng());
+                                if (flowNodeList.get(i).getFloor() == Integer.parseInt(GlobalVar.BeaconList.getFloor())) {
+                                    double a = getDistance(GlobalVar.BeaconList.getWGS_K_LatLng(), flowNodeList.get(i).getLatLng());
                                     double c = 2 * Math.asin(a);
                                     double dist = R * c;
                                     FlowNode fn = new FlowNode();
@@ -350,10 +349,10 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void run() {
                         //현재 층에 따른 도면 바꾸기
-                        System.out.println("+++++checkFloor 현재 층:" + BeaconList.getFloor());
-                        if (BeaconList.getFloor().equals("1")) {
+                        System.out.println("+++++checkFloor 현재 층:" + GlobalVar.BeaconList.getFloor());
+                        if (GlobalVar.BeaconList.getFloor().equals("1")) {
                             binding.floorSelector.check(binding.select2floor.getId());
-                        } else if (BeaconList.getFloor().equals("2")) {
+                        } else if (GlobalVar.BeaconList.getFloor().equals("2")) {
                             binding.floorSelector.check(binding.select3floor.getId());
                         }
                     }
@@ -371,6 +370,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         mediaPlayer.start();
         binding.turn.setText("목적지 도착");
         binding.turnImg.setImageResource(R.drawable.arrive);
+        GlobalVar.isScanning = false;
 
 
         // 안내 메세지
@@ -589,7 +589,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        camPosition = new CameraPosition.Builder(camPosition).zoom(25).target(BeaconList.getWGS_K_LatLng()).bearing(getBearing(flowNodeList.get(nearDist.getIndex()).getLatLng(), flowNodeList.get(nearDist.getIndex() + 1).getLatLng())).build();
+                        camPosition = new CameraPosition.Builder(camPosition).zoom(25).target(GlobalVar.BeaconList.getWGS_K_LatLng()).bearing(getBearing(flowNodeList.get(nearDist.getIndex()).getLatLng(), flowNodeList.get(nearDist.getIndex() + 1).getLatLng())).build();
                         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition)); //test
                     }
                 });
@@ -610,9 +610,15 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //3. 현위치 계산
         //3.1 전체 비콘 정보를 받아옴
-        getAllBeacon();
+        System.out.println("값모냐" + GlobalVar.BeaconList.getWGS_K_LatLng());
+
+        if (!GlobalVar.get) {
+            getAllBeacon();
+            GlobalVar.get = true;
+        }
+
         //3.2 현위치 얻기
-        initView(BeaconList, mMap); //어댑터 생성
+        initView(GlobalVar.BeaconList, mMap); //어댑터 생성
         initManager(); //싱글톤 패턴
         initListener(); //비콘의 신호 수신
 
@@ -699,7 +705,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                             ArrayList<Dist> distList = new ArrayList<Dist>();
                             for (int i = 0; i < flowNodeList.size() - 1; i++) {
                                 Dist dist = new Dist();
-                                dist.setDist(distanceToLine(BeaconList.getWGS_K_LatLng(), flowNodeList.get(i).getLatLng(), flowNodeList.get(i + 1).getLatLng()));
+                                dist.setDist(distanceToLine(GlobalVar.BeaconList.getWGS_K_LatLng(), flowNodeList.get(i).getLatLng(), flowNodeList.get(i + 1).getLatLng()));
                                 dist.setIndex(i);
                                 distList.add(dist);
                             }
@@ -763,7 +769,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startPoly.endCap(new RoundCap());
                 startPoly.width(15f);
                 startPoly.pattern(pattern);
-                startPoly.add(BeaconList.getWGS_K_LatLng()); //test
+                startPoly.add(GlobalVar.BeaconList.getWGS_K_LatLng()); //test
                 startPoly.add(flowNodeList.get(0).getLatLng());
                 mMap.addPolyline(startPoly);
                 polyStart_This = false;
@@ -816,7 +822,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             overlayCheck = false;
         }
 
-        switch (BeaconList.getFloor()) {
+        switch (GlobalVar.BeaconList.getFloor()) {
             case "1":
                 groundOverlayOptions = groundOverlayOptions.image(BitmapDescriptorFactory.fromResource(R.drawable.map_2th_floor))
                         .positionFromBounds(new LatLngBounds(new LatLng(35.89651393057683, 128.6201298818298), new LatLng(35.89707923321034, 128.62176975983763)));
@@ -835,22 +841,23 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     } //mapOverlay()
 
     private void initManager() {
-        mMinewBeaconManager = MinewBeaconManager.getInstance(this);
+        GlobalVar.mMinewBeaconManager = MinewBeaconManager.getInstance(this);
     } //initManager()
 
     private void initView(BeaconList BeaconList, GoogleMap GoogleMap) {
-        mAdapter = new BeaconAdapter(BeaconList, GoogleMap);
+        GlobalVar.mAdapter = new BeaconAdapter(BeaconList, GoogleMap);
     } //initView()
 
     private void showBLEDialog() {
         Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        startActivityForResult(enableIntent, GlobalVar.REQUEST_ENABLE_BT);
     } //showBLEDialog()
 
 
     private void initListener() {
-        if (mMinewBeaconManager != null) {
-            BluetoothState bluetoothState = mMinewBeaconManager.checkBluetoothState();
+        System.out.println("들어왔니");
+        if (GlobalVar.mMinewBeaconManager != null) {
+            BluetoothState bluetoothState = GlobalVar.mMinewBeaconManager.checkBluetoothState();
             switch (bluetoothState) {
                 case BluetoothStateNotSupported:
                     Toast.makeText(FlowActivity.this, "Not Support BLE", Toast.LENGTH_SHORT).show();
@@ -863,22 +870,28 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     break;
             }
         }
-        if (isScanning) {
-            isScanning = false;
-
-            if (mMinewBeaconManager != null) {
-                mMinewBeaconManager.stopScan();
-            }
-        } else {
-            isScanning = true;
-
-            try {
-                mMinewBeaconManager.startScan();
-            } catch (Exception e) {
-                e.printStackTrace();
+        if(!GlobalVar.isScanning){
+            if (GlobalVar.mMinewBeaconManager != null) {
+                GlobalVar.mMinewBeaconManager.startScan();
             }
         }
-        mMinewBeaconManager.setDeviceManagerDelegateListener(new MinewBeaconManagerListener() {
+
+//        if (GlobalVar.isScanning) {
+//            GlobalVar.isScanning = false;
+//
+//            if (GlobalVar.mMinewBeaconManager != null) {
+//                GlobalVar.mMinewBeaconManager.stopScan();
+//            }
+//        } else {
+//            GlobalVar.isScanning = true;
+//
+//            try {
+//                GlobalVar.mMinewBeaconManager.startScan();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+        GlobalVar.mMinewBeaconManager.setDeviceManagerDelegateListener(new MinewBeaconManagerListener() {
             /**
              *   if the manager find some new beacon, it will call back this method.
              *
@@ -913,23 +926,23 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Collections.sort(minewBeacons, comp);
-                        Log.e("tag", state + "");
-                        if (state == 1 || state == 2) {
+                        System.out.println("들어왔니2");
+                        binding.lat.setText(GlobalVar.BeaconList.getWGS_K_lat() + "");
+                        binding.lng.setText(GlobalVar.BeaconList.getWGS_K_lng() + "");
+                        binding.floor.setText(GlobalVar.BeaconList.getFloor() + "");
+
+                        Collections.sort(minewBeacons, GlobalVar.comp);
+                        if (GlobalVar.state == 1 || GlobalVar.state == 2) {
                         } else {
                             if (recivedBeacon) {
-                                mAdapter.setItems(minewBeacons);
-                                System.out.println("현위치 : " + BeaconList.getWGS_K_lat() + "," + BeaconList.getWGS_K_lng());
+                                GlobalVar.mAdapter.setItems(minewBeacons);
+                                System.out.println("현위치 : " + GlobalVar.BeaconList.getWGS_K_lat() + "," + GlobalVar.BeaconList.getWGS_K_lng());
                                 if (!first) {
-                                    if (BeaconList.getWGS_K_lat() != 0.0) {
+                                    if (GlobalVar.BeaconList.getWGS_K_lat() != 0.0) {
+                                        System.out.println("들어왔니3");
                                         first = true;
                                         mapOverlay();
                                         getAllFlow();
-
-                                        binding.lat.setText(BeaconList.getWGS_K_lat() + "");
-                                        binding.lng.setText(BeaconList.getWGS_K_lng() + "");
-                                        binding.floor.setText(BeaconList.getFloor() + "");
-
                                     }
                                 }
                             }
@@ -965,21 +978,21 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         //  2) 서버로부터 받은 비콘 정보를 비콘 리스트에 추가
         // 1층 왼쪽
 
-        BeaconList.add(new BeaconData("2", "1", "15001", 35.896697983871235, 128.6203462855552));
-        BeaconList.add(new BeaconData("2", "1", "15002", 35.89671482300457, 128.62042574599727));
-        BeaconList.add(new BeaconData("2", "1", "15003", 35.89673274852964, 128.6205085592006));
-        BeaconList.add(new BeaconData("2", "2", "15004", 35.896701975845126, 128.6203400822074));
-        BeaconList.add(new BeaconData("2", "2", "15005", 35.89671707059689, 128.62042146459254));
-        BeaconList.add(new BeaconData("2", "2", "15006", 35.89673472452264, 128.62050360724362));
-        BeaconList.add(new BeaconData("2", "2", "15008", 35.896749390857984, 128.62056999187578));
-        BeaconList.add(new BeaconData("2", "2", "15009", 35.896762699196934, 128.6206427467953));
-        BeaconList.add(new BeaconData("3", "2", "15010", 35.896780344554, 128.62064817263));
-        BeaconList.add(new BeaconData("3", "2", "15011", 35.896842540625, 128.62061430974));
-        BeaconList.add(new BeaconData("3", "2", "15012", 35.896848244192, 128.62064683152));
-        BeaconList.add(new BeaconData("3", "1", "15013", 35.896581540581, 128.62021097642));
-        BeaconList.add(new BeaconData("3", "1", "15014", 35.896596750143, 128.62029613655));
-        BeaconList.add(new BeaconData("3", "1", "15015", 35.896651613183, 128.62019085985));
-        BeaconList.add(new BeaconData("2", "1", "15016", 35.89665887361227, 128.6205622033809));
+        GlobalVar.BeaconList.add(new BeaconData("2", "1", "15001", 35.896697983871235, 128.6203462855552));
+        GlobalVar.BeaconList.add(new BeaconData("2", "1", "15002", 35.89671482300457, 128.62042574599727));
+        GlobalVar.BeaconList.add(new BeaconData("2", "1", "15003", 35.89673274852964, 128.6205085592006));
+        GlobalVar.BeaconList.add(new BeaconData("2", "2", "15004", 35.896701975845126, 128.6203400822074));
+        GlobalVar.BeaconList.add(new BeaconData("2", "2", "15005", 35.89671707059689, 128.62042146459254));
+        GlobalVar.BeaconList.add(new BeaconData("2", "2", "15006", 35.89673472452264, 128.62050360724362));
+        GlobalVar.BeaconList.add(new BeaconData("2", "2", "15008", 35.896749390857984, 128.62056999187578));
+        GlobalVar.BeaconList.add(new BeaconData("2", "2", "15009", 35.896762699196934, 128.6206427467953));
+        GlobalVar.BeaconList.add(new BeaconData("3", "2", "15010", 35.896780344554, 128.62064817263));
+        GlobalVar.BeaconList.add(new BeaconData("3", "2", "15011", 35.896842540625, 128.62061430974));
+        GlobalVar.BeaconList.add(new BeaconData("3", "2", "15012", 35.896848244192, 128.62064683152));
+        GlobalVar.BeaconList.add(new BeaconData("3", "1", "15013", 35.896581540581, 128.62021097642));
+        GlobalVar.BeaconList.add(new BeaconData("3", "1", "15014", 35.896596750143, 128.62029613655));
+        GlobalVar.BeaconList.add(new BeaconData("3", "1", "15015", 35.896651613183, 128.62019085985));
+        GlobalVar.BeaconList.add(new BeaconData("2", "1", "15016", 35.89665887361227, 128.6205622033809));
 
 //        String url = GlobalVar.URL + GlobalVar.URL_BEACON_LIST;
 //        StringRequest request = new StringRequest(
@@ -1041,7 +1054,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
 //        AppHelper.requestQueue.add(request);
 
-        BeaconList.getList();
+        GlobalVar.BeaconList.getList();
 
 
     } //getAllBeacon()
@@ -1050,7 +1063,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_ENABLE_BT:
+            case GlobalVar.REQUEST_ENABLE_BT:
                 break;
         }
     } //onActivityResult()
@@ -1171,12 +1184,12 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("lat", BeaconList.getWGS_K_lat() + "");
-                params.put("lng", BeaconList.getWGS_K_lng() + "");
+                params.put("lat", GlobalVar.BeaconList.getWGS_K_lat() + "");
+                params.put("lng", GlobalVar.BeaconList.getWGS_K_lng() + "");
 //                System.out.println("비교 - getAllFlow mode : " + GlobalVar.mode);
 //                System.out.println("비교 - 출발지 lat : " + BeaconList.getLat());
 //                System.out.println("비교 - 출발지 lng : " + BeaconList.getLng());
-                params.put("major", BeaconList.getFloor()); //층번호
+                params.put("major", GlobalVar.BeaconList.getFloor()); //층번호
                 return params;
             }
 
@@ -1269,9 +1282,9 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 if (n == 0) {
-                    params.put("lat", BeaconList.getWGS_K_lat() + "");
-                    params.put("lng", BeaconList.getWGS_K_lng() + "");
-                    params.put("major", BeaconList.getFloor() + "");
+                    params.put("lat", GlobalVar.BeaconList.getWGS_K_lat() + "");
+                    params.put("lng", GlobalVar.BeaconList.getWGS_K_lng() + "");
+                    params.put("major", GlobalVar.BeaconList.getFloor() + "");
                     params.put("end_room_node", endRoomNode);
                 } else {
                     params.put("start_room_node", startRoomNode);
@@ -1387,6 +1400,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onDestroy();
         naviStartCheck = false;
 //        mMinewBeaconManager.stopScan();
+        GlobalVar.isScanning = false;
         flag = false;
         finish();
 
