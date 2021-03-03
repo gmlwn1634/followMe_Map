@@ -65,7 +65,7 @@ public class GlobalVar extends Application {
     public static int state;
 
     public static boolean recivedBeacon = true;
-//    public static boolean first = false;
+    public static boolean first = false;
 
     public void onCreate() {
 

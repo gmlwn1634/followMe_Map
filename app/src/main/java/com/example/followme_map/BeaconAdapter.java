@@ -113,9 +113,9 @@ public class BeaconAdapter {
 //        System.out.println("점3 - " + selectBeacons[2].minor + " " + selectBeacons[2].distance);
 //        System.out.println("점 층수 - " + BeaconList.getFloor());
 
-        Trilateration tr = new Trilateration(selectBeacons[0], selectBeacons[1], selectBeacons[2]);
+        Trilateration tr = new Trilateration(BeaconList.getTM_lat(), BeaconList.getTM_lng(), selectBeacons[0], selectBeacons[1], selectBeacons[2]);
         BeaconList.setTM_LatLng(tr.resultX, tr.resultY);
-        BeaconList.kalman();
+        BeaconList.kalman(tr.doKalman);
 
     }
 //    boolean calculaorsDgree(BeaconData[] argBeaconData) {

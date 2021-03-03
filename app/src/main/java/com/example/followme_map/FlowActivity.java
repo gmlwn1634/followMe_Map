@@ -980,7 +980,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         GlobalVar.BeaconList.add(new BeaconData("2", "1", "15001", 35.896697983871235, 128.6203462855552));
         GlobalVar.BeaconList.add(new BeaconData("2", "1", "15002", 35.89671482300457, 128.62042574599727));
-        GlobalVar.BeaconList.add(new BeaconData("2", "1", "15003", 35.89673274852964, 128.6205085592006));
+        GlobalVar.BeaconList.add(new BeaconData("2", "1", "15003", 35.89674234433988, 128.62052931761377));
         GlobalVar.BeaconList.add(new BeaconData("2", "2", "15004", 35.896701975845126, 128.6203400822074));
         GlobalVar.BeaconList.add(new BeaconData("2", "2", "15005", 35.89671707059689, 128.62042146459254));
         GlobalVar.BeaconList.add(new BeaconData("2", "2", "15006", 35.89673472452264, 128.62050360724362));
@@ -1402,6 +1402,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        mMinewBeaconManager.stopScan();
         GlobalVar.isScanning = false;
         flag = false;
+//        GlobalVar.first = false;
         finish();
 
     } //onDestroy()

@@ -60,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:text="- 대기 순서는 병원 사정에 따라 달라질 수 있습니다."
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     app:layout_constraintBottom_toTopOf="@+id/textView29"
                     app:layout_constraintEnd_toEndOf="@+id/textView29"
                     app:layout_constraintStart_toStartOf="@+id/textView29" />
@@ -71,10 +71,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
                     android:text="- 진료 순서가 지난 경우 접수가 취소될 수 있습니다."
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     app:layout_constraintBottom_toTopOf="@+id/line"
-                    app:layout_constraintEnd_toEndOf="@+id/line"
-                    app:layout_constraintStart_toStartOf="@+id/line" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
                 <View
                     android:id="@+id/line"
@@ -138,19 +138,19 @@
 
         </androidx.cardview.widget.CardView>
 
+
         <androidx.cardview.widget.CardView
 
             android:id="@+id/qrCodCardView"
             android:layout_width="0dp"
             android:layout_height="350dp"
-            android:layout_marginTop="32dp"
             android:visibility="visible"
             app:cardCornerRadius="20dp"
             app:cardElevation="2dp"
-            app:layout_constraintBottom_toTopOf="@+id/flowStartBtn"
-            app:layout_constraintEnd_toEndOf="@+id/flowStartBtn"
-            app:layout_constraintStart_toStartOf="@+id/flowStartBtn"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintBottom_toBottomOf="@+id/standbyNumCardView"
+            app:layout_constraintEnd_toEndOf="@+id/standbyNumCardView"
+            app:layout_constraintStart_toStartOf="@+id/standbyNumCardView"
+            app:layout_constraintTop_toTopOf="@+id/standbyNumCardView">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -191,7 +191,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>
-
 
         <androidx.cardview.widget.CardView
             android:id="@+id/flowStartBtn"
@@ -248,11 +247,11 @@
             android:id="@+id/DestSearchBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
             app:cardCornerRadius="10dp"
             app:layout_constraintBottom_toTopOf="@+id/paymentBtn"
             app:layout_constraintEnd_toEndOf="@+id/paymentBtn"
-            app:layout_constraintStart_toStartOf="@+id/paymentBtn">
+            app:layout_constraintStart_toStartOf="@+id/paymentBtn"
+            app:layout_constraintTop_toBottomOf="@+id/flowStartBtn">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -300,12 +299,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
 
+            android:layout_marginTop="26dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="32dp"
             app:cardCornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/DestSearchBtn">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
