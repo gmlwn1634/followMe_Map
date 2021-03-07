@@ -17,8 +17,7 @@
         <TextView
             android:id="@+id/startP"
             android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -32,8 +31,7 @@
         <TextView
             android:id="@+id/endP"
             android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 </LinearLayout>

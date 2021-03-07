@@ -23,7 +23,7 @@
                 android:id="@+id/textView11"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="내역조회"
+                android:text="ヒストリー"
                 android:textColor="#FFFFFF"
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -141,7 +141,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     FlowNode nearNode;
     Dist nearDist;
 
-//    public static boolean recivedBeacon = true;
+    //    public static boolean recivedBeacon = true;
     public static String selectedFloor;
 
 
@@ -223,7 +223,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void run() {
                         //경로 이탈 - 현위치와 현위치에서 가장 가까운 노드
 //                        if (getDistanceMeter(BeaconList.getLatLng(), getNearNode().getLatLng()) >= 14) {
-                        if (getDistanceMeter(GlobalVar.BeaconList.getWGS_K_LatLng(), nearNode.getLatLng()) >= 14) { //test
+                        if (getDistanceMeter(GlobalVar.BeaconList.getWGS_K_LatLng(), nearNode.getLatLng()) >= 5) { //test
                             flag = false;
                             Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "이탈이탈");
 //                            System.out.println("디버깅 이탈: 현위치" + BeaconAdapter.thisMarker.getPosition());
@@ -241,7 +241,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     getNFlowNode(0);//경로 재탐색
                                     flag = true;
                                 }
-                            }, "경로에서 벗어났습니다.", "현재 위치를 재탐색합니다.");
+                            }, "経路から外れました。", "現在地をリサーチします。");
                             customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
                             customDialog.setCancelable(false);
                             customDialog.show();
@@ -368,7 +368,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        mMinewBeaconManager.stopScan();
         mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.arrival_sound);
         mediaPlayer.start();
-        binding.turn.setText("목적지 도착");
+        binding.turn.setText("目的地到着");
         binding.turnImg.setImageResource(R.drawable.arrive);
         GlobalVar.isScanning = false;
 
@@ -430,7 +430,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
 
-        }, "목적지 부근에 도착했습니다.", "경로 안내를 종료합니다.");
+        }, "目的地の付近に到着しました。", "経路案内を終了します。");
         customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         customDialog.setCancelable(false);
         customDialog.show();
@@ -488,13 +488,13 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 System.out.println("!!!! case 1 : 좌회전");
 
                                 binding.navigation.setVisibility(View.VISIBLE);
-                                binding.turn.setText("좌회전");
+                                binding.turn.setText("左折");
                                 binding.turnImg.setImageResource(R.drawable.turn_left);
                                 break;
                             case -1:
                                 System.out.println("!!!! case -1 : 우회전");
                                 binding.navigation.setVisibility(View.VISIBLE);
-                                binding.turn.setText("우회전");
+                                binding.turn.setText("右折");
                                 binding.turnImg.setImageResource(R.drawable.turn_right);
                                 break;
                             case 0:
@@ -640,10 +640,12 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     overlayCheck = false;
                 }
                 if (binding.floorSelector.getCheckedRadioButtonId() == binding.select2floor.getId()) {
-                    groundOverlayOptions = groundOverlayOptions.image(BitmapDescriptorFactory.fromResource(R.drawable.map_2th_floor));
+                    groundOverlayOptions = groundOverlayOptions.image(BitmapDescriptorFactory.fromResource(R.drawable.map_2th_floor))
+                            .positionFromBounds(new LatLngBounds(new LatLng(35.89651393057683, 128.6201298818298), new LatLng(35.89707923321034, 128.62176975983763)));
                     selectedFloor = "1";
                 } else if (binding.floorSelector.getCheckedRadioButtonId() == binding.select3floor.getId()) {
-                    groundOverlayOptions = groundOverlayOptions.image(BitmapDescriptorFactory.fromResource(R.drawable.map_3th_floor));
+                    groundOverlayOptions = groundOverlayOptions.image(BitmapDescriptorFactory.fromResource(R.drawable.map_3th_floor))
+                            .positionFromBounds(new LatLngBounds(new LatLng(35.89651393057683, 128.6201298818298), new LatLng(35.89707923321034, 128.62176975983763)));
                     selectedFloor = "2";
                 }
                 groundOverlay = mMap.addGroundOverlay(groundOverlayOptions);
@@ -816,28 +818,14 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     } //drawPolyline()
 
     void mapOverlay() {
-
-        if (overlayCheck) {
-            groundOverlay.remove();
-            overlayCheck = false;
-        }
-
         switch (GlobalVar.BeaconList.getFloor()) {
             case "1":
-                groundOverlayOptions = groundOverlayOptions.image(BitmapDescriptorFactory.fromResource(R.drawable.map_2th_floor))
-                        .positionFromBounds(new LatLngBounds(new LatLng(35.89651393057683, 128.6201298818298), new LatLng(35.89707923321034, 128.62176975983763)));
                 binding.floorSelector.check(binding.select2floor.getId());
                 break;
             case "2":
-                groundOverlayOptions = groundOverlayOptions.image(BitmapDescriptorFactory.fromResource(R.drawable.map_3th_floor))
-                        .positionFromBounds(new LatLngBounds(new LatLng(35.89651393057683, 128.6201298818298), new LatLng(35.89707923321034, 128.62176975983763)));
                 binding.floorSelector.check(binding.select3floor.getId());
                 break;
         }
-
-        groundOverlay = mMap.addGroundOverlay(groundOverlayOptions);
-        overlayCheck = true;
-
     } //mapOverlay()
 
     private void initManager() {
@@ -870,7 +858,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     break;
             }
         }
-        if(!GlobalVar.isScanning){
+        if (!GlobalVar.isScanning) {
             if (GlobalVar.mMinewBeaconManager != null) {
                 GlobalVar.mMinewBeaconManager.startScan();
             }
@@ -1101,9 +1089,9 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 Log.i(GlobalVar.TAG_ACTIVITY_FLOW, flowObj.toString());
                                 Flow flow = new Flow();
                                 if (i == 0) {
-                                    JSONObject roomRaca = flowObj.getJSONObject("room_location");
-                                    flow.setRoomName("출발지");
-                                    flow.setRoomNode(roomRaca.getInt("node_id"));
+                                    JSONObject roomLocation = flowObj.getJSONObject("room_location");
+                                    flow.setRoomName("出発地");
+                                    flow.setRoomNode(roomLocation.getInt("node_id"));
                                 } else {
                                     flow.setFlowId(flowObj.getInt("flow_id"));
                                     flow.setPatientId(flowObj.getInt("patient_id"));
@@ -1138,10 +1126,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                             //전체 목록 표시
                             Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "length" + flowList.size());
                             for (int i = 0; i < flowList.size() - 1; i++)
-                                if (i == 0)
-                                    destInfoArrayList.add(new DestInfo((i + 1) + "", "출발지", flowList.get(i + 1).getRoomName()));
-                                else
-                                    destInfoArrayList.add(new DestInfo((i + 1) + "", flowList.get(i).getRoomName(), flowList.get(i + 1).getRoomName()));
+                                destInfoArrayList.add(new DestInfo((i + 1) + "", flowList.get(i).getRoomName(), flowList.get(i + 1).getRoomName()));
 
 
                             DestAdapter destAdapter = new DestAdapter(FlowActivity.this, destInfoArrayList);
@@ -1165,7 +1150,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "서버에 진료동선 요청 실패" + e.getMessage());
-                            Toast.makeText(getApplicationContext(), "등록된 진료 동선이 없습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "登録された診療動線がありません。", Toast.LENGTH_SHORT).show();
                             finish();
 
                         }
@@ -1176,7 +1161,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
                         Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "서버에 진료동선 요청 실패" + e.getMessage());
-                        Toast.makeText(getApplicationContext(), "등록된 진료 동선이 없습니다.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "登録された診療動線がありません。", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 }
@@ -1339,6 +1324,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
 
+        System.out.println("bearing: " + true_bearing);
         return (float) true_bearing;
     } //getBearing()
 

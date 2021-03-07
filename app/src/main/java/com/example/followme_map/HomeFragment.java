@@ -92,7 +92,7 @@ public class HomeFragment extends Fragment {
         });
 
         //QR코드 생성
-        createQRCord();
+        createQRCord(LoginActivity.patientToken);
 
         //대기순번
         laravelPusher();
@@ -227,10 +227,10 @@ public class HomeFragment extends Fragment {
 
 
     //회원번호를 담은 QR코드 생성
-    public void createQRCord() {
+    public void createQRCord(String data) {
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
-            BitMatrix bitMatrix = multiFormatWriter.encode(LoginActivity.patientToken + "", BarcodeFormat.QR_CODE, 1000, 1000);
+            BitMatrix bitMatrix = multiFormatWriter.encode(data + "", BarcodeFormat.QR_CODE, 1000, 1000);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
             binding.qrImg.setImageBitmap(bitmap);

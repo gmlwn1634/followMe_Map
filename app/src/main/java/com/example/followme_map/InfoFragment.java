@@ -46,14 +46,14 @@ public class InfoFragment extends Fragment {
         binding.logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendToken();
+                loginAPI();
             }
         });
 
         binding.logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendToken();
+                loginAPI();
             }
         });
 
@@ -65,7 +65,7 @@ public class InfoFragment extends Fragment {
     }
 
 
-    public void sendToken() {
+    public void loginAPI() {
         String url = GlobalVar.URL + GlobalVar.URL_LOGOUT;
         StringRequest request = new StringRequest(
                 Request.Method.POST,

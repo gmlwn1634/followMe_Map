@@ -25,8 +25,8 @@ public class ListFragment extends Fragment {
 
         tabs = binding.tab;
 
-        tabs.addTab(tabs.newTab().setText("결제내역"));
-        tabs.addTab(tabs.newTab().setText("진료내역"));
+        tabs.addTab(tabs.newTab().setText("決済リスト"));
+        tabs.addTab(tabs.newTab().setText("診療リスト"));
         setFrag(0);
 
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

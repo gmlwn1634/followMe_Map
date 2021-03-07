@@ -213,36 +213,44 @@
     </fragment>
 
 
-    <LinearLayout
-        android:id="@+id/floorLinear"
-        android:layout_width="0dp"
+    <RadioGroup
+        android:id="@+id/floorSelector"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:orientation="vertical"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/map"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/naviSelector"
         app:layout_constraintVertical_bias="0.050000012">
 
-        <RadioGroup
-            android:id="@+id/floorSelector"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/select2floor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/radio_btn_1f_selector"
+            android:button="@android:color/transparent"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="1F"
+            android:textColor="#FFFFFF" />
 
-            <RadioButton
-                android:id="@+id/select2floor"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="2floor" />
+        <RadioButton
+            android:id="@+id/select3floor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/radio_btn_2f_selector"
+            android:button="@android:color/transparent"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="2F"
+            android:textColor="#FFFFFF" />
+    </RadioGroup>
 
-            <RadioButton
-                android:id="@+id/select3floor"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="3floor" />
-        </RadioGroup>
-    </LinearLayout>
+
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"

@@ -541,7 +541,7 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
             @Override
             public void onClick(View v) {
                 binding.naviSelector.setVisibility(View.INVISIBLE);
-                binding.floorLinear.setVisibility(View.INVISIBLE);
+                binding.floorSelector.setVisibility(View.INVISIBLE);
                 binding.naviStart.setVisibility(View.INVISIBLE);
 
 
