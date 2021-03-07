@@ -223,7 +223,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void run() {
                         //경로 이탈 - 현위치와 현위치에서 가장 가까운 노드
 //                        if (getDistanceMeter(BeaconList.getLatLng(), getNearNode().getLatLng()) >= 14) {
-                        if (getDistanceMeter(GlobalVar.BeaconList.getWGS_K_LatLng(), nearNode.getLatLng()) >= 5) { //test
+                        if (getDistanceMeter(GlobalVar.BeaconList.getWGS_K_LatLng(), nearNode.getLatLng()) >= 14) { //test
                             flag = false;
                             Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "이탈이탈");
 //                            System.out.println("디버깅 이탈: 현위치" + BeaconAdapter.thisMarker.getPosition());
@@ -245,6 +245,11 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                             customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
                             customDialog.setCancelable(false);
                             customDialog.show();
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 });
@@ -1323,8 +1328,24 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             true_bearing = radian_bearing * (180 / Math.PI);
         }
 
+//
+//        Log.i("방위각", "방위각: " + true_bearing);
+//        Log.i("방위각", "현위치 방위각: " + BeaconAdapter.thisMarker.getRotation());
+//        Log.i("방위각", "방위각 차이: " + Math.abs(BeaconAdapter.thisMarker.getRotation() - true_bearing));
+//        if (Math.abs(BeaconAdapter.thisMarker.getRotation()-true_bearing) >= 100) {
+//            true_bearing *= -1;
+//            System.out.println("바꾼 방위각: " + true_bearing);
+//        }
 
-        System.out.println("bearing: " + true_bearing);
+
+//        if (Math.abs(BeaconAdapter.thisMarker.getRotation() - true_bearing) >= 100) {
+//            true_bearing += 180;
+//            if (true_bearing >= 360) true_bearing -= 360;
+//
+//            System.out.println("바꾼 방위각: " + true_bearing);
+//        }
+
+
         return (float) true_bearing;
     } //getBearing()
 
