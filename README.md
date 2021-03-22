@@ -10,9 +10,9 @@
 > [2. Sequence Diagram](#Sequence-Diagram)   
 > [3. 使用技術](#使用技術)   
 > [4. system diagram](#使用技術)   
-> [5. 開発期間](#開発期間)  
-> >　担当部分　‐　ユーザーアプリ開発 
-> [6. DataBase 設計](#DataBase-設計)   
+> [5. 開発期間](#開発期間)   
+> > 担当部分　‐　ユーザーアプリ開発   
+> > [6. DataBase 設計](#DataBase-設計)   
 > [7. API 種類](#API-種類)   
 ---
 # サービス紹介
