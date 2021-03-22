@@ -7,12 +7,12 @@
 
 # 目次
 > [1. サービス紹介](#サービス紹介)   
-[2. Sequence Diagram](#Sequence-Diagram)   
-[3. 使用技術](#使用技術)   
-[4. system diagram](#使用技術)   
-[5. 開発期間](#開発期間)
-[6. DataBase 設計](#DataBase-設計)    
-[7. API 種類](#API-種類)      
+> [2. Sequence Diagram](#Sequence-Diagram)   
+> [3. 使用技術](#使用技術)   
+> [4. system diagram](#使用技術)   
+> [5. 開発期間](#開発期間)
+> [6. DataBase 設計](#DataBase-設計)    
+> [7. API 種類](#API-種類)      
 ---
 # サービス紹介
 > ## サービス名
