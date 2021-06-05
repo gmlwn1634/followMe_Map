@@ -16,7 +16,7 @@
             android:layout_width="0dp"
             android:layout_height="350dp"
             android:layout_marginTop="32dp"
-            android:visibility="invisible"
+            android:visibility="visible"
             app:cardCornerRadius="20dp"
             app:cardElevation="2dp"
             app:layout_constraintBottom_toTopOf="@+id/flowStartBtn"
@@ -147,7 +147,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/standbyNumCardView"
             app:layout_constraintEnd_toEndOf="@+id/standbyNumCardView"
             app:layout_constraintStart_toStartOf="@+id/standbyNumCardView"
-            app:layout_constraintTop_toTopOf="@+id/standbyNumCardView">
+            app:layout_constraintTop_toTopOf="@+id/standbyNumCardView"
+            tools:visibility="invisible">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout

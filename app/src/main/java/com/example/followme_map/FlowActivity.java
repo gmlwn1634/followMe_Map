@@ -133,7 +133,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MediaPlayer mediaPlayer;
 
     //현위치 받아왔는지 표시
-    boolean first = false;
+//    boolean first = false;
     boolean polyStart_This = false; //현위치와 출발지 연결
     public static boolean naviStartCheck = false;
 
@@ -150,6 +150,10 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         binding = ActivityFlowBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        GlobalVar.first = false;
+        GlobalVar.BeaconList.setWGS_K_LatLng(0.0,0.0);
+        GlobalVar.recivedBeacon = true;
 
         // Volley 통신 requestQueue 생성 및 초기화
         if (AppHelper.requestQueue != null)
@@ -594,8 +598,22 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        camPosition = new CameraPosition.Builder(camPosition).zoom(25).target(GlobalVar.BeaconList.getWGS_K_LatLng()).bearing(getBearing(flowNodeList.get(nearDist.getIndex()).getLatLng(), flowNodeList.get(nearDist.getIndex() + 1).getLatLng())).build();
-                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition)); //test
+
+                        float mapBearing = getBearing(flowNodeList.get(nearDist.getIndex()).getLatLng(), flowNodeList.get(nearDist.getIndex() + 1).getLatLng());
+                        float markerBearing = BeaconAdapter.thisMarker.getRotation();
+
+                        Log.i("방위각", "  맵:" + mapBearing);
+                        Log.i("방위각", "마커: " + markerBearing);
+
+//                        if (Math.abs(BeaconAdapter.thisMarker.getRotation() - mapBearing) >= 90) {
+//                            mapBearing += 180;
+//                            if (mapBearing >= 360) mapBearing -= 360;
+//                        }
+
+                        camPosition = new CameraPosition.Builder(camPosition).zoom(25).target(GlobalVar.BeaconList.getWGS_K_LatLng()).bearing(mapBearing).build();
+                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+
+
                     }
                 });
             }
@@ -930,10 +948,10 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                             if (GlobalVar.recivedBeacon) {
                                 GlobalVar.mAdapter.setItems(minewBeacons);
                                 System.out.println("현위치 : " + GlobalVar.BeaconList.getWGS_K_lat() + "," + GlobalVar.BeaconList.getWGS_K_lng());
-                                if (!first) {
+                                if (!GlobalVar.first) {
                                     if (GlobalVar.BeaconList.getWGS_K_lat() != 0.0) {
                                         System.out.println("들어왔니3");
-                                        first = true;
+                                        GlobalVar.first = true;
                                         mapOverlay();
                                         getAllFlow();
                                     }
@@ -1083,6 +1101,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             JSONObject jsonResponse = new JSONObject(response);
 
+                            Log.i("진료동선",jsonResponse.toString());
 
                             flowArr = jsonResponse.getJSONArray("flow_list"); //전체 동선
                             nodeArr = jsonResponse.getJSONArray("nodeFlow"); //첫번째 동선
@@ -1329,20 +1348,15 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
 //
-//        Log.i("방위각", "방위각: " + true_bearing);
-//        Log.i("방위각", "현위치 방위각: " + BeaconAdapter.thisMarker.getRotation());
-//        Log.i("방위각", "방위각 차이: " + Math.abs(BeaconAdapter.thisMarker.getRotation() - true_bearing));
-//        if (Math.abs(BeaconAdapter.thisMarker.getRotation()-true_bearing) >= 100) {
-//            true_bearing *= -1;
-//            System.out.println("바꾼 방위각: " + true_bearing);
-//        }
-
-
-//        if (Math.abs(BeaconAdapter.thisMarker.getRotation() - true_bearing) >= 100) {
+        Log.i("방위각", "방위각: " + radian_bearing);
+        Log.i("방위각", "현위치 방위각: " + BeaconAdapter.thisMarker.getRotation());
+        Log.i("방위각", "방위각 차이: " + Math.abs(BeaconAdapter.thisMarker.getRotation() - true_bearing));
+//
+//
+//        if (Math.abs(BeaconAdapter.thisMarker.getRotation() - true_bearing) >= 45 &&Math.abs(BeaconAdapter.thisMarker.getRotation() - true_bearing) >= 135 ) {
 //            true_bearing += 180;
 //            if (true_bearing >= 360) true_bearing -= 360;
-//
-//            System.out.println("바꾼 방위각: " + true_bearing);
+//            Log.i("방위각", "바뀐 방위각: " + true_bearing);
 //        }
 
 

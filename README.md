@@ -27,7 +27,7 @@
 - https://breadboy.tistory.com/287
 - https://developers.google.com/android/reference/com/google/android/gms/maps/model/PolylineOptions
 
-#### googleMap Compass
+#### Compass (방위각 계산 - 현위치 마커 회전, 지도 회전)
 - https://developer.android.com/guide/topics/sensors/sensors_position?hl=ko#java
 - https://stackoverflow.com/questions/50996340/android-getorientation-description-does-not-match-output-values
 - http://androstudio77.blogspot.com/p/blog-page_13.html
@@ -36,6 +36,14 @@
 - https://swlock.blogspot.com/2017/10/android-cameracompass.html
 - https://developer.android.com/guide/topics/sensors/sensors_position?hl=ko
 - https://stackoverflow.com/questions/33877621/how-to-detect-movecamera-is-finished-on-the-google-map-service/33878134
+- https://swlock.blogspot.com/2017/10/android-cameracompass.html
+
+### CCW 알고리즘 (진행방향 구별)
+- https://code0xff.tistory.com/40
+- https://degurii.tistory.com/47
+
+#### QR코드 (진료 접수)
+- https://park-duck.tistory.com/108
 
 #### thread
 - https://recipes4dev.tistory.com/150
@@ -93,8 +101,6 @@
 - https://recipes4dev.tistory.com/168
 - https://recipes4dev.tistory.com/154
 
-#### QR코드
-- https://park-duck.tistory.com/108
 
 #### 기타
 - https://developer.android.com/guide/topics/ui/controls/spinner?hl=ko#java

@@ -27,8 +27,8 @@ public class GlobalVar extends Application {
     public static final String TAG_ADAPTER_DEST = "DestAdapter";
 
 
-    //        public static final String URL = "http://172.26.3.122:8000";
-    public static final String URL = "http://34.234.79.156/index.php"; //aws
+//            public static final String URL = "http://172.26.3.122:8000";
+    public static final String URL = "http://52.78.153.155/index.php"; //aws
 
     //Server URL
     public static final String URL_LOGIN = "/api/patient/login";

@@ -42,15 +42,6 @@ public class BeaconList {
 
 
     BeaconList() {
-//        if (GlobalVar.mode == 1) {
-//            testLat = 35.89666866704047;
-//            testLng = 128.62027197619136;
-//        } else if (GlobalVar.mode == 2) {
-//            testLat = 35.896758278816;
-//            testLng = 128.62047268466;
-//        }
-
-//        System.out.println("비교 - 모드 : " + GlobalVar.mode);
 
 
         tail = new Node(null, null);
@@ -82,19 +73,6 @@ public class BeaconList {
         //이전 값 저장
         setTM_K_LatLng(filteredX, filteredY);
     }
-
-
-//    public LatLng getLatLng() {
-//        return new LatLng(testLat, testLng);
-//    }//test
-
-//    public Double getLat() {
-//        return testLat;
-//    }//test
-
-//    public Double getLng() {
-//        return testLng;
-//    }//test
 
 
     // 비콘 클래스 추가

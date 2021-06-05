@@ -2,6 +2,7 @@ package com.example.followme_map;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +23,13 @@ public class ClinicListFragment extends Fragment {
 
     private FragmentPaymentListBinding binding;
 
+
     Calendar startCalendar = Calendar.getInstance();
     Calendar endCalendar = Calendar.getInstance();
+    String startDate;
+    String endDate;
 
-    Date date = new Date();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY/MM/dd");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 
 
     //시작날짜 선택기
@@ -37,7 +40,9 @@ public class ClinicListFragment extends Fragment {
             startCalendar.set(Calendar.MONTH, month);
             startCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-            binding.startDate.setText(dateFormat.format(startCalendar.getTime()));
+            startDate = dateFormat.format(startCalendar.getTime());
+            binding.startDate.setText(startDate);
+            Log.i("날짜", startDate + "시작");
         }
     };
 
@@ -50,7 +55,9 @@ public class ClinicListFragment extends Fragment {
             endCalendar.set(Calendar.MONTH, month);
             endCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-            binding.endDate.setText(dateFormat.format(endCalendar.getTime()));
+            startDate = dateFormat.format(startCalendar.getTime());
+            binding.startDate.setText(startDate);
+            Log.i("날짜", startDate + "시작");
         }
     };
 
@@ -62,8 +69,10 @@ public class ClinicListFragment extends Fragment {
 
         //기본 설정 날짜 : 한달 전 ~ 오늘
         startCalendar.add(Calendar.MONTH, -1);
-        binding.startDate.setText(dateFormat.format(startCalendar.getTime()));
-        binding.endDate.setText(dateFormat.format(endCalendar.getTime()));
+        startDate = dateFormat.format(startCalendar.getTime());
+        endDate = dateFormat.format(endCalendar.getTime());
+        binding.startDate.setText(startDate);
+        binding.endDate.setText(endDate);
 
         //시작 날짜 설정
         binding.startDate.setOnClickListener(new View.OnClickListener() {

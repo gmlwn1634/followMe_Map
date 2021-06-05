@@ -63,7 +63,7 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
     private SupportMapFragment mapFragment;
     private CameraPosition camPosition;
     private float zoomLevel = 25;
-//    private LatLng thisPoint = new LatLng(35.89676194374706, 128.62034143980088);
+    //    private LatLng thisPoint = new LatLng(35.89676194374706, 128.62034143980088);
     private LatLng thisPoint = new LatLng(35.896672996764, 128.62037176654);
     private LatLng schoolPoint = new LatLng(35.89679977286669, 128.62092742557013);
     private LatLng startPoint, endPoint;
@@ -130,7 +130,6 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
     //1: 출발지-도착지
     //2: 현위치-도착지
     private int mode = 1;
-
 
 
     @Override
@@ -290,8 +289,6 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
-
 
 
                         if (overlayMap == getThisFloor()) {
@@ -798,7 +795,7 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
         double dy2 = NodeC.longitude - NodeB.longitude;
         double d = dx1 * dx2 + dy1 * dy2;
         double l2 = (dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2);
-        double angle = Math.acos(d / Math.sqrt(l2)); //삼각형 내적각
+        double angle = Math.acos(d / Math.sqrt(l2)); //삼각형 내각
 
         return Math.toDegrees(angle);
     } //getAngle()
@@ -812,6 +809,8 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
         double y2 = nodeB.longitude;
         double x3 = nodeC.latitude;
         double y3 = nodeC.longitude;
+
+
 
         double temp1 = (y2 - y1) * (x3 - x1) + y1 * (x2 - x1);
         double temp2 = (x2 - x1) * y3;
