@@ -130,7 +130,13 @@ public class HomeFragment extends Fragment {
 
                 try {
                     JSONObject jsonObject = new JSONObject(event.getData());
+                    Log.i("대기순번 확인", "pusher : " + jsonObject.getInt("event"));
+                    new Exception();
                     eventPatientID = jsonObject.getInt("event");
+                    // qr코드 인식 시 0 받음
+                    // 진료 종료시 종료된 사람 회원번호 받음
+                    //event 수신될 때마다 http통신으로 standby 컬럼 값 받음
+                    // event랑 현 핸드폰 회원번호랑 같으면
                     getStandByNum();
 
                 } catch (JSONException e) {
@@ -157,11 +163,16 @@ public class HomeFragment extends Fragment {
                         try {
                             JSONObject jsonResponse = new JSONObject(response);
 
+                            Log.i("대기순번 확인", "http:" + jsonResponse.toString());
+
                             int standByNum = jsonResponse.getInt("standby_number");
                             binding.standByNum.setText(String.format("%03d", standByNum));
                             JSONObject clinicInfo = jsonResponse.getJSONObject("clinic_info");
+
                             binding.clinicPlace.setText(clinicInfo.getString("clinic_subject_name"));
                             binding.acceptTime.setText(clinicInfo.getString("clinic_time"));
+
+
                             if (LoginActivity.patientId == eventPatientID) {
                                 binding.qrCodCardView.setVisibility(View.VISIBLE);
                                 binding.standbyNumCardView.setVisibility(View.INVISIBLE);

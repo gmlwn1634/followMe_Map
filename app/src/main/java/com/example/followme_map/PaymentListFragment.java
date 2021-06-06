@@ -22,9 +22,11 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.followme_map.databinding.FragmentPaymentListBinding;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -129,17 +131,21 @@ public class PaymentListFragment extends Fragment {
                     public void onResponse(String response) {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            Log.i("결제내역",jsonObject.toString());
 
+//                            JSONArray storage_record = jsonObject.getJSONArray("storage_record");
+                            Log.i("결제내역","진료과"+response.toString());
+
+//                            for (int i = 0; i< storage_record.length(); i++){
+//                                Log.i("결제내역","진료과"+storage_record.getJSONObject(i).getString("clinic_subject_name"));
+//                                Log.i("결제내역","금액"+storage_record.getJSONObject(i).getInt("storage"));
+//                                Log.i("결제내역","날짜"+storage_record.getJSONObject(i).getString("clinic_date"));
+//                                Log.i("결제내역","시간"+storage_record.getJSONObject(i).getString("clinic_time"));
+//                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-//                        Log.i(GlobalVar.TAG_FRAGMENT_INFO, response);
-//                        Toast.makeText(context, "로그아웃에 성공하였습니다.", Toast.LENGTH_SHORT).show();
-//                        Intent intent = new Intent(context, MainActivity2.class);
-//                        startActivity(intent);
                     }
                 },
                 new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
