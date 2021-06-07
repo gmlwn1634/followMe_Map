@@ -152,7 +152,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(binding.getRoot());
 
         GlobalVar.first = false;
-        GlobalVar.BeaconList.setWGS_K_LatLng(0.0,0.0);
+        GlobalVar.BeaconList.setWGS_K_LatLng(0.0, 0.0);
         GlobalVar.recivedBeacon = true;
 
         // Volley 통신 requestQueue 생성 및 초기화
@@ -226,34 +226,33 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void run() {
                         //경로 이탈 - 현위치와 현위치에서 가장 가까운 노드
-//                        if (getDistanceMeter(BeaconList.getLatLng(), getNearNode().getLatLng()) >= 14) {
                         if (getDistanceMeter(GlobalVar.BeaconList.getWGS_K_LatLng(), nearNode.getLatLng()) >= 14) { //test
                             flag = false;
+                            //이탈이 감지되면 쓰레드 동작 멈춤
+
+
                             Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "이탈이탈");
-//                            System.out.println("디버깅 이탈: 현위치" + BeaconAdapter.thisMarker.getPosition());
-//                            System.out.println("디버깅 이탈: 가까운 노드" + getNearNode().getIndex() + " 좌표 : " + getNearNode().getLatLng());
+
+                            //네비판 감추기
                             binding.navigation.setVisibility(View.INVISIBLE);
 
+                            // 알림뜨고 메시지 재생
                             mediaPlayer = MediaPlayer.create(FlowActivity.this, R.raw.off_road_sound);
                             mediaPlayer.start();
 
-
+                            getNFlowNode(0);//경로 재탐색
                             // 안내 메세지
                             CustomDialog customDialog = new CustomDialog(FlowActivity.this, new CustomDialogClickListener() {
                                 @Override
                                 public void onPositiveClick() {
-                                    getNFlowNode(0);//경로 재탐색
                                     flag = true;
+
                                 }
                             }, "経路から外れました。", "現在地をリサーチします。");
+
                             customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
                             customDialog.setCancelable(false);
                             customDialog.show();
-                            try {
-                                Thread.sleep(3000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
                         }
                     }
                 });
@@ -1101,7 +1100,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             JSONObject jsonResponse = new JSONObject(response);
 
-                            Log.i("진료동선",jsonResponse.toString());
+                            Log.i("진료동선", jsonResponse.toString());
 
                             flowArr = jsonResponse.getJSONArray("flow_list"); //전체 동선
                             nodeArr = jsonResponse.getJSONArray("nodeFlow"); //첫번째 동선

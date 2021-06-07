@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.followme_map.databinding.ActivityMainBinding;
@@ -19,64 +20,29 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Handler mHandler = new Handler();
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //블루투스 연결 확인
-                checkBluetooth();
-                connectBluetooth();
 
+        binding.login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
-        }, 2000);
+        });
+
+        binding.signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, JoinActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
 
     } //onCreate()
-
-
-    private void checkBluetooth() {
-        //블루투스 지원 유무 확인
-        if (bluetoothAdapter == null) {
-            Toast.makeText(this, "해당 기기는 블루투스를 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
-            Log.i(GlobalVar.TAG_ACTIVITY_MAIN, "블루투스 미지원 종료");
-            finish();
-        }
-    } //checkBluetooth()
-
-
-    private void connectBluetooth() {
-
-        //블루투스가 켜져있으면 로그인화면으로 이동
-        if (bluetoothAdapter.isEnabled()) {
-            Intent intent = new Intent(this, MainActivity2.class);
-            startActivity(intent);
-        } else {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, RESULT_CANCELED);
-        }
-    } //connectBluetooth()
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_CANCELED) {
-            Toast.makeText(this, "블루투스를 허용하지 않았으므로 종료합니다.", Toast.LENGTH_SHORT).show();
-            Log.i(GlobalVar.TAG_ACTIVITY_MAIN, "블루투스 비허용 종료");
-            finish();
-        } else if (resultCode == RESULT_OK) {
-            Intent intent = new Intent(this, MainActivity2.class);
-            startActivity(intent);
-        }
-    }//onActivityResult()
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    } //onDestroy()
 }

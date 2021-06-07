@@ -1,6 +1,10 @@
 package com.example.followme_map;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -35,6 +39,8 @@ public class LoginActivity extends AppCompatActivity {
     static String phoneNumber;
     static String notes;
     private static String residentNumber;
+    private BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    int REQUEST_ENABLE_BT = 10;
 
 
     @Override
@@ -45,17 +51,54 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
 
+
         binding.loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                IntentFilter bluFilter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+                registerReceiver(mBroadcastReceiver1,bluFilter);
+
                 loginAPI();
-//                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-//                startActivity(intent);
             }
         });
 
 
     }
+
+    private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+                switch(state) {
+                    case BluetoothAdapter.STATE_OFF:
+                        if (bluetoothAdapter == null) {
+                            Toast.makeText(getApplicationContext(), "해당 기기는 블루투스를 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
+                            Log.i(GlobalVar.TAG_ACTIVITY_MAIN, "블루투스 미지원 종료");
+                            finish();
+                        } else{
+                            Intent intent2 = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                            startActivityForResult(intent2, REQUEST_ENABLE_BT);
+                        }
+
+
+
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_OFF:
+                        break;
+                    case BluetoothAdapter.STATE_ON:
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_ON:
+                        break;
+                }
+
+            }
+        }
+    };
+
 
     public void loginAPI() {
 

@@ -84,7 +84,7 @@ public class InfoFragment extends Fragment {
 
                         Log.i(GlobalVar.TAG_FRAGMENT_INFO, response);
                         Toast.makeText(context, "로그아웃에 성공하였습니다.", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(context, MainActivity2.class);
+                        Intent intent = new Intent(context, MainActivity.class);
                         startActivity(intent);
                     }
                 },
