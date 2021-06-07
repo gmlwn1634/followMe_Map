@@ -1,10 +1,10 @@
 package com.example.followme_map;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,12 +23,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.followme_map.databinding.FragmentHomeBinding;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -48,6 +42,9 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+
 
 public class HomeFragment extends Fragment {
 
@@ -56,6 +53,9 @@ public class HomeFragment extends Fragment {
     private Pusher pusher;
     private int eventPatientID;  //안내재생
     private MediaPlayer mediaPlayer;
+    private int mode;
+
+    private BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
 
     @Nullable
@@ -70,10 +70,19 @@ public class HomeFragment extends Fragment {
         binding.flowStartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), FlowActivity.class);
-                startActivity(intent);
+                mode = 1;
+                checkBluetooth();
             }
         });
+
+        binding.DestSearchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mode = 2;
+                checkBluetooth();
+            }
+        });
+
 
         binding.paymentBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -84,13 +93,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        binding.DestSearchBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), DestSearchActivity.class);
-                startActivity(intent);
-            }
-        });
 
         //QR코드 생성
         createQRCord(LoginActivity.patientToken);
@@ -170,11 +172,7 @@ public class HomeFragment extends Fragment {
                             binding.clinicPlace.setText(clinicInfo.getString("clinic_subject_name"));
                             binding.acceptTime.setText(clinicInfo.getString("clinic_time"));
 
-
-//                            mediaPlayer = MediaPlayer.create(getContext(), R.raw.scan_sound);
-//                                mediaPlayer.start();
                             if (LoginActivity.patientId == eventPatientID) {
-                                Log.i("대기순번 테스트","1");
                                 //진료 종료되었을 때
 
                                 binding.qrCodCardView.setVisibility(View.VISIBLE);
@@ -182,16 +180,13 @@ public class HomeFragment extends Fragment {
                             } else if (standByNum != 0) {
                                 //진료 접수했을 때
 
-                                Log.i("대기순번 테스트","2"+standByNum);
-
 
                                 binding.qrCodCardView.setVisibility(View.INVISIBLE);
                                 binding.standbyNumCardView.setVisibility(View.VISIBLE);
 
                                 if (standByNum == 1) {
-                                    Log.i("대기순번 테스트","3");
                                     //대기순번 1일 때
-                                    
+
                                     // 안내 메세지
                                     mediaPlayer = MediaPlayer.create(getContext(), R.raw.standby_sound);
                                     mediaPlayer.start();
@@ -205,8 +200,7 @@ public class HomeFragment extends Fragment {
                                     customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
                                     customDialog.setCancelable(false);
                                     customDialog.show();
-                                } else{
-                                    Log.i("대기순번 테스트","4");
+                                } else {
                                     mediaPlayer = MediaPlayer.create(getContext(), R.raw.scan_sound);
                                     mediaPlayer.start();
                                 }
@@ -271,6 +265,45 @@ public class HomeFragment extends Fragment {
         super.onDestroy();
         pusher.disconnect();
     } //onDestroy()
+
+    private void checkBluetooth() {
+        if (bluetoothAdapter == null) {
+            Toast.makeText(getContext(), "해당 기기는 블루투스를 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
+        }
+
+        //블루투스가 켜져있으면 로그인화면으로 이동
+        if (bluetoothAdapter.isEnabled()) {
+            if (mode == 1) {
+                Intent intent = new Intent(getContext(), FlowActivity.class);
+                startActivity(intent);
+            } else if (mode == 2) {
+                Intent intent = new Intent(getActivity(), DestSearchActivity.class);
+                startActivity(intent);
+            }
+
+        } else {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, RESULT_CANCELED);
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_CANCELED) {
+            Toast.makeText(getContext(), "블루투스를 활성화 해주세요.", Toast.LENGTH_SHORT).show();
+        } else if (resultCode == RESULT_OK) {
+            if (mode == 1) {
+                Intent intent = new Intent(getActivity(), FlowActivity.class);
+                startActivity(intent);
+            } else if (mode == 2) {
+                Intent intent = new Intent(getActivity(), DestSearchActivity.class);
+                startActivity(intent);
+            }
+        }
+    }//onActivityResult()
+
 
 }
 

@@ -63,7 +63,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import static com.example.followme_map.GlobalVar.REQUEST_ENABLE_BT;
 import static com.google.maps.android.PolyUtil.distanceToLine;
 
 
@@ -152,7 +151,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         binding = ActivityFlowBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        GlobalVar.mode = 1;
         GlobalVar.first = false;
         GlobalVar.BeaconList.setWGS_K_LatLng(0.0, 0.0);
         GlobalVar.recivedBeacon = true;
@@ -863,11 +861,11 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void showBLEDialog() {
         Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(enableIntent, GlobalVar.REQUEST_ENABLE_BT);
-
     } //showBLEDialog()
 
 
     private void initListener() {
+        System.out.println("들어왔니");
         if (GlobalVar.mMinewBeaconManager != null) {
             BluetoothState bluetoothState = GlobalVar.mMinewBeaconManager.checkBluetoothState();
             switch (bluetoothState) {
@@ -888,6 +886,21 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
+//        if (GlobalVar.isScanning) {
+//            GlobalVar.isScanning = false;
+//
+//            if (GlobalVar.mMinewBeaconManager != null) {
+//                GlobalVar.mMinewBeaconManager.stopScan();
+//            }
+//        } else {
+//            GlobalVar.isScanning = true;
+//
+//            try {
+//                GlobalVar.mMinewBeaconManager.startScan();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
         GlobalVar.mMinewBeaconManager.setDeviceManagerDelegateListener(new MinewBeaconManagerListener() {
             /**
              *   if the manager find some new beacon, it will call back this method.
@@ -923,6 +936,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        System.out.println("들어왔니2");
                         binding.lat.setText(GlobalVar.BeaconList.getWGS_K_lat() + "");
                         binding.lng.setText(GlobalVar.BeaconList.getWGS_K_lng() + "");
                         binding.floor.setText(GlobalVar.BeaconList.getFloor() + "");
@@ -935,6 +949,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 System.out.println("현위치 : " + GlobalVar.BeaconList.getWGS_K_lat() + "," + GlobalVar.BeaconList.getWGS_K_lng());
                                 if (!GlobalVar.first) {
                                     if (GlobalVar.BeaconList.getWGS_K_lat() != 0.0) {
+                                        System.out.println("들어왔니3");
                                         GlobalVar.first = true;
                                         mapOverlay();
                                         getAllFlow();
@@ -989,6 +1004,65 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         GlobalVar.BeaconList.add(new BeaconData("3", "1", "15015", 35.896651613183, 128.62019085985));
         GlobalVar.BeaconList.add(new BeaconData("2", "1", "15016", 35.89665887361227, 128.6205622033809));
 
+//        String url = GlobalVar.URL + GlobalVar.URL_BEACON_LIST;
+//        StringRequest request = new StringRequest(
+//                Request.Method.GET,
+//                url,
+//                new Response.Listener<String>() { //응답을 잘 받았을 때 이 메소드가 자동으로 호출
+//                    @Override
+//                    public void onResponse(String response) {
+//                        try {
+//
+//                            JSONObject jsonResponse = new JSONObject(response);
+//
+//                            JSONArray beaconList = jsonResponse.getJSONArray("beacon_list");
+//
+//                            for (int i = 0; i < beaconList.length(); i++) {
+//                                JSONObject beacon = beaconList.getJSONObject(i);
+//                                String group = String.valueOf(beacon.getInt("group"));
+//                                String major = String.valueOf(beacon.getInt("major"));
+//                                String minor = String.valueOf(beacon.getInt("beacon_id_minor"));
+//                                double lat = beacon.getDouble("lat");
+//                                double lng = beacon.getDouble("lng");
+//                                System.out.println("천은: group" + group + "major : " + major + "minor: " + minor +
+//                                        " 좌표:" + lat + ", " + lng);
+//
+//                                BeaconList.add(new BeaconData(group, major, minor, lat, lng));
+//
+//                            }
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "비콘 정보 요청 실패" + e.getMessage());
+//                            Toast.makeText(getApplicationContext(), "등록된 비콘이 없습니다.", Toast.LENGTH_SHORT).show();
+//                            finish();
+//
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() { //에러 발생시 호출될 리스너 객체
+//                    @Override
+//                    public void onErrorResponse(VolleyError e) {
+//                        e.printStackTrace();
+//                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "비콘 정보 요청 실패" + e.getMessage());
+//                        Toast.makeText(getApplicationContext(), "등록된 비콘이 없습니다.", Toast.LENGTH_SHORT).show();
+//                        finish();
+//                    }
+//                }
+//        ) {
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                Map<String, String> headers = new HashMap<String, String>();
+//                headers.put("Authorization", "Bearer " + LoginActivity.patientToken);
+//                return headers;
+//            }
+//
+//        };
+//
+//
+//        request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
+//        AppHelper.requestQueue = Volley.newRequestQueue(this); // requestQueue 초기화 필수
+//        AppHelper.requestQueue.add(request);
 
         GlobalVar.BeaconList.getList();
 
@@ -999,11 +1073,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_ENABLE_BT:
-                if (resultCode == RESULT_CANCELED) { // 블루투스 활성화를 취소를 클릭하였다면
-                    Toast.makeText(getApplicationContext(), "블루투스를 활성화 해주세요.", Toast.LENGTH_LONG).show();
-                    finish();
-                }
+            case GlobalVar.REQUEST_ENABLE_BT:
                 break;
         }
     } //onActivityResult()
