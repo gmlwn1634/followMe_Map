@@ -146,7 +146,6 @@ public class LoginActivity extends AppCompatActivity {
                             }
 
 
-                            Log.d(GlobalVar.TAG_ACTIVITY_LOGIN, response);
                             Toast.makeText(getApplication(), "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                             startActivity(intent);

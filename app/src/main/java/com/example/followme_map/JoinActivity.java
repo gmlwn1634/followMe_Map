@@ -81,7 +81,7 @@ public class JoinActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), "패스워드 불일치", Toast.LENGTH_SHORT).show();
 
         else {
-            String url = GlobalVar.URL + GlobalVar.URL_SIGNUP;
+            String url = GlobalVar.URL + GlobalVar.URL_SIGNUP; ;
             StringRequest request = new StringRequest(
                     Request.Method.POST,
                     url,
@@ -91,7 +91,6 @@ public class JoinActivity extends AppCompatActivity {
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
                                 String message = jsonObject.getString("message");
-                                Log.d(GlobalVar.TAG_ACTIVITY_JOIN, message);
 
                                 Toast.makeText(getApplication(), "회원 등록에 성공하였습니다.", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(JoinActivity.this, LoginActivity.class);

@@ -54,7 +54,8 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private Pusher pusher;
-    private int eventPatientID;
+    private int eventPatientID;  //안내재생
+    private MediaPlayer mediaPlayer;
 
 
     @Nullable
@@ -133,10 +134,6 @@ public class HomeFragment extends Fragment {
                     Log.i("대기순번 확인", "pusher : " + jsonObject.getInt("event"));
                     new Exception();
                     eventPatientID = jsonObject.getInt("event");
-                    // qr코드 인식 시 0 받음
-                    // 진료 종료시 종료된 사람 회원번호 받음
-                    //event 수신될 때마다 http통신으로 standby 컬럼 값 받음
-                    // event랑 현 핸드폰 회원번호랑 같으면
                     getStandByNum();
 
                 } catch (JSONException e) {
@@ -167,22 +164,38 @@ public class HomeFragment extends Fragment {
 
                             int standByNum = jsonResponse.getInt("standby_number");
                             binding.standByNum.setText(String.format("%03d", standByNum));
+
                             JSONObject clinicInfo = jsonResponse.getJSONObject("clinic_info");
 
                             binding.clinicPlace.setText(clinicInfo.getString("clinic_subject_name"));
                             binding.acceptTime.setText(clinicInfo.getString("clinic_time"));
 
 
+//                            mediaPlayer = MediaPlayer.create(getContext(), R.raw.scan_sound);
+//                                mediaPlayer.start();
                             if (LoginActivity.patientId == eventPatientID) {
+                                Log.i("대기순번 테스트","1");
+                                //진료 종료되었을 때
+
                                 binding.qrCodCardView.setVisibility(View.VISIBLE);
                                 binding.standbyNumCardView.setVisibility(View.INVISIBLE);
                             } else if (standByNum != 0) {
+                                //진료 접수했을 때
+
+                                Log.i("대기순번 테스트","2"+standByNum);
+
 
                                 binding.qrCodCardView.setVisibility(View.INVISIBLE);
                                 binding.standbyNumCardView.setVisibility(View.VISIBLE);
 
-                                if (jsonResponse.getInt("standby_number") == 1) {
+                                if (standByNum == 1) {
+                                    Log.i("대기순번 테스트","3");
+                                    //대기순번 1일 때
+                                    
                                     // 안내 메세지
+                                    mediaPlayer = MediaPlayer.create(getContext(), R.raw.standby_sound);
+                                    mediaPlayer.start();
+
                                     final CustomDialog customDialog = new CustomDialog(getContext(), new CustomDialogClickListener() {
                                         @Override
                                         public void onPositiveClick() {
@@ -192,12 +205,15 @@ public class HomeFragment extends Fragment {
                                     customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
                                     customDialog.setCancelable(false);
                                     customDialog.show();
+                                } else{
+                                    Log.i("대기순번 테스트","4");
+                                    mediaPlayer = MediaPlayer.create(getContext(), R.raw.scan_sound);
+                                    mediaPlayer.start();
                                 }
 
                                 Log.i("대기순번", jsonResponse.getString("message"));
                                 Log.i(GlobalVar.TAG_FRAGMENT_HOME, "대기순번 요청 성공");
                             }
-
 
                         } catch (JSONException e) {
                             e.printStackTrace();
