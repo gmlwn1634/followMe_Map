@@ -162,6 +162,8 @@ public class BeaconAdapter {
 //            }
 //        }
 
+
+
         thisMarker = mMap.addMarker(new MarkerOptions()
                 .position(BeaconList.getWGS_K_LatLng())
                 .anchor(0.5f, 0.5f)

@@ -1,5 +1,6 @@
 package com.example.followme_map;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
@@ -19,12 +21,16 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.followme_map.databinding.ActivityLoginBinding;
+import com.minew.beacon.BluetoothState;
+import com.minew.beacon.MinewBeaconManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.example.followme_map.GlobalVar.REQUEST_ENABLE_BT;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -39,8 +45,10 @@ public class LoginActivity extends AppCompatActivity {
     static String phoneNumber;
     static String notes;
     private static String residentNumber;
-    private BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    int REQUEST_ENABLE_BT = 10;
+
+    //Bluetooth 연결
+    BluetoothAdapter mBluetoothAdapter;
+    final static int BLUETOOTH_REQUEST_CODE = 100;
 
 
     @Override
@@ -50,55 +58,41 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        GlobalVar.mMinewBeaconManager = MinewBeaconManager.getInstance(this);
 
 
         binding.loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                IntentFilter bluFilter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-                registerReceiver(mBroadcastReceiver1,bluFilter);
-
                 loginAPI();
+
             }
         });
 
 
     }
 
-    private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
-                switch(state) {
-                    case BluetoothAdapter.STATE_OFF:
-                        if (bluetoothAdapter == null) {
-                            Toast.makeText(getApplicationContext(), "해당 기기는 블루투스를 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
-                            Log.i(GlobalVar.TAG_ACTIVITY_MAIN, "블루투스 미지원 종료");
-                            finish();
-                        } else{
-                            Intent intent2 = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                            startActivityForResult(intent2, REQUEST_ENABLE_BT);
-                        }
-
-
-
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_OFF:
-                        break;
-                    case BluetoothAdapter.STATE_ON:
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_ON:
-                        break;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_ENABLE_BT:
+                if (resultCode == RESULT_OK) { // 블루투스 활성화를 확인을 클릭하였다면
+                    loginAPI();
+                } else if (resultCode == RESULT_CANCELED) { // 블루투스 활성화를 취소를 클릭하였다면
+                    Toast.makeText(getApplicationContext(), "블루투스를 활성화 해주세요.", Toast.LENGTH_LONG).show();
                 }
-
-            }
+                break;
         }
-    };
+        super.onActivityResult(requestCode, resultCode, data);
 
+
+    }
+
+    private void showBLEDialog() {
+        Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+    }
 
     public void loginAPI() {
 

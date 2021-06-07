@@ -52,9 +52,9 @@ public class GlobalVar extends Application {
     public static final String URL_BEACON_LIST = "/api/patient/beacon_list ";
 
 
-
-    //test>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    public static int mode; //1이면 진료동선안내, 2이면 길찾기
     public static boolean get = false;
+
 
     //beacon Value-------------------
     public static BeaconList BeaconList = new BeaconList();
