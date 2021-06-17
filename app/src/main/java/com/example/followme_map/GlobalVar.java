@@ -15,6 +15,7 @@ public class GlobalVar extends Application {
     public static final String TAG_ACTIVITY_MAIN = "MainActivity";
     public static final String TAG_ACTIVITY_PAYMENT = "PaymentActivity";
     public static final String TAG_ACTIVITY_FLOW = "FlowActivity";
+    public static final String TAG_ACTIVITY_DESTSEARCH = "DestSearchActivity";
 
     //fragment
     public static final String TAG_FRAGMENT_HOME = "HomeFragment";

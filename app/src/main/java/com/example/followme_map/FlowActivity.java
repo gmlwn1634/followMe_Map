@@ -68,15 +68,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private ActivityFlowBinding binding;
 
-    //beacon Value-------------------
-//    public BeaconList BeaconList = new BeaconList();
-//    private MinewBeaconManager mMinewBeaconManager;
-//    public BeaconAdapter mAdapter;
-//    private static final int REQUEST_ENABLE_BT = 2;
-//    private boolean isScanning;
-//    UserRssi comp = new UserRssi();
-//    private int state;
-
     //방위각 계산 Values-----------
     private SensorManager sm;
     private Sensor mAccelSensor; //가속도센서
@@ -126,21 +117,15 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean startMarkerCheck = false;
     private boolean endMarkerCheck = false;
     boolean flag = true;
+    FlowNode nearNode;
+    Dist nearDist;
+    public static String selectedFloor;
 
     //안내재생
     private MediaPlayer mediaPlayer;
 
-    //현위치 받아왔는지 표시
-//    boolean first = false;
     boolean polyStart_This = false; //현위치와 출발지 연결
     public static boolean naviStartCheck = false;
-
-
-    FlowNode nearNode;
-    Dist nearDist;
-
-    //    public static boolean recivedBeacon = true;
-    public static String selectedFloor;
 
 
     @Override
@@ -257,7 +242,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
             }
         }).start();
-    }
+    }//checkOffLoad()
 
     void naviStart() {
         new Thread(new Runnable() {
@@ -345,7 +330,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
             }
         }).start();
-    }
+    }//checkNearNode()
 
 
     void checkFloor() {
@@ -366,7 +351,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
             }
         }).start();
-    }
+    }//checkFloor()
 
     void arrived() {
 
@@ -442,7 +427,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         customDialog.setCancelable(false);
         customDialog.show();
 
-    }
+    }//arrived()
 
 
     void changeTurn() {
@@ -619,7 +604,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     } //setCameraPosition()
 
-    @Override
+    //지도가 준비되었을 때
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
@@ -753,7 +738,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
             }
         }).start();
-    }
+    }//checkNearDist()
 
 
     //진료동선 표시
@@ -857,7 +842,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     private void initListener() {
-        System.out.println("들어왔니");
         if (GlobalVar.mMinewBeaconManager != null) {
             BluetoothState bluetoothState = GlobalVar.mMinewBeaconManager.checkBluetoothState();
             switch (bluetoothState) {
@@ -1062,7 +1046,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     } //getAllBeacon()
 
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
@@ -1071,7 +1054,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     } //onActivityResult()
 
-    @Override
     public void onBackPressed() {
         flag = false;
         finish();
@@ -1402,19 +1384,14 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
     } //getChangedAzimut()
 
 
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         naviStartCheck = false;
-//        mMinewBeaconManager.stopScan();
         GlobalVar.isScanning = false;
         flag = false;
-//        GlobalVar.first = false;
         finish();
-
     } //onDestroy()
 
-    @Override
     protected void onResume() {
         super.onResume();
 
@@ -1427,7 +1404,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             sm.registerListener(this, mMagnetSensor, SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
     } //onResume()
 
-    @Override
     protected void onPause() {
         super.onPause();
 
