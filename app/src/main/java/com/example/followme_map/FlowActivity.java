@@ -878,6 +878,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
+        //
 //        if (GlobalVar.isScanning) {
 //            GlobalVar.isScanning = false;
 //
