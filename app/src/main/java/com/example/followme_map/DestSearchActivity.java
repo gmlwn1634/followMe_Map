@@ -111,6 +111,10 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
     private PolylineOptions polyOpt;
     private boolean polyCheck = false;
     private LatLng startPoint, endPoint;
+    private Marker endMarker;
+    private Marker startMarker;
+    private boolean startMarkerCheck = false;
+    private boolean endMarkerCheck = false;
     boolean flag = true;
     FlowNode nearNode;
     Dist nearDist;
@@ -119,7 +123,7 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
     //안내 재생
     private MediaPlayer mediaPlayer;
 
-
+    boolean polyStart_This = true; //현위치와 출발지 연결
     public static boolean naviStartCheck = false;
 
     //search
@@ -739,15 +743,6 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
 
                 naviStartCheck = true;
 
-//                if (startMarkerCheck) {
-//                    startMarker.remove();
-//                    startMarkerCheck = false;
-//                }
-//                if (endMarkerCheck) {
-//                    endMarker.remove();
-//                    endMarkerCheck = false;
-//                }
-
                 naviStart();
             }
         });
@@ -809,6 +804,15 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
             polyCheck = false;
         }
 
+        if (startMarkerCheck) {
+            startMarker.remove();
+            startMarkerCheck = false;
+        }
+        if (endMarkerCheck) {
+            endMarker.remove();
+            endMarkerCheck = false;
+        }
+
 
         polyOpt = new PolylineOptions();
         polyOpt.startCap(new RoundCap());
@@ -817,17 +821,36 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
 
 
         for (int i = 0; i < flowNodeList.size(); i++) {
+
+            Log.i("startPoly",polyStart_This+"");
+            if (polyStart_This) { //현위치-출발지 점선으로 연결
+                Log.i("startPoly","들어옴");
+                List<PatternItem> pattern = Arrays.asList(new Dash(30), new Gap(20));
+                PolylineOptions startPoly = new PolylineOptions();
+                startPoly.startCap(new RoundCap());
+                startPoly.endCap(new RoundCap());
+                startPoly.width(15f);
+                startPoly.pattern(pattern);
+                startPoly.add(GlobalVar.BeaconList.getWGS_K_LatLng());
+                startPoly.add(flowNodeList.get(0).getLatLng());
+                mMap.addPolyline(startPoly);
+                polyStart_This = false;
+            }
+
+
             if (binding.floorSelector.getCheckedRadioButtonId() == binding.select2floor.getId()) {
+
+
                 if (flowNodeList.get(i).getFloor() == 1) {
                     polyOpt.add(flowNodeList.get(i).getLatLng());
                     Log.i("draw", "들어옴2");
                     if (i == 0) {
-//                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
-//                        startMarkerCheck = true;
+                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+                        startMarkerCheck = true;
                     }
                     if (i == flowNodeList.size() - 1) {
-//                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
-//                        endMarkerCheck = true;
+                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+                        endMarkerCheck = true;
                     }
                 }
             }
@@ -836,12 +859,12 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
                     polyOpt.add(flowNodeList.get(i).getLatLng());
                     Log.i("draw", "들어옴3");
                     if (i == 0) {
-//                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
-//                        startMarkerCheck = true;
+                        startMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("출발지").icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+                        startMarkerCheck = true;
                     }
                     if (i == flowNodeList.size() - 1) {
-//                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
-//                        endMarkerCheck = true;
+                        endMarker = mMap.addMarker(new MarkerOptions().position(endPoint).title("도착지").icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+                        endMarkerCheck = true;
                     }
                 }
             }

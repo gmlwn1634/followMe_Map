@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -1132,8 +1133,8 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
                             //첫번째 동선 표시
-//                            startPoint = flowNodeList.get(0).getLatLng();
-//                            endPoint = flowNodeList.get(flowNodeList.size() - 1).getLatLng();
+                            startPoint = flowNodeList.get(0).getLatLng();
+                            endPoint = flowNodeList.get(flowNodeList.size() - 1).getLatLng();
                             drawPolyline();
 
 
