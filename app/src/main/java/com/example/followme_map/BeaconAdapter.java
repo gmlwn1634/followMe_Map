@@ -153,22 +153,19 @@ public class BeaconAdapter {
 
         makerState = true;
 
-        //test
-//        if (FlowActivity.naviStartCheck) {
-//            testLatLng = FlowActivity.flowNodeList.get(num).getLatLng();
-//            num++;
-//            if (num >= FlowActivity.flowNodeList.size()) {
-//                num = 0;
-//            }
-//        }
-
-
-
-        thisMarker = mMap.addMarker(new MarkerOptions()
-                .position(BeaconList.getWGS_K_LatLng())
-                .anchor(0.5f, 0.5f)
-                .rotation(FlowActivity.getChangedAzimut() - FlowActivity.camPosition.bearing)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
+        if(GlobalVar.mode == 1){
+            thisMarker = mMap.addMarker(new MarkerOptions()
+                    .position(BeaconList.getWGS_K_LatLng())
+                    .anchor(0.5f, 0.5f)
+                    .rotation(FlowActivity.getChangedAzimut() - FlowActivity.camPosition.bearing)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
+        } else if(GlobalVar.mode ==2){
+            thisMarker = mMap.addMarker(new MarkerOptions()
+                    .position(BeaconList.getWGS_K_LatLng())
+                    .anchor(0.5f, 0.5f)
+                    .rotation(FlowActivity.getChangedAzimut() - DestSearchActivity.camPosition.bearing)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
+        }
     }
 
     // 삼변측량에 필요한 비콘 3개 선별하는 함수

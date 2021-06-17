@@ -39,7 +39,6 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -56,7 +55,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -154,6 +152,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         GlobalVar.first = false;
         GlobalVar.BeaconList.setWGS_K_LatLng(0.0, 0.0);
         GlobalVar.recivedBeacon = true;
+        GlobalVar.mode = 1; //진료동선 안내
 
         // Volley 통신 requestQueue 생성 및 초기화
         if (AppHelper.requestQueue != null)
@@ -630,10 +629,8 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
 
 
-        //3. 현위치 계산
-        //3.1 전체 비콘 정보를 받아옴
-        System.out.println("값모냐" + GlobalVar.BeaconList.getWGS_K_LatLng());
-
+        //현위치 계산
+        // 전체 비콘 정보를 받아옴
         if (!GlobalVar.get) {
             getAllBeacon();
             GlobalVar.get = true;
@@ -825,11 +822,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 }
             }
-
-//            mMap.addMarker(new MarkerOptions()
-//                    .position(flowNodeList.get(i).getLatLng())
-//                    .draggable(true))
-//                    .setTitle(flowNodeList.get(i).getIndex() + "," + flowNodeList.get(i).getFloor());
 
         }
 
@@ -1194,9 +1186,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("lat", GlobalVar.BeaconList.getWGS_K_lat() + "");
                 params.put("lng", GlobalVar.BeaconList.getWGS_K_lng() + "");
-//                System.out.println("비교 - getAllFlow mode : " + GlobalVar.mode);
-//                System.out.println("비교 - 출발지 lat : " + BeaconList.getLat());
-//                System.out.println("비교 - 출발지 lng : " + BeaconList.getLng());
                 params.put("major", GlobalVar.BeaconList.getFloor()); //층번호
                 return params;
             }
@@ -1265,9 +1254,6 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 flowNode.setStairCheck(nodeObj.getInt("stair_check"));
                                 flowNodeList.add(flowNode);
                             }
-
-//                            startPoint = flowNodeList.get(0).getLatLng();
-//                            endPoint = flowNodeList.get(flowNodeList.size() - 1).getLatLng();
                             drawPolyline();
 
                         } catch (JSONException e) {
