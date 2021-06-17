@@ -42,6 +42,9 @@ public class InfoFragment extends Fragment {
         binding.name.setText(LoginActivity.patientName);
         binding.patientId.setText(LoginActivity.patientId + "");
         binding.phoneNumber.setText(LoginActivity.phoneNumber);
+        binding.postalCode.setText(LoginActivity.postalCode+"");
+        binding.address.setText(LoginActivity.address);
+        binding.detailAddress.setText(LoginActivity.detailAddress);
 
         binding.logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -40,11 +40,10 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/textView24"
-            app:layout_constraintEnd_toEndOf="@+id/patient_id"
-            app:layout_constraintHorizontal_bias="0.27"
-            app:layout_constraintStart_toStartOf="@+id/patient_id"
+            app:layout_constraintStart_toEndOf="@+id/textView24"
             app:layout_constraintTop_toTopOf="@+id/textView24" />
 
         <TextView
@@ -65,9 +64,7 @@
             android:textSize="20sp"
 
             app:layout_constraintBottom_toBottomOf="@+id/textView27"
-            app:layout_constraintEnd_toEndOf="@+id/phone_number"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/phone_number"
+            app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toTopOf="@+id/textView27" />
 
 
@@ -89,56 +86,62 @@
             android:textSize="20sp"
 
             app:layout_constraintBottom_toBottomOf="@+id/textView6"
-            app:layout_constraintEnd_toStartOf="@+id/modifyPhoneBtn"
-            app:layout_constraintHorizontal_bias="0.3"
-            app:layout_constraintStart_toEndOf="@+id/textView6"
+            app:layout_constraintStart_toStartOf="@+id/patient_id"
             app:layout_constraintTop_toTopOf="@+id/textView6" />
 
-
-        <ImageButton
-            android:id="@+id/modifyPhoneBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#00FFFFFF"
-            app:layout_constraintBottom_toBottomOf="@+id/textView6"
-            app:layout_constraintEnd_toEndOf="@+id/modifyAddressBtn"
-            app:layout_constraintTop_toTopOf="@+id/textView6"
-            app:srcCompat="@drawable/btn_modify" />
 
         <TextView
             android:id="@+id/textView39"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="140dp"
             android:text="住所"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/textView33"
             app:layout_constraintStart_toStartOf="@+id/textView33" />
 
-
-        <ImageButton
-            android:id="@+id/modifyAddressBtn"
+        <TextView
+            android:id="@+id/postal_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#00FFFFFF"
+            android:layout_marginBottom="50dp"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/textView39"
-            app:layout_constraintEnd_toEndOf="@+id/logoutBtn"
+            app:layout_constraintStart_toStartOf="@+id/phone_number"
             app:layout_constraintTop_toTopOf="@+id/textView39"
-            app:srcCompat="@drawable/btn_modify" />
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@+id/postal_code"
+            app:layout_constraintTop_toBottomOf="@+id/postal_code" />
+
+
+        <TextView
+            android:id="@+id/detail_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@+id/address"
+            app:layout_constraintTop_toBottomOf="@+id/address" />
 
         <TextView
             android:id="@+id/textView33"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:layout_marginBottom="190dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginBottom="150dp"
             android:text="ログアウト"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-
 
         <ImageButton
             android:id="@+id/logoutBtn"
