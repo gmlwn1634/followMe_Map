@@ -123,7 +123,7 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
     //안내 재생
     private MediaPlayer mediaPlayer;
 
-    boolean polyStart_This = true; //현위치와 출발지 연결
+    boolean polyStart_This; //현위치와 출발지 연결
     public static boolean naviStartCheck = false;
 
     //search
@@ -626,22 +626,6 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
         camPosition = new CameraPosition.Builder().target(schoolPoint).zoom(18.5f).bearing(-14.7f).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
 
-
-        // 전체 비콘 정보를 받아옴
-        if (!GlobalVar.get) {
-            getAllBeacon();
-            GlobalVar.get = true;
-        }
-
-        //스피너
-        getRoom();
-
-        // 현위치 얻기
-        initView(GlobalVar.BeaconList, mMap); //어댑터 생성
-        initManager(); //싱글톤 패턴
-        initListener(); //비콘의 신호 수신
-
-
         //층선택기 값 바뀌면 새로 그리기
         binding.floorSelector.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -664,6 +648,25 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
                 overlayCheck = true;
             }
         });
+
+
+        binding.floorSelector.check(binding.select2floor.getId());
+
+
+        // 전체 비콘 정보를 받아옴
+        if (!GlobalVar.get) {
+            getAllBeacon();
+            GlobalVar.get = true;
+        }
+
+
+        //스피너
+        getRoom();
+
+        // 현위치 얻기
+        initView(GlobalVar.BeaconList, mMap); //어댑터 생성
+        initManager(); //싱글톤 패턴
+        initListener(); //비콘의 신호 수신
 
 
         //출발지 선택 리스너
@@ -970,6 +973,7 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
                                 if (!GlobalVar.first) {
                                     if (GlobalVar.BeaconList.getWGS_K_lat() != 0.0) {
                                         GlobalVar.first = true;
+                                        binding.thisPoint.setVisibility(View.VISIBLE);
                                         mapOverlay();
                                     }
                                 }
