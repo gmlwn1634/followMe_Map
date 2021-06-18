@@ -13,6 +13,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -28,6 +30,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,13 +40,14 @@ import java.util.Map;
 public class PaymentListFragment extends Fragment {
 
     private FragmentPaymentListBinding binding;
+    private ArrayList<ArrayList<PaymentRecord>> allPaymentList = new ArrayList();
 
     Calendar startCalendar = Calendar.getInstance();
     Calendar endCalendar = Calendar.getInstance();
     String startDate;
     String endDate;
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 
     //시작날짜 선택기
@@ -82,6 +86,7 @@ public class PaymentListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentPaymentListBinding.inflate(inflater);
+
 
         //기본 설정 날짜 : 한달 전 ~ 오늘
         startCalendar.add(Calendar.MONTH, -1);
@@ -132,16 +137,33 @@ public class PaymentListFragment extends Fragment {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
 
-//                            JSONArray storage_record = jsonObject.getJSONArray("storage_record");
-                            Log.i("결제내역","진료과"+response.toString());
+                            JSONArray storage_record = jsonObject.getJSONArray("storage_record");
+                            Log.i("결제내역", "진료과" + storage_record);
 
-//                            for (int i = 0; i< storage_record.length(); i++){
-//                                Log.i("결제내역","진료과"+storage_record.getJSONObject(i).getString("clinic_subject_name"));
-//                                Log.i("결제내역","금액"+storage_record.getJSONObject(i).getInt("storage"));
-//                                Log.i("결제내역","날짜"+storage_record.getJSONObject(i).getString("clinic_date"));
-//                                Log.i("결제내역","시간"+storage_record.getJSONObject(i).getString("clinic_time"));
-//                            }
+                            for (int i = 0; i < storage_record.length(); i++) {
+                                ArrayList<PaymentRecord> paymentRecord1 = new ArrayList();
 
+                                for (int j = 0; j < storage_record.getJSONArray(i).length(); j++) {
+
+                                    PaymentRecord paymentRecord = new PaymentRecord();
+                                    paymentRecord.setPlace(storage_record.getJSONArray(i).getJSONObject(j).getString("clinic_subject_name"));
+                                    paymentRecord.setPrice(storage_record.getJSONArray(i).getJSONObject(j).getInt("storage") + "");
+                                    paymentRecord.setTime(storage_record.getJSONArray(i).getJSONObject(j).getString("clinic_time"));
+                                    paymentRecord.setDate(storage_record.getJSONArray(i).getJSONObject(j).getString("clinic_date"));
+                                    Log.i("왜안나와", "i:" + i + "j:" + j);
+                                    Log.i("왜안나와", paymentRecord.place);
+                                    Log.i("왜안나와", paymentRecord.price);
+                                    Log.i("왜안나와", paymentRecord.time);
+                                    Log.i("왜안나와", paymentRecord.date);
+                                    paymentRecord1.add(paymentRecord);
+                                }
+                                allPaymentList.add(paymentRecord1);
+                            }
+
+                            PaymentRecordListAdapter paymentRecordListAdapter = new PaymentRecordListAdapter(getContext(), allPaymentList);
+                            binding.recyclerView.setHasFixedSize(true);
+                            binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                            binding.recyclerView.setAdapter(paymentRecordListAdapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

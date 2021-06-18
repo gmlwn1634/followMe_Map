@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 
-public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class PaymentInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static class PaymentViewHolder extends RecyclerView.ViewHolder {
 
@@ -23,14 +23,14 @@ public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             super(itemView);
             time = itemView.findViewById(R.id.time);
             place = itemView.findViewById(R.id.place);
-            price = itemView.findViewById(R.id.totalPrice);
+            price = itemView.findViewById(R.id.price);
         }
     }
 
 
     private ArrayList<PaymentInfo> paymentInfoArrayList;
 
-    PaymentAdapter(ArrayList<PaymentInfo> paymentInfoArrayList) {
+    PaymentInfoAdapter(ArrayList<PaymentInfo> paymentInfoArrayList) {
         this.paymentInfoArrayList = paymentInfoArrayList;
     }
 

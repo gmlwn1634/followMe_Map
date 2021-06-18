@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -27,7 +26,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -101,8 +99,8 @@ public class PaymentActivity extends AppCompatActivity {
                                 totalPrice += paymentObj.getInt("storage");
                             }
 
-                            PaymentAdapter paymentAdapter = new PaymentAdapter(paymentInfoArrayList);
-                            binding.recyclerView.setAdapter(paymentAdapter);
+                            PaymentInfoAdapter paymentInfoAdapter = new PaymentInfoAdapter(paymentInfoArrayList);
+                            binding.recyclerView.setAdapter(paymentInfoAdapter);
 
 
                             //결제 금액이 없을 때
@@ -111,7 +109,7 @@ public class PaymentActivity extends AppCompatActivity {
                             else
                                 binding.goToPayBtn.setVisibility(View.VISIBLE);
 
-                            binding.totalPrice.setText(moneyFormatToWon(totalPrice));
+                            binding.price.setText(moneyFormatToWon(totalPrice));
 
 
                             Log.i(GlobalVar.TAG_ACTIVITY_PAYMENT, "서버에 결제내역 요청 성공" + paymentInfoArrayList.toString());
