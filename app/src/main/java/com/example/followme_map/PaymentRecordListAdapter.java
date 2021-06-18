@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,14 +26,17 @@ public class PaymentRecordListAdapter extends RecyclerView.Adapter<PaymentRecord
 
     public class PaymentRecordListViewHolder extends RecyclerView.ViewHolder {
         protected RecyclerView recyclerView;
+        protected TextView date;
 
 
         public PaymentRecordListViewHolder(View view) {
             super(view);
             this.recyclerView = (RecyclerView) view.findViewById(R.id.payRecRecycler);
+            this.date = (TextView) view.findViewById(R.id.date);
 
         }
     }
+
 
     @Override
     public PaymentRecordListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -44,11 +48,10 @@ public class PaymentRecordListAdapter extends RecyclerView.Adapter<PaymentRecord
     public void onBindViewHolder(PaymentRecordListAdapter.PaymentRecordListViewHolder holder, int position) {
 
         PaymentRecordAdapter adapter = new PaymentRecordAdapter(AllPayment.get(position));
-
         holder.recyclerView.setHasFixedSize(true);
         holder.recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         holder.recyclerView.setAdapter(adapter);
-
+        holder.date.setText(AllPayment.get(position).get(position).date);
     }
 
     @Override

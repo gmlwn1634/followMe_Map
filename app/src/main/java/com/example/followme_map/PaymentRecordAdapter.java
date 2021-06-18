@@ -41,7 +41,6 @@ public class PaymentRecordAdapter extends RecyclerView.Adapter<PaymentRecordAdap
     }
 
 
-
     public void onBindViewHolder(PaymentRecordViewHolder paymentRecordViewHolder, int position) {
         paymentRecordViewHolder
                 .time
