@@ -50,21 +50,6 @@ public class ListFragment extends Fragment {
             }
         });
 
-//        binding.paymentBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
-//
-//        binding.clinicBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                binding.tab.setBackgroundResource(R.drawable.tab2);
-//                setFrag(1);
-//            }
-//        });
-
 
         return binding.getRoot();
     }

@@ -1,20 +1,17 @@
 package com.example.followme_map;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -28,11 +25,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +42,7 @@ public class PaymentListFragment extends Fragment {
     Calendar endCalendar = Calendar.getInstance();
     String startDate;
     String endDate;
+
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -74,9 +71,9 @@ public class PaymentListFragment extends Fragment {
             endCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
 
-            startDate = dateFormat.format(startCalendar.getTime());
-            binding.startDate.setText(startDate);
-            Log.i("날짜", startDate + "시작");
+            endDate = dateFormat.format(endCalendar.getTime());
+            binding.endDate.setText(endDate);
+            Log.i("날짜", endDate + "시작");
 
         }
     };
@@ -127,6 +124,7 @@ public class PaymentListFragment extends Fragment {
     }
 
     public void searchPayListApi() {
+        allPaymentList.clear();
         String url = GlobalVar.URL + GlobalVar.URL_STORAGE_RECORD;
         StringRequest request = new StringRequest(
                 Request.Method.POST,
@@ -136,12 +134,13 @@ public class PaymentListFragment extends Fragment {
                     public void onResponse(String response) {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-
                             JSONArray storage_record = jsonObject.getJSONArray("storage_record");
-                            Log.i("결제내역", "진료과" + storage_record);
+                            int totalMoney = 0;
+
 
                             for (int i = 0; i < storage_record.length(); i++) {
-                                ArrayList<PaymentRecord> paymentRecord1 = new ArrayList();
+                                ArrayList<PaymentRecord> paymentRecords = new ArrayList();
+                                int dayTotal = 0;
 
                                 for (int j = 0; j < storage_record.getJSONArray(i).length(); j++) {
 
@@ -150,20 +149,22 @@ public class PaymentListFragment extends Fragment {
                                     paymentRecord.setPrice(storage_record.getJSONArray(i).getJSONObject(j).getInt("storage") + "");
                                     paymentRecord.setTime(storage_record.getJSONArray(i).getJSONObject(j).getString("clinic_time"));
                                     paymentRecord.setDate(storage_record.getJSONArray(i).getJSONObject(j).getString("clinic_date"));
-                                    Log.i("왜안나와", "i:" + i + "j:" + j);
-                                    Log.i("왜안나와", paymentRecord.place);
-                                    Log.i("왜안나와", paymentRecord.price);
-                                    Log.i("왜안나와", paymentRecord.time);
-                                    Log.i("왜안나와", paymentRecord.date);
-                                    paymentRecord1.add(paymentRecord);
+                                    dayTotal += Integer.parseInt(paymentRecord.price);
+                                    paymentRecord.setDayPrice(dayTotal + "");
+                                    paymentRecords.add(paymentRecord);
+
                                 }
-                                allPaymentList.add(paymentRecord1);
+                                totalMoney += dayTotal;
+                                allPaymentList.add(paymentRecords);
                             }
 
+
                             PaymentRecordListAdapter paymentRecordListAdapter = new PaymentRecordListAdapter(getContext(), allPaymentList);
+                            binding.totalPrice.setText(moneyFormatToWon(totalMoney));
                             binding.recyclerView.setHasFixedSize(true);
                             binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                             binding.recyclerView.setAdapter(paymentRecordListAdapter);
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -200,6 +201,11 @@ public class PaymentListFragment extends Fragment {
         request.setShouldCache(false); //이전 결과 있어도 새로 요청하여 응답을 보여준다.
         AppHelper.requestQueue = Volley.newRequestQueue(getContext()); // requestQueue 초기화 필수
         AppHelper.requestQueue.add(request);
+    }
+
+    public static String moneyFormatToWon(int inputMoney) {
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0");
+        return decimalFormat.format(inputMoney);
     }
 
 

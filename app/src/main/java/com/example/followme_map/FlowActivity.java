@@ -1138,7 +1138,9 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                             drawPolyline();
 
 
-                            mapFragment.getView().setVisibility(View.VISIBLE);
+                            if(!mapFragment.getView().equals(null)){
+                                mapFragment.getView().setVisibility(View.VISIBLE);
+                            }
                             binding.ready.setVisibility(View.INVISIBLE);
                             binding.recyclerView.setVisibility(View.VISIBLE);
                             binding.startEndImg.setVisibility(View.VISIBLE);

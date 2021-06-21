@@ -51,6 +51,8 @@ public class PaymentRecordAdapter extends RecyclerView.Adapter<PaymentRecordAdap
         paymentRecordViewHolder
                 .price
                 .setText(dataList.get(position).price);
+
+
     }
 
     public int getItemCount() {

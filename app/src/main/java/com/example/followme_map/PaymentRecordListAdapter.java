@@ -1,6 +1,7 @@
 package com.example.followme_map;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,12 +28,14 @@ public class PaymentRecordListAdapter extends RecyclerView.Adapter<PaymentRecord
     public class PaymentRecordListViewHolder extends RecyclerView.ViewHolder {
         protected RecyclerView recyclerView;
         protected TextView date;
+        protected TextView totalPrice;
 
 
         public PaymentRecordListViewHolder(View view) {
             super(view);
             this.recyclerView = (RecyclerView) view.findViewById(R.id.payRecRecycler);
             this.date = (TextView) view.findViewById(R.id.date);
+            this.totalPrice = (TextView) view.findViewById(R.id.totalPrice);
 
         }
     }
@@ -51,7 +54,9 @@ public class PaymentRecordListAdapter extends RecyclerView.Adapter<PaymentRecord
         holder.recyclerView.setHasFixedSize(true);
         holder.recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         holder.recyclerView.setAdapter(adapter);
-        holder.date.setText(AllPayment.get(position).get(position).date);
+        holder.date.setText(AllPayment.get(position).get(0).date);
+        holder.totalPrice.setText(AllPayment.get(position).get(adapter.getItemCount()-1).dayPrice);
+
     }
 
     @Override

@@ -5,6 +5,7 @@ public class PaymentRecord {
     public String place;
     public String price;
     public String date;
+    public String dayPrice;
 
     public void setPlace(String place) {
         this.place = place;
@@ -20,5 +21,9 @@ public class PaymentRecord {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public void setDayPrice(String dayPrice) {
+        this.dayPrice = dayPrice;
     }
 }
