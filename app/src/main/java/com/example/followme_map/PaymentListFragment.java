@@ -137,6 +137,8 @@ public class PaymentListFragment extends Fragment {
                             JSONArray storage_record = jsonObject.getJSONArray("storage_record");
                             int totalMoney = 0;
 
+                            Log.i("RECO",storage_record.toString());
+
 
                             for (int i = 0; i < storage_record.length(); i++) {
                                 ArrayList<PaymentRecord> paymentRecords = new ArrayList();

@@ -37,7 +37,7 @@ import java.util.Map;
 public class ClinicListFragment extends Fragment {
 
     private FragmentClinicListBinding binding;
-//    private ArrayList<ArrayList<PaymentRecord>> allPaymentList = new ArrayList();
+    private ArrayList<ArrayList<ClinicRecord>> allClinicList = new ArrayList();
 
 
     Calendar startCalendar = Calendar.getInstance();
@@ -122,7 +122,7 @@ public class ClinicListFragment extends Fragment {
     }
 
     public void searchFlowListApi() {
-//        allPaymentList.clear();
+        allClinicList.clear();
         String url = GlobalVar.URL + GlobalVar.URL_FLOW_RECORD;
         StringRequest request = new StringRequest(
                 Request.Method.POST,
@@ -133,34 +133,35 @@ public class ClinicListFragment extends Fragment {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             JSONArray flow_record = jsonObject.getJSONArray("flow_record");
+
                             Log.i("RECORD", flow_record.toString());
 
 
-//                            for (int i = 0; i < storage_record.length(); i++) {
-//                                ArrayList<PaymentRecord> paymentRecords = new ArrayList();
-//
-//                                for (int j = 0; j < storage_record.getJSONArray(i).length(); j++) {
-//
-//                                    PaymentRecord paymentRecord = new PaymentRecord();
-//                                    paymentRecord.setPlace(storage_record.getJSONArray(i).getJSONObject(j).getString("clinic_subject_name"));
-//                                    paymentRecord.setPrice(storage_record.getJSONArray(i).getJSONObject(j).getInt("storage") + "");
-//                                    paymentRecord.setTime(storage_record.getJSONArray(i).getJSONObject(j).getString("clinic_time"));
-//                                    paymentRecord.setDate(storage_record.getJSONArray(i).getJSONObject(j).getString("clinic_date"));
-//                                    dayTotal += Integer.parseInt(paymentRecord.price);
-//                                    paymentRecord.setDayPrice(dayTotal + "");
-//                                    paymentRecords.add(paymentRecord);
-//
-//                                }
-//                                totalMoney += dayTotal;
-//                                allPaymentList.add(paymentRecords);
-//                            }
+                            //날짜
+                            //룸네임
+                            //시간
 
 
-//                            PaymentRecordListAdapter paymentRecordListAdapter = new PaymentRecordListAdapter(getContext(), allPaymentList);
-//                            binding.totalPrice.setText(moneyFormatToWon(totalMoney));
-//                            binding.recyclerView.setHasFixedSize(true);
-//                            binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-//                            binding.recyclerView.setAdapter(paymentRecordListAdapter);
+                            for (int i = 0; i < flow_record.length(); i++) {
+                                ArrayList<ClinicRecord> clinicRecords = new ArrayList();
+
+                                for (int j = 0; j < flow_record.getJSONArray(i).length(); j++) {
+
+                                    ClinicRecord clinicRecord = new ClinicRecord();
+                                    clinicRecord.setPlace(flow_record.getJSONArray(i).getJSONObject(j).getJSONObject("room_location").getString("room_name"));
+                                    clinicRecord.setDate(flow_record.getJSONArray(i).getJSONObject(j).getString("flow_create_date").substring(0,10));
+                                    clinicRecord.setTime(flow_record.getJSONArray(i).getJSONObject(j).getString("flow_create_date").substring(11, 19));
+                                    clinicRecords.add(clinicRecord);
+
+                                }
+                                allClinicList.add(clinicRecords);
+                            }
+
+
+                            ClinicRecordListAdapter clinicRecordListAdapter = new ClinicRecordListAdapter(getContext(), allClinicList);
+                            binding.recyclerView.setHasFixedSize(true);
+                            binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                            binding.recyclerView.setAdapter(clinicRecordListAdapter);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
