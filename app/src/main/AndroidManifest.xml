@@ -28,7 +28,6 @@
         android:usesCleartextTraffic="true">
         <activity android:name=".DestSearchActivity"></activity>
         <activity android:name=".ImPortActivity" />
-        <!-- <activity android:name=".CustomDialog" /> -->
         <activity android:name=".PaymentActivity" />
         <activity android:name=".JoinActivity" />
         <activity android:name=".HomeActivity" />
