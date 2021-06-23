@@ -1,5 +1,7 @@
 package com.example.followme_map;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -153,13 +155,13 @@ public class BeaconAdapter {
 
         makerState = true;
 
-        if(GlobalVar.mode == 1){
+        if (GlobalVar.mode == 1) {
             thisMarker = mMap.addMarker(new MarkerOptions()
                     .position(BeaconList.getWGS_K_LatLng())
                     .anchor(0.5f, 0.5f)
                     .rotation(FlowActivity.getChangedAzimut() - FlowActivity.camPosition.bearing)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.this_point)));
-        } else if(GlobalVar.mode ==2){
+        } else if (GlobalVar.mode == 2) {
             thisMarker = mMap.addMarker(new MarkerOptions()
                     .position(BeaconList.getWGS_K_LatLng())
                     .anchor(0.5f, 0.5f)

@@ -95,7 +95,8 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
     private SupportMapFragment mapFragment;
     private GoogleMap mMap;
     public static CameraPosition camPosition;
-    private final LatLng schoolPoint = new LatLng(35.89679977286669, 128.62092742557013);
+//    private final LatLng schoolPoint = new LatLng(35.89679977286669, 128.62092742557013);
+    private final LatLng schoolPoint = new LatLng(35.89672118272869, 128.62047684589012);
     private GroundOverlay groundOverlay;
     private GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
     private boolean overlayCheck = false;
@@ -623,7 +624,7 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
         mMap = googleMap;
 
         //1. 카메라 포지션
-        camPosition = new CameraPosition.Builder().target(schoolPoint).zoom(18.5f).bearing(-14.7f).build();
+        camPosition = new CameraPosition.Builder().target(schoolPoint).zoom(19.7f).bearing(-14.7f).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
 
         //층선택기 값 바뀌면 새로 그리기

@@ -280,6 +280,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="debug lat:"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -287,6 +288,7 @@
             android:id="@+id/lat_debug"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/textView44"
             app:layout_constraintStart_toEndOf="@+id/textView44"
             app:layout_constraintTop_toTopOf="@+id/textView44" />
@@ -297,6 +299,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="lng:"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/lat_debug"
             app:layout_constraintStart_toEndOf="@+id/lat_debug"
             app:layout_constraintTop_toTopOf="@+id/lat_debug" />
@@ -305,6 +308,7 @@
             android:id="@+id/lng_debug"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/textView45"
             app:layout_constraintStart_toEndOf="@+id/textView45"
             app:layout_constraintTop_toTopOf="@+id/textView45" />
