@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.yuliwuli.blescan.demo">
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name="com.minewbeacon.blescan.demo.DestSearchActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.minewbeacon.blescan.demo.ImPortActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.minewbeacon.blescan.demo.PaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.minewbeacon.blescan.demo.FlowActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.minewbeacon.blescan.demo.HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.minewbeacon.blescan.demo.JoinActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.minewbeacon.blescan.demo.LoginActivity"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBAkKGi4PR849qH0W2cBKRnR2gEBr6Tsvk" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name="com.minewbeacon.blescan.demo.MainActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.minewbeacon.blescan.demo.MainActivity2"
+            android:screenOrientation="portrait">
+
+<!--             <intent-filter>-->
+<!--             <action android:name="android.intent.action.MAIN" />-->
+
+
+<!--             <category android:name="android.intent.category.LAUNCHER" />-->
+<!--             </intent-filter>-->
+        </activity>
+
+        <service android:name="com.minew.beacon.ScanService" />
+        <receiver android:name="com.minew.beacon.BluetoothChangedReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
