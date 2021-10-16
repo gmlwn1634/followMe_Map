@@ -65,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text=" 원"
+            android:text="@string/paymentUnit"
             android:textColor="#FF6E6E"
             android:textSize="22sp"
             app:layout_constraintBottom_toBottomOf="parent"

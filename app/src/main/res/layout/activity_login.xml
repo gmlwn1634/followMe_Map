@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context="com.minewbeacon.blescan.demo.LoginActivity">
+    tools:context="com.minewbeacon.blescan.demo.MainActivity">
 
     <ImageView
         android:id="@+id/imageView2"
@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="60dp"
-                android:text="ID"
+                android:text="@string/id"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="@+id/id"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -61,7 +61,7 @@
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PASSWORD"
+                android:text="@string/password"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="@+id/password"
                 app:layout_constraintStart_toStartOf="@+id/password" />
@@ -91,7 +91,7 @@
         android:layout_height="48dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/button_style3"
-        android:text="LOGIN"
+        android:text="@string/loginBtn"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="@+id/cardView"
         app:layout_constraintHorizontal_bias="0.0"

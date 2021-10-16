@@ -24,15 +24,14 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:padding="5dp">
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -56,7 +55,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
-                android:text="출발지"
+                android:text="@string/startPoint"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/startRoom"
                 app:layout_constraintStart_toStartOf="@+id/startRoom" />
 
@@ -64,7 +64,7 @@
                 android:id="@+id/thisP"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="現在地"
+                android:text="@string/currentLocaction"
                 android:textColor="#000000"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="@+id/startRoom"
@@ -74,8 +74,7 @@
             <Spinner
                 android:id="@+id/startRoom"
                 android:layout_width="0dp"
-                android:layout_height="20dp"
-                android:layout_marginBottom="8dp"
+                android:layout_height="48dp"
                 android:textAlignment="textStart"
                 app:layout_constraintBottom_toTopOf="@+id/line"
                 app:layout_constraintEnd_toEndOf="@+id/endRoom"
@@ -85,15 +84,16 @@
                 android:id="@+id/textView38"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="도착지"
+                android:layout_marginTop="2dp"
+                android:text="@string/endPoint"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/line"
                 app:layout_constraintTop_toBottomOf="@+id/line" />
 
             <Spinner
                 android:id="@+id/endRoom"
                 android:layout_width="0dp"
-                android:layout_height="20dp"
+                android:layout_height="48dp"
                 android:layout_marginEnd="16dp"
                 android:textAlignment="textStart"
                 app:layout_constraintEnd_toStartOf="@+id/showFlow"
@@ -126,13 +126,13 @@
                 android:id="@+id/showFlow"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_marginTop="8dp"
                 android:background="#7FD3DD"
-                android:text="경로표시"
+                android:text="@string/pathMark"
                 android:textColor="#FFFFFF"
+                android:textSize="17sp"
                 app:layout_constraintBottom_toBottomOf="@+id/endRoom"
                 app:layout_constraintEnd_toEndOf="@+id/line"
-                app:layout_constraintTop_toBottomOf="@+id/line" />
+                app:layout_constraintTop_toTopOf="@+id/endRoom" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -220,27 +220,29 @@
 
         <RadioButton
             android:id="@+id/select2floor"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:background="@drawable/radio_btn_1f_selector"
             android:button="@android:color/transparent"
             android:gravity="center"
             android:padding="10dp"
             android:text="1F"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
 
         <RadioButton
             android:id="@+id/select3floor"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:background="@drawable/radio_btn_2f_selector"
             android:button="@android:color/transparent"
             android:gravity="center"
             android:padding="10dp"
             android:text="2F"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
     </RadioGroup>
 
 
@@ -285,7 +287,7 @@
                 android:id="@+id/textView10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="현위치 →"
+                android:text="@string/currentLocaction2"
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/constraintLayout8"
@@ -303,7 +305,7 @@
 
                 <ImageButton
                     android:id="@+id/imageButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@android:color/transparent"
                     app:layout_constraintBottom_toBottomOf="parent"

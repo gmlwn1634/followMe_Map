@@ -131,6 +131,7 @@ public class ClinicListFragment extends Fragment {
                     public void onResponse(String response) {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
+                            Log.i("response", response.toString());
                             JSONArray flow_record = jsonObject.getJSONArray("flow_record");
 
                             Log.i("RECORD", flow_record.toString());
@@ -161,9 +162,12 @@ public class ClinicListFragment extends Fragment {
                             binding.recyclerView.setHasFixedSize(true);
                             binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                             binding.recyclerView.setAdapter(clinicRecordListAdapter);
+                            Log.i(GlobalVar.TAG_FRAGMENT_INFO, GlobalVar.MSG_REQUEST_CLINIC_SUCCESS+ allClinicList.toString());
 
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Log.i(GlobalVar.TAG_FRAGMENT_INFO, GlobalVar.MSG_REQUEST_CLINIC_FAILED+ e.getMessage());
+
                         }
 
                     }
@@ -172,7 +176,7 @@ public class ClinicListFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
-                        Log.i(GlobalVar.TAG_FRAGMENT_INFO, "결제내역 불러오기 실패" + e.getMessage());
+                        Log.i(GlobalVar.TAG_FRAGMENT_INFO, GlobalVar.MSG_REQUEST_CLINIC_FAILED + e.getMessage());
                     }
                 }
         ) {
@@ -186,6 +190,9 @@ public class ClinicListFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
+                Log.i("response", startDate.toString());
+                Log.i("response", endDate.toString());
                 params.put("start_date", startDate);
                 params.put("end_date", endDate);
 

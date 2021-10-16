@@ -10,7 +10,7 @@
         android:id="@+id/ready"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="진료동선을 불러오고 있습니다."
+        android:text="@string/roadingMsg"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,6 +32,7 @@
         app:uiScrollGestures="true"
         app:uiZoomGestures="true"
         tools:context="com.example.styledmap.MapsActivityString"
+        tools:layout="@layout/activity_flow"
         tools:visibility="visible">
 
     </fragment>
@@ -92,8 +93,8 @@
 
     <RadioGroup
         android:id="@+id/floorSelector"
-        android:layout_width="38dp"
-        android:layout_height="84dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:visibility="invisible"
@@ -103,27 +104,31 @@
 
         <RadioButton
             android:id="@+id/select2floor"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:background="@drawable/radio_btn_1f_selector"
             android:button="@android:color/transparent"
             android:gravity="center"
             android:padding="10dp"
-            android:text="1F"
-            android:textColor="#FFFFFF" />
+            android:text="@string/_1f"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            tools:visibility="visible" />
 
         <RadioButton
             android:id="@+id/select3floor"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:background="@drawable/radio_btn_2f_selector"
             android:button="@android:color/transparent"
             android:gravity="center"
             android:padding="10dp"
-            android:text="2F"
-            android:textColor="#FFFFFF" />
+            android:text="@string/_2f"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            tools:visibility="visible" />
     </RadioGroup>
 
 
@@ -194,7 +199,7 @@
                 android:id="@+id/textView10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="현위치 →"
+                android:text="@string/currentLocaction2"
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/constraintLayout8"
@@ -212,14 +217,15 @@
 
                 <ImageButton
                     android:id="@+id/imageButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@android:color/transparent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/navi_menu" />
+                    app:srcCompat="@drawable/navi_menu"
+                    tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 

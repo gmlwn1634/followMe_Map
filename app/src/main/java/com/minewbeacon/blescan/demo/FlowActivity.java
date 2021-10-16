@@ -241,7 +241,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     flag = true;
 
                                 }
-                            }, "경로에서 멀어졌습니다.", "경로를 재검색합니다.");
+                            }, GlobalVar.MSG_DIE_PATH,GlobalVar.MSG_RESEARCH_PATH);
 
                             customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
                             customDialog.setCancelable(false);
@@ -386,10 +386,10 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                             public void onResponse(String response) {
                                 try {
                                     JSONObject jsonResponse = new JSONObject(response);
-                                    Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "목적지 도착 알림 성공");
+                                    Log.i(GlobalVar.TAG_ACTIVITY_FLOW, GlobalVar.MSG_ARRIVED_SUCCESS);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
-                                    Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "목적지 도착 알림 실패" + e.getMessage());
+                                    Log.i(GlobalVar.TAG_ACTIVITY_FLOW, GlobalVar.MSG_ARRIVED_FAILED + e.getMessage());
 
                                 }
 
@@ -399,7 +399,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                             @Override
                             public void onErrorResponse(VolleyError e) {
                                 e.printStackTrace();
-                                Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "목적지 도착 알림 실패" + e.getMessage());
+                                Log.i(GlobalVar.TAG_ACTIVITY_FLOW, GlobalVar.MSG_ARRIVED_FAILED + e.getMessage());
                             }
                         }
                 ) {
@@ -430,7 +430,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
 
-        }, "목적지 주변에 도착했습니다.", "경로 안내를 종료합니다.");
+        }, GlobalVar.MSG_ARRIVED, GlobalVar.MSG_EXIT_PATH);
         customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         customDialog.setCancelable(false);
         customDialog.show();
@@ -1074,7 +1074,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 Flow flow = new Flow();
                                 if (i == 0) {
                                     JSONObject roomLocation = flowObj.getJSONObject("room_location");
-                                    flow.setRoomName("出発地");
+                                    flow.setRoomName("출발지");
                                     flow.setRoomNode(roomLocation.getInt("node_id"));
                                 } else {
                                     flow.setFlowId(flowObj.getInt("flow_id"));
@@ -1134,10 +1134,11 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                             binding.naviStart.setVisibility(View.VISIBLE);
 
 
+
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "서버에 진료동선 요청 실패" + e.getMessage());
-                            Toast.makeText(getApplicationContext(), "등록된 진료동선이 없습니다.", Toast.LENGTH_SHORT).show();
+                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, GlobalVar.MSG_REQUEST_PATH_FAILED + e.getMessage());
+                            Toast.makeText(getApplicationContext(), GlobalVar.MSG_NO_PATH , Toast.LENGTH_SHORT).show();
                             finish();
 
                         }
@@ -1147,8 +1148,8 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
-                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "서버에 진료동선 요청 실패" + e.getMessage());
-                        Toast.makeText(getApplicationContext(), "등록된 진료동선이 없습니다.", Toast.LENGTH_SHORT).show();
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, GlobalVar.MSG_REQUEST_PATH_FAILED +e.getMessage());
+                        Toast.makeText(getApplicationContext(), GlobalVar.MSG_NO_PATH, Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 }
@@ -1230,7 +1231,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "서버에 진료동선 요청 실패" + e.getMessage());
+                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, GlobalVar.MSG_REQUEST_PATH_FAILED + e.getMessage());
                         }
 
 
@@ -1240,7 +1241,7 @@ public class FlowActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
-                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "서버에 진료동선 요청 실패" + e.getMessage());
+                        Log.i(GlobalVar.TAG_ACTIVITY_FLOW, GlobalVar.MSG_REQUEST_PATH_FAILED + e.getMessage());
                     }
                 }
         ) {

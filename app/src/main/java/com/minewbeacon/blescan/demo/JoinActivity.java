@@ -69,16 +69,16 @@ public class JoinActivity extends AppCompatActivity {
 
         //공란 체크
         if (id.equals("") || residentNumber1.equals("") || residentNumber2.equals("") || password.equals("") || passwordConfirm.equals("") || name.equals("") || phone.equals("") || postalCode.equals("") || address.equals("") || detailAddress.equals(""))
-            Toast.makeText(getApplication(), "공란이 있습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplication(), GlobalVar.MSG_JOIN_BLANK, Toast.LENGTH_SHORT).show();
 
         //패스워드 형식 확인
         if (!password.matches(pwdVali)) {
-            Toast.makeText(getApplication(), "비밀번호 형식 불일치", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplication(), GlobalVar.MSG_JOIN_PWFORM_MISSMATCH, Toast.LENGTH_SHORT).show();
         }
 
         //패스워드 일치 확인
         else if (!password.equals(passwordConfirm))
-            Toast.makeText(getApplication(), "패스워드 불일치", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplication(), GlobalVar.MSG_JOIN_PW_MISSMATCH, Toast.LENGTH_SHORT).show();
 
         else {
             String url = GlobalVar.URL + GlobalVar.URL_SIGNUP; ;
@@ -92,12 +92,14 @@ public class JoinActivity extends AppCompatActivity {
                                 JSONObject jsonObject = new JSONObject(response);
                                 String message = jsonObject.getString("message");
 
-                                Toast.makeText(getApplication(), "회원 등록에 성공하였습니다.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplication(), GlobalVar.MSG_REQUEST_JOIN_SUCCESS, Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(JoinActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 finish();
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                Log.i(GlobalVar.TAG_ACTIVITY_FLOW, GlobalVar.MSG_REQUEST_JOIN_FAILED + e.getMessage());
+
                             }
 
                         }
@@ -106,7 +108,7 @@ public class JoinActivity extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError e) {
                             e.printStackTrace();
-                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, "회원가입 실패" + e.getMessage());
+                            Log.i(GlobalVar.TAG_ACTIVITY_FLOW, GlobalVar.MSG_REQUEST_JOIN_FAILED + e.getMessage());
                         }
                     }
             ) {

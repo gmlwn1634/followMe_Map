@@ -87,7 +87,7 @@ public class InfoFragment extends Fragment {
                         }
 
                         Log.i(GlobalVar.TAG_FRAGMENT_INFO, response);
-                        Toast.makeText(context, "로그아웃에 성공하였습니다.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, GlobalVar.MSG_REQUEST_LOGOUT_SUCCESS , Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, MainActivity.class);
                         startActivity(intent);
                     }
@@ -96,7 +96,7 @@ public class InfoFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
-                        Log.i(GlobalVar.TAG_FRAGMENT_INFO, "로그아웃 실패" + e.getMessage());
+                        Log.i(GlobalVar.TAG_FRAGMENT_INFO, GlobalVar.MSG_REQUEST_LOGOUT_FAILED + e.getMessage());
                     }
                 }
         ) {

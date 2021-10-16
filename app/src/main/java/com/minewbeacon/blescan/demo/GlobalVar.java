@@ -6,6 +6,46 @@ import com.minew.beacon.MinewBeaconManager;
 
 public class GlobalVar extends Application {
 
+    //print MSG
+    public static final String MSG_ROADING_PATH = "진료동선을 불러오고 있습니다.";
+    public static final String MSG_DIE_PATH = "경로에서 멀어졌습니다.";
+    public static final String MSG_RESEARCH_PATH = "경로를 재검색합니다.";
+    public static final String MSG_EXIT_PATH = "경로 안내를 종료합니다.";
+    public static final String MSG_REQUEST_PATH_FAILED = "서버에 진료동선 요청 실패";
+    public static final String MSG_NO_PATH = "등록된 진료동선이 없습니다.";
+
+    public static final String MSG_ARRIVED = "목적지 주변에 도착했습니다.";
+    public static final String MSG_ARRIVED_FAILED = "목적지 도착 알림 실패";
+    public static final String MSG_ARRIVED_SUCCESS = "목적지 도착 알림 성공";
+
+    public static final String MSG_NO_BLUETOOTH = "해당 기기는 블루투스를 지원하지 않습니다.";
+    public static final String MSG_REQUEST_BLUETOOTH = "블루투스를 활성화 해주세요.";
+
+
+    public static final String MSG_JOIN_BLANK = "패스워드 공란";
+    public static final String MSG_JOIN_PW_MISSMATCH = "패스워드 불일치";
+    public static final String MSG_JOIN_PWFORM_MISSMATCH = "패스워드 형식 불일치";
+
+    public static final String MSG_REQUEST_JOIN_SUCCESS = "회원가입 성공";
+    public static final String MSG_REQUEST_JOIN_FAILED = "서버에 회원가입 요청 실패";
+
+    public static final String MSG_REQUEST_LOGIN_SUCCESS = "로그인 성공";
+    public static final String MSG_REQUEST_LOGIN_FAILED = "로그인 실패";
+
+    public static final String MSG_REQUEST_LOGOUT_SUCCESS = "로그아웃 성공";
+    public static final String MSG_REQUEST_LOGOUT_FAILED = "로그아웃 실패";
+
+    public static final String MSG_REQUEST_STANDBY_NUMBER_SUCCESS = "서버에 대기순번 요청 성공";
+    public static final String MSG_REQUEST_STANDBY_NUMBER_FAILED= "서버에 대기순번 요청 실패";
+
+    public static final String MSG_REQUEST_CLINIC_SUCCESS = "서버에 진료내역 요청 성공";
+    public static final String MSG_REQUEST_CLINIC_FAILED = "서버에 진료내역 요청 실패";
+
+
+    public static final String MSG_REQUEST_PAYMENT_SUCCESS = "서버에 결제내역 요청 성공";
+    public static final String MSG_REQUEST_PAYMENT_FAILED = "서버에 결제내역 요청 실패";
+
+
     //activity
     public static final String TAG_ACTIVITY_JOIN = "JoinActivity";
     public static final String TAG_ACTIVITY_LOGIN = "LoginActivity";

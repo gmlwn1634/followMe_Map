@@ -236,7 +236,7 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
                                 public void onPositiveClick() {
                                     flag = true;
                                 }
-                            }, "경로에서 멀어졌습니다.", "경로를 재검색합니다.");
+                            }, GlobalVar.MSG_DIE_PATH,  GlobalVar.MSG_RESEARCH_PATH);
 
                             customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
                             customDialog.setCancelable(false);
@@ -378,7 +378,7 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
             }
 
 
-        }, "목적지 주변에 도착했습니다.", "동선 안내를 종료합니다.");
+        }, GlobalVar.MSG_ARRIVED, GlobalVar.MSG_EXIT_PATH);
         customDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         customDialog.setCancelable(false);
         customDialog.show();
@@ -1064,7 +1064,7 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.i(GlobalVar.TAG_ACTIVITY_DESTSEARCH, "서버에 진료동선 요청 실패" + e.getMessage());
+                            Log.i(GlobalVar.TAG_ACTIVITY_DESTSEARCH, GlobalVar.MSG_REQUEST_PATH_FAILED+ e.getMessage());
                         }
 
 
@@ -1074,7 +1074,7 @@ public class DestSearchActivity extends AppCompatActivity implements OnMapReadyC
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
-                        Log.i(GlobalVar.TAG_ACTIVITY_DESTSEARCH, "서버에 진료동선 요청 실패" + e.getMessage());
+                        Log.i(GlobalVar.TAG_ACTIVITY_DESTSEARCH, GlobalVar.MSG_REQUEST_PATH_FAILED + e.getMessage());
                     }
                 }
         ) {

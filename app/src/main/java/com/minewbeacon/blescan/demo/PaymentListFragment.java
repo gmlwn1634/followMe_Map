@@ -177,7 +177,7 @@ public class PaymentListFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
-                        Log.i(GlobalVar.TAG_FRAGMENT_INFO, "결제내역 불러오기 실패" + e.getMessage());
+                        Log.i(GlobalVar.TAG_FRAGMENT_INFO, GlobalVar.MSG_REQUEST_PAYMENT_FAILED + e.getMessage());
                     }
                 }
         ) {

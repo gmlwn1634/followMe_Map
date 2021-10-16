@@ -112,10 +112,10 @@ public class PaymentActivity extends AppCompatActivity {
                             binding.price.setText(moneyFormatToWon(totalPrice));
 
 
-                            Log.i(GlobalVar.TAG_ACTIVITY_PAYMENT, "서버에 결제내역 요청 성공" + paymentInfoArrayList.toString());
+                            Log.i(GlobalVar.TAG_ACTIVITY_PAYMENT, GlobalVar.MSG_REQUEST_PAYMENT_SUCCESS + paymentInfoArrayList.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.i(GlobalVar.TAG_ACTIVITY_PAYMENT, "서버에 결제내역 요청 실패" + e.getMessage());
+                            Log.i(GlobalVar.TAG_ACTIVITY_PAYMENT, GlobalVar.MSG_REQUEST_PAYMENT_FAILED + e.getMessage());
                         }
 
 
@@ -126,7 +126,7 @@ public class PaymentActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
-                        Log.i(GlobalVar.TAG_ACTIVITY_PAYMENT, "서버에 결제내역 요청 실패" + e.getMessage());
+                        Log.i(GlobalVar.TAG_ACTIVITY_PAYMENT, GlobalVar.MSG_REQUEST_PAYMENT_FAILED + e.getMessage());
                     }
                 }
         ) {

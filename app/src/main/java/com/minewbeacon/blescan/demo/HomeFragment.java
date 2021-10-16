@@ -207,12 +207,12 @@ public class HomeFragment extends Fragment {
                                 }
 
                                 Log.i("대기순번", jsonResponse.getString("message"));
-                                Log.i(GlobalVar.TAG_FRAGMENT_HOME, "대기순번 요청 성공");
+                                Log.i(GlobalVar.TAG_FRAGMENT_HOME, GlobalVar.MSG_REQUEST_STANDBY_NUMBER_SUCCESS);
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.i(GlobalVar.TAG_FRAGMENT_HOME, "대기순번 요청 실패" + e.getMessage());
+                            Log.i(GlobalVar.TAG_FRAGMENT_HOME, GlobalVar.MSG_REQUEST_STANDBY_NUMBER_FAILED + e.getMessage());
                         }
 
                     }
@@ -221,7 +221,7 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         e.printStackTrace();
-                        Log.i(GlobalVar.TAG_FRAGMENT_HOME, "대기순번 요청 실패" + e.getMessage());
+                        Log.i(GlobalVar.TAG_FRAGMENT_HOME, GlobalVar.MSG_REQUEST_STANDBY_NUMBER_FAILED + e.getMessage());
                     }
                 }
         ) {
@@ -269,7 +269,7 @@ public class HomeFragment extends Fragment {
 
     private void checkBluetooth() {
         if (bluetoothAdapter == null) {
-            Toast.makeText(getContext(), "해당 기기는 블루투스를 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), GlobalVar.MSG_NO_BLUETOOTH, Toast.LENGTH_SHORT).show();
         }
 
         //블루투스가 켜져있으면 로그인화면으로 이동
@@ -293,7 +293,7 @@ public class HomeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_CANCELED) {
-            Toast.makeText(getContext(), "블루투스를 활성화 해주세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), GlobalVar.MSG_REQUEST_BLUETOOTH, Toast.LENGTH_SHORT).show();
         } else if (resultCode == RESULT_OK) {
             if (mode == 1) {
                 Intent intent = new Intent(getActivity(), FlowActivity.class);

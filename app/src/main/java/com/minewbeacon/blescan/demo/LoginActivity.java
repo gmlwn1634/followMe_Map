@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) { // 블루투스 활성화를 확인을 클릭하였다면
                     loginAPI();
                 } else if (resultCode == RESULT_CANCELED) { // 블루투스 활성화를 취소를 클릭하였다면
-                    Toast.makeText(getApplicationContext(), "블루투스를 활성화 해주세요.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), GlobalVar.MSG_REQUEST_BLUETOOTH, Toast.LENGTH_LONG).show();
                 }
                 break;
         }
@@ -136,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
 
 
-                            Toast.makeText(getApplication(), "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplication(), GlobalVar.MSG_REQUEST_LOGIN_SUCCESS, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                             startActivity(intent);
                             finish();
@@ -146,8 +146,8 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError e) {
                             e.printStackTrace();
-                            Toast.makeText(getApplication(), "로그인에 실패하였습니다. 아이디/비밀번호를 확인해주세요.", Toast.LENGTH_SHORT).show();
-                            Log.i(GlobalVar.TAG_ACTIVITY_LOGIN, "로그인 실패" + e.getMessage());
+                            Toast.makeText(getApplication(), GlobalVar.MSG_REQUEST_LOGIN_FAILED+", 아이디/비밀번호를 확인해주세요.", Toast.LENGTH_SHORT).show();
+                            Log.i(GlobalVar.TAG_ACTIVITY_LOGIN, GlobalVar.MSG_REQUEST_LOGIN_FAILED + e.getMessage());
                         }
                     }
             ) {

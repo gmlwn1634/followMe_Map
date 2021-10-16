@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:text="결제"
+            android:text="@string/payment"
             android:textSize="30sp"
             app:layout_constraintBottom_toTopOf="@+id/line"
             app:layout_constraintStart_toStartOf="parent"
@@ -93,7 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
-                android:text="총액"
+                android:text="@string/amount"
                 android:textSize="26sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -115,7 +115,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="50dp"
-                android:text="원"
+                android:text="@string/paymentUnit"
                 android:textSize="26sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -125,7 +125,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    E
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -144,7 +143,7 @@
         android:id="@+id/noPayment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="진료 내용이 없습니다."
+        android:text="@string/payNull"
         android:textSize="25sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/recycler_view"

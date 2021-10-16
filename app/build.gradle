@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion '29.0.3'
+    compileSdkVersion 30
+    buildToolsVersion '30.0.3'
     buildFeatures {
         viewBinding = true
     }
@@ -10,9 +10,9 @@ android {
 
     defaultConfig {
         applicationId "com.minewbeacon.blescan.demo"
-        minSdkVersion 21
+        minSdkVersion 23
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
     }
@@ -40,8 +40,8 @@ dependencies {
 
 
     //jar import
-    implementation files('libs\\TransCoord.jar')
-    implementation files('libs\\minewBeaconScan.jar')
+    implementation files('libs/TransCoord.jar')
+    implementation files('libs/minewBeaconScan.jar')
 
     //qr cord
     implementation 'com.journeyapps:zxing-android-embedded:3.6.0'

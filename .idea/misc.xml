@@ -11,25 +11,25 @@
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/drawable/ic_map.xml" value="0.1" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/drawable/splash.xml" value="0.1" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/font/custom_font.xml" value="0.10462962962962963" />
-        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_dest_search.xml" value="0.1" />
-        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_flow.xml" value="0.1" />
+        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_dest_search.xml" value="0.264" />
+        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_flow.xml" value="0.12" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_home.xml" value="0.1" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_im_port.xml" value="0.1" />
-        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_join.xml" value="0.1" />
+        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_join.xml" value="0.16" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_login.xml" value="0.1" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_main.xml" value="0.11458333333333333" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_main2.xml" value="0.1" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/activity_payment.xml" value="0.1" />
-        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/clinic_record_list.xml" value="0.1" />
+        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/clinic_record_list.xml" value="0.152" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/clinic_record_list_row.xml" value="0.1" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/custom_dialog.xml" value="0.1" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/dest_row.xml" value="0.1" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/flow_list_view.xml" value="0.1" />
-        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/fragment_clinic_list.xml" value="0.1" />
+        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/fragment_clinic_list.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/fragment_home.xml" value="0.1" />
-        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/fragment_info.xml" value="0.1" />
+        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/fragment_info.xml" value="0.2" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/fragment_list.xml" value="0.1" />
-        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/fragment_payment_list.xml" value="0.1" />
+        <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/fragment_payment_list.xml" value="0.264" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/main_item.xml" value="0.11458333333333333" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/payment_list_row.xml" value="0.1" />
         <entry key="..\:/Users/gmlwn/Desktop/BleScanDemo2/app/src/main/res/layout/payment_record_list.xml" value="0.1" />

@@ -49,9 +49,9 @@ public class PaymentRecordAdapter extends RecyclerView.Adapter<PaymentRecordAdap
         paymentRecordViewHolder
                 .place
                 .setText(dataList.get(position).place);
-        paymentRecordViewHolder
-                .price
-                .setText(dataList.get(position).price);
+//        paymentRecordViewHolder
+//                .price
+//                .setText(dataList.get(position).price);
 
 
     }

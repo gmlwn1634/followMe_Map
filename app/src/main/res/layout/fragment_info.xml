@@ -170,6 +170,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="50dp"
             android:backgroundTint="#00FFFFFF"
+            android:padding="20dp"
             app:layout_constraintBottom_toBottomOf="@+id/textView33"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textView33"
